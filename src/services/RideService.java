@@ -1,7 +1,12 @@
 package services;
 
-import models.Rider;
+import java.util.Comparator;
 import java.util.HashMap;
+import java.util.PriorityQueue;
+
+import models.Driver;
+import models.Rider;
+import utilities.DistanceUtility;
 
 public class RideService {
     private HashMap<String, Rider> riderDetails = new HashMap<>();
@@ -14,5 +19,15 @@ public class RideService {
 
     public matchRider(String riderID) {
 
+    }
+}
+
+class DriverDistancePair {
+    public int distance;
+    public String ID;
+
+    public DriverDistancePair(int distance, String ID) {
+        this.distance = distance;
+        this.ID = ID;
     }
 }
