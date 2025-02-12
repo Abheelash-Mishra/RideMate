@@ -66,6 +66,62 @@ public class RideService {
         System.out.println();
     }
 
+    public void startRide(String rideID, int N, String riderID, DriverService driverService) {
+        List<String> matchedDrivers = riderDriverMapping.get(riderID);
+
+        if (matchedDrivers.size() < N) {
+            System.out.println("INVALID_RIDE");
+            return;
+        }
+
+        String driverID = matchedDrivers.get(N-1);
+        boolean driverAvailable = driverService.driverDetails.get(driverID).available;
+        if (!driverAvailable || rideDetails.containsKey(rideID)) {
+            System.out.println("INVALID_RIDE");
+            return;
+        }
+
+        rideDetails.put(rideID, new Ride(riderID, driverID));
+        driverService.driverDetails.get(driverID).updateAvailability();
+
+        System.out.println("RIDE_STARTED " + rideID);
+    }
+
+    public void stopRide(String rideID, int dest_x_coordinate, int dest_y_coordinate, int timeTakenInMins, DriverService driverService) {
+        Ride currentRide = rideDetails.get(rideID);
+        if (currentRide == null || currentRide.hasFinished) {
+            System.out.println("INVALID_RIDE");
+            return;
+        }
+
+        System.out.println("RIDE_STOPPED " + rideID);
+        driverService.driverDetails.get(currentRide.driverID).updateAvailability();
+        currentRide.finishRide(dest_x_coordinate, dest_y_coordinate, timeTakenInMins);
+    }
+
+    public void billRide(String rideID) {
+        Ride currentRide = rideDetails.get(rideID);
+
+        final double BASE_FARE = 50.0;
+        final double PER_KM = 6.5;
+        final double PER_MIN = 2.0;
+        final double SERVICE_TAX = 1.2;      // 20 percent
+
+        double finalBill = BASE_FARE;
+
+        int[] startCoordinates = riderDetails.get(currentRide.riderID).coordinates;
+        int[] destCoordinates = currentRide.destinationCoordinates;
+        double distanceTravelled = DistanceUtility.calculate(startCoordinates, destCoordinates);
+        finalBill += (distanceTravelled * PER_KM);
+
+        int timeTakenInMins = currentRide.timeTakenInMins;
+        finalBill += (timeTakenInMins * PER_MIN);
+
+        finalBill *= SERVICE_TAX;
+
+        System.out.println("BILL " + rideID + " " + currentRide.driverID + " " + String.format("%.1f", finalBill));
+    }
+
 
     public static class DriverDistancePair {
         public String ID;
