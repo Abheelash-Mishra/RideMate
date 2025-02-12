@@ -1,9 +1,12 @@
 package services;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.PriorityQueue;
 
 import models.Driver;
+import models.Ride;
 import models.Rider;
 import utilities.DistanceUtility;
 
@@ -14,8 +17,6 @@ public class RideService {
 
     public void addRider(String riderID, int x_coordinate, int y_coordinate) {
         riderDetails.put(riderID, new Rider(riderID, x_coordinate, y_coordinate));
-
-        System.err.println("Added new rider - " + riderID);
     }
 
     public void matchRider(String riderID, DriverService driverService) {
@@ -36,9 +37,9 @@ public class RideService {
 
         for(String driverID : allDrivers.keySet()) {
             Driver driver = allDrivers.get(driverID);
+
             if(driver.available) {
                 double distance = DistanceUtility.calculate(riderCoordinates, driver.coordinates);
-                System.err.println(distance);
 
                 if (distance <= LIMIT) {
                     DriverDistancePair pair = new DriverDistancePair(driverID, distance);
@@ -47,22 +48,24 @@ public class RideService {
             }
         }
 
-        driversMatched(nearestDrivers);
+        driversMatched(riderID, nearestDrivers);
     }
 
-    public void driversMatched(PriorityQueue<DriverDistancePair> nearestDrivers) {
+    public void driversMatched(String riderID, PriorityQueue<DriverDistancePair> nearestDrivers) {
         if (nearestDrivers.isEmpty()) {
             System.out.println("NO_DRIVERS_AVAILABLE");
             return;
         }
 
+        System.out.print("DRIVERS_MATCHED");
+        riderDriverMapping.putIfAbsent(riderID, new ArrayList<>());
         int size = Math.min(nearestDrivers.size(), 5);
-        System.out.print("DRIVERS_MATCHED ");
 
         for (int i = 0; i < size; i++) {
             DriverDistancePair driver = nearestDrivers.poll();
             if (driver != null) {
-                System.out.print(driver.ID + " ");
+                riderDriverMapping.get(riderID).add(driver.ID);
+                System.out.print(" " + driver.ID);
             }
         }
         System.out.println();
