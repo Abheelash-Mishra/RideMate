@@ -9,6 +9,8 @@ import utilities.DistanceUtility;
 
 public class RideService {
     private final HashMap<String, Rider> riderDetails = new HashMap<>();
+    private final HashMap<String, Ride> rideDetails = new HashMap<>();
+    private final HashMap<String, List<String>> riderDriverMapping = new HashMap<>();
 
     public void addRider(String riderID, int x_coordinate, int y_coordinate) {
         riderDetails.put(riderID, new Rider(riderID, x_coordinate, y_coordinate));
