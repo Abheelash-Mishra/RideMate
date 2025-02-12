@@ -8,6 +8,6 @@ public class Rider {
         this.riderID = riderID;
         this.coordinates = new int[]{x_coordinate, y_coordinate};
 
-        System.out.println("Created rider - " + riderID);
+        System.err.println("Created rider - " + riderID);
     }
 }

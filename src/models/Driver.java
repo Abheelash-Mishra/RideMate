@@ -9,7 +9,7 @@ public class Driver {
         this.driverID = driverID;
         this.coordinates = new int[]{x_coordinate, y_coordinate};
 
-        System.out.println("Created driver - " + driverID);
+        System.err.println("Created driver - " + driverID);
     }
 
 
