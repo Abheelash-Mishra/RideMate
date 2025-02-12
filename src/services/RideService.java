@@ -22,18 +22,15 @@ public class RideService {
         int[] riderCoordinates = riderDetails.get(riderID).coordinates;
 
         HashMap<String, Driver> allDrivers = driverService.driverDetails;
-        PriorityQueue<DriverDistancePair> nearestDrivers = new PriorityQueue<>(new Comparator<DriverDistancePair>() {
-            @Override
-            public int compare(DriverDistancePair pair1, DriverDistancePair pair2) {
-                if (pair1.distance < pair2.distance) {
-                    return -1;
-                }
-                else if (pair1.distance > pair2.distance) {
-                    return 1;
-                }
-
-                return pair1.ID.compareTo(pair2.ID);
+        PriorityQueue<DriverDistancePair> nearestDrivers = new PriorityQueue<>((pair1, pair2) -> {
+            if (pair1.distance < pair2.distance) {
+                return -1;
             }
+            else if (pair1.distance > pair2.distance) {
+                return 1;
+            }
+
+            return pair1.ID.compareTo(pair2.ID);
         });
 
         for(String driverID : allDrivers.keySet()) {
