@@ -2,11 +2,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
-import services.RideService;
 
 import java.io.*;
-
-import static org.junit.Assert.assertEquals;
 
 class RiderAppTests {
     private final InputStream originalSystemIn = System.in;
