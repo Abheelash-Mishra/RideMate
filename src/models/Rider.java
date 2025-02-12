@@ -7,7 +7,5 @@ public class Rider {
     public Rider(String riderID, int x_coordinate, int y_coordinate) {
         this.riderID = riderID;
         this.coordinates = new int[]{x_coordinate, y_coordinate};
-
-        System.err.println("Created rider - " + riderID);
     }
 }
