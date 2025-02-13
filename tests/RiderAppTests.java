@@ -103,7 +103,61 @@ class RiderAppTests {
     }
 
     @Test
-    void NoDriversAvailableAtAll() {
+    void BillRiderUsingWallet() {
+        String input = """
+                ADD_DRIVER D1 1 1
+                ADD_DRIVER D2 4 5
+                ADD_DRIVER D3 2 2
+                ADD_RIDER R1 0 0
+                ADD_MONEY R1 520
+                MATCH R1
+                START_RIDE RIDE-001 2 R1
+                STOP_RIDE RIDE-001 4 5 32
+                BILL RIDE-001
+                PAY_VIA_WALLET RIDE-001
+                """;
+
+        String expectedOutput = """
+                CURRENT_BALANCE R1 520.0
+                DRIVERS_MATCHED D1 D3
+                RIDE_STARTED RIDE-001
+                RIDE_STOPPED RIDE-001
+                BILL RIDE-001 D3 186.7
+                PAID 186.7 SUCCESSFULLY | CURRENT_BALANCE 333.3
+                """;
+
+        runTest(input, expectedOutput);
+    }
+
+    @Test
+    void BillRiderUsingWalletWithLowBalance() {
+        String input = """
+                ADD_DRIVER D1 1 1
+                ADD_DRIVER D2 4 5
+                ADD_DRIVER D3 2 2
+                ADD_RIDER R1 0 0
+                ADD_MONEY R1 100
+                MATCH R1
+                START_RIDE RIDE-001 2 R1
+                STOP_RIDE RIDE-001 4 5 32
+                BILL RIDE-001
+                PAY_VIA_WALLET RIDE-001
+                """;
+
+        String expectedOutput = """
+                CURRENT_BALANCE R1 100.0
+                DRIVERS_MATCHED D1 D3
+                RIDE_STARTED RIDE-001
+                RIDE_STOPPED RIDE-001
+                BILL RIDE-001 D3 186.7
+                LOW_BALANCE
+                """;
+
+        runTest(input, expectedOutput);
+    }
+
+    @Test
+    void NoDriversAvailableAtAll_ThrowsException() {
         String input = """
                 ADD_RIDER R1 3 5
                 ADD_RIDER R2 1 1

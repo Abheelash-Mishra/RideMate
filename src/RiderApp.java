@@ -85,6 +85,19 @@ public class RiderApp {
                     rideService.billRide(rideID);
                     break;
 
+                case "PAY_VIA_WALLET":
+                    rideID = parts[1];
+
+                    rideService.payViaWallet(rideID);
+                    break;
+
+                case "ADD_MONEY":
+                    riderID = parts[1];
+                    float amount = Float.parseFloat(parts[2]);
+
+                    rideService.addMoney(riderID, amount);
+                    break;
+
                 default:
                     break;
             }

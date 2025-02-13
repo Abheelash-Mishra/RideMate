@@ -125,7 +125,21 @@ public class RideService {
 
         finalBill *= SERVICE_TAX;
 
+        currentRide.bill = (float) (Math.round(finalBill * 10.0) / 10.0);;
         System.out.println("BILL " + rideID + " " + currentRide.driverID + " " + String.format("%.1f", finalBill));
+    }
+
+    public void payViaWallet(String rideID) {
+        Ride currentRide = rideDetails.get(rideID);
+        Rider rider = riderDetails.get(currentRide.riderID);
+
+        rider.deductMoney(currentRide.bill);
+    }
+
+    public void addMoney(String riderID, float amount) {
+        Rider rider = riderDetails.get(riderID);
+
+        rider.addMoney(amount);
     }
 
 
