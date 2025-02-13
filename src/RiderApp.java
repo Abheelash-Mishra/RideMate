@@ -29,12 +29,12 @@ public class RiderApp {
     public static void processCommands(String command) {
         String[] parts = command.split(" ");
         int x_coordinate, y_coordinate;
-        String riderID, rideID;
+        String riderID, rideID, driverID;
 
         try {
             switch (parts[0]) {
                 case "ADD_DRIVER":
-                    String driverID = parts[1];
+                    driverID = parts[1];
                     x_coordinate = Integer.parseInt(parts[2]);
                     y_coordinate = Integer.parseInt(parts[3]);
 
@@ -71,6 +71,12 @@ public class RiderApp {
 
                     rideService.stopRide(rideID,dest_x_coordinate, dest_y_coordinate, timeTakenInMins, driverService);
                     break;
+
+                case "RATE_DRIVER":
+                    driverID = parts[1];
+                    int rating = Integer.parseInt(parts[2]);
+
+                    driverService.rateDriver(driverID, rating);
 
                 case "BILL":
                     rideID = parts[1];
