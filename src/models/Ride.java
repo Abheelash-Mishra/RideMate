@@ -6,6 +6,7 @@ public class Ride {
     public int[] destinationCoordinates;
     public int timeTakenInMins;
     public boolean hasFinished;
+    public float bill;
 
     public Ride(String riderID, String driverID) {
         this.riderID = riderID;
