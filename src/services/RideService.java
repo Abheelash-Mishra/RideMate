@@ -125,7 +125,7 @@ public class RideService {
 
         finalBill *= SERVICE_TAX;
 
-        currentRide.bill = (float) (Math.round(finalBill * 10.0) / 10.0);;
+        currentRide.bill = (float) (Math.round(finalBill * 10.0) / 10.0);
         System.out.println("BILL " + rideID + " " + currentRide.driverID + " " + String.format("%.1f", finalBill));
     }
 
@@ -143,15 +143,7 @@ public class RideService {
     }
 
 
-    public static class DriverDistancePair {
-        public String ID;
-        public double distance;
-
-        public DriverDistancePair(String ID, double distance) {
-            this.ID = ID;
-            this.distance = distance;
-        }
-    }
+    public record DriverDistancePair(String ID, double distance) {}
 
     public static class InvalidRideException extends Exception {
         public InvalidRideException() {
