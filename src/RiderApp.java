@@ -74,9 +74,10 @@ public class RiderApp {
 
                 case "RATE_DRIVER":
                     driverID = parts[1];
-                    int rating = Integer.parseInt(parts[2]);
+                    float rating = Float.parseFloat(parts[2]);
 
                     driverService.rateDriver(driverID, rating);
+                    break;
 
                 case "BILL":
                     rideID = parts[1];
