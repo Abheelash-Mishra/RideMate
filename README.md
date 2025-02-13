@@ -6,6 +6,7 @@ seamless interactions between riders and drivers while maintaining structured ri
 ## Class Structure
 
 **1. RideService:** Manages ride-related operations such as:
+
 - Adding riders to the service
 - Handling ride creation
 - Matching drivers to riders
@@ -21,4 +22,5 @@ seamless interactions between riders and drivers while maintaining structured ri
 
 **6. DistanceUtility:** Utility class that calculates the distance between 2 points.
 
-**7. RiderAppTests:** Automated testcases using `JUnit`, testing various scenarios and points-of-failures. (Resets `RideService` and `DriverService` between each testcase)
+**7. RiderAppTests:** Automated testcases using `JUnit`, testing various scenarios and points-of-failures. (Resets
+`RideService` and `DriverService` between each testcase)

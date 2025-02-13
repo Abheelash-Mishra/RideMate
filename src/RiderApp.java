@@ -16,7 +16,7 @@ public class RiderApp {
     }
 
     public static void main(String[] args) {
-        while(scanner.hasNextLine()) {
+        while (scanner.hasNextLine()) {
             String command = scanner.nextLine().trim();
             if (command.isEmpty()) break;
 
@@ -69,7 +69,7 @@ public class RiderApp {
                     int dest_y_coordinate = Integer.parseInt(parts[3]);
                     int timeTakenInMins = Integer.parseInt(parts[4]);
 
-                    rideService.stopRide(rideID,dest_x_coordinate, dest_y_coordinate, timeTakenInMins, driverService);
+                    rideService.stopRide(rideID, dest_x_coordinate, dest_y_coordinate, timeTakenInMins, driverService);
                     break;
 
                 case "RATE_DRIVER":
@@ -101,8 +101,7 @@ public class RiderApp {
                 default:
                     break;
             }
-        }
-        catch (RideService.InvalidRideException e) {
+        } catch (RideService.InvalidRideException e) {
             System.out.println(e.getMessage());
         }
     }

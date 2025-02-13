@@ -1,14 +1,14 @@
 package services;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.PriorityQueue;
-
 import models.Driver;
 import models.Ride;
 import models.Rider;
 import utilities.DistanceUtility;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.PriorityQueue;
 
 public class RideService {
     private final HashMap<String, Rider> riderDetails = new HashMap<>();
@@ -27,18 +27,17 @@ public class RideService {
         PriorityQueue<DriverDistancePair> nearestDrivers = new PriorityQueue<>((pair1, pair2) -> {
             if (pair1.distance < pair2.distance) {
                 return -1;
-            }
-            else if (pair1.distance > pair2.distance) {
+            } else if (pair1.distance > pair2.distance) {
                 return 1;
             }
 
             return pair1.ID.compareTo(pair2.ID);
         });
 
-        for(String driverID : allDrivers.keySet()) {
+        for (String driverID : allDrivers.keySet()) {
             Driver driver = allDrivers.get(driverID);
 
-            if(driver.available) {
+            if (driver.available) {
                 double distance = DistanceUtility.calculate(riderCoordinates, driver.coordinates);
 
                 if (distance <= LIMIT) {
@@ -48,7 +47,7 @@ public class RideService {
             }
         }
 
-        try{
+        try {
             driversMatched(riderID, nearestDrivers);
         } catch (NoDriversException e) {
             System.out.println(e.getMessage());
@@ -81,7 +80,7 @@ public class RideService {
             throw new InvalidRideException();
         }
 
-        String driverID = matchedDrivers.get(N-1);
+        String driverID = matchedDrivers.get(N - 1);
         boolean driverAvailable = driverService.driverDetails.get(driverID).available;
 
         if (!driverAvailable || rideDetails.containsKey(rideID)) {
@@ -143,7 +142,8 @@ public class RideService {
     }
 
 
-    public record DriverDistancePair(String ID, double distance) {}
+    public record DriverDistancePair(String ID, double distance) {
+    }
 
     public static class InvalidRideException extends Exception {
         public InvalidRideException() {

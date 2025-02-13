@@ -1,9 +1,12 @@
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-import java.io.*;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.InputStream;
+import java.io.PrintStream;
 
 class RiderAppTests {
     private final InputStream originalSystemIn = System.in;
@@ -306,7 +309,6 @@ class RiderAppTests {
 
         runTest(input, expectedOutput);
     }
-
 
 
     private void runTest(String input, String expectedOutput) {
