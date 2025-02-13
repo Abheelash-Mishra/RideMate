@@ -48,13 +48,16 @@ public class RideService {
             }
         }
 
-        driversMatched(riderID, nearestDrivers);
+        try{
+            driversMatched(riderID, nearestDrivers);
+        } catch (NoDriversException e) {
+            System.out.println(e.getMessage());
+        }
     }
 
-    public void driversMatched(String riderID, PriorityQueue<DriverDistancePair> nearestDrivers) {
+    public void driversMatched(String riderID, PriorityQueue<DriverDistancePair> nearestDrivers) throws NoDriversException {
         if (nearestDrivers.isEmpty()) {
-            System.out.println("NO_DRIVERS_AVAILABLE");
-            return;
+            throw new NoDriversException();
         }
 
         System.out.print("DRIVERS_MATCHED");
@@ -71,19 +74,18 @@ public class RideService {
         System.out.println();
     }
 
-    public void startRide(String rideID, int N, String riderID, DriverService driverService) {
+    public void startRide(String rideID, int N, String riderID, DriverService driverService) throws InvalidRideException {
         List<String> matchedDrivers = riderDriverMapping.get(riderID);
 
         if (matchedDrivers.size() < N) {
-            System.out.println("INVALID_RIDE");
-            return;
+            throw new InvalidRideException();
         }
 
         String driverID = matchedDrivers.get(N-1);
         boolean driverAvailable = driverService.driverDetails.get(driverID).available;
+
         if (!driverAvailable || rideDetails.containsKey(rideID)) {
-            System.out.println("INVALID_RIDE");
-            return;
+            throw new InvalidRideException();
         }
 
         rideDetails.put(rideID, new Ride(riderID, driverID));
@@ -92,11 +94,10 @@ public class RideService {
         System.out.println("RIDE_STARTED " + rideID);
     }
 
-    public void stopRide(String rideID, int dest_x_coordinate, int dest_y_coordinate, int timeTakenInMins, DriverService driverService) {
+    public void stopRide(String rideID, int dest_x_coordinate, int dest_y_coordinate, int timeTakenInMins, DriverService driverService) throws InvalidRideException {
         Ride currentRide = rideDetails.get(rideID);
         if (currentRide == null || currentRide.hasFinished) {
-            System.out.println("INVALID_RIDE");
-            return;
+            throw new InvalidRideException();
         }
 
         System.out.println("RIDE_STOPPED " + rideID);
@@ -135,6 +136,18 @@ public class RideService {
         public DriverDistancePair(String ID, double distance) {
             this.ID = ID;
             this.distance = distance;
+        }
+    }
+
+    public static class InvalidRideException extends Exception {
+        public InvalidRideException() {
+            super("INVALID_RIDE");
+        }
+    }
+
+    public static class NoDriversException extends Exception {
+        public NoDriversException() {
+            super("NO_DRIVERS_AVAILABLE");
         }
     }
 }

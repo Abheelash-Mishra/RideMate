@@ -31,55 +31,59 @@ public class RiderApp {
         int x_coordinate, y_coordinate;
         String riderID, rideID;
 
-        switch (parts[0]) {
-            case "ADD_DRIVER":
-                String driverID = parts[1];
-                x_coordinate = Integer.parseInt(parts[2]);
-                y_coordinate = Integer.parseInt(parts[3]);
+        try {
+            switch (parts[0]) {
+                case "ADD_DRIVER":
+                    String driverID = parts[1];
+                    x_coordinate = Integer.parseInt(parts[2]);
+                    y_coordinate = Integer.parseInt(parts[3]);
 
-                driverService.addDriver(driverID, x_coordinate, y_coordinate);
-                break;
+                    driverService.addDriver(driverID, x_coordinate, y_coordinate);
+                    break;
 
-            case "ADD_RIDER":
-                riderID = parts[1];
-                x_coordinate = Integer.parseInt(parts[2]);
-                y_coordinate = Integer.parseInt(parts[3]);
+                case "ADD_RIDER":
+                    riderID = parts[1];
+                    x_coordinate = Integer.parseInt(parts[2]);
+                    y_coordinate = Integer.parseInt(parts[3]);
 
-                rideService.addRider(riderID, x_coordinate, y_coordinate);
-                break;
+                    rideService.addRider(riderID, x_coordinate, y_coordinate);
+                    break;
 
-            case "MATCH":
-                riderID = parts[1];
+                case "MATCH":
+                    riderID = parts[1];
 
-                rideService.matchRider(riderID, driverService);
-                break;
+                    rideService.matchRider(riderID, driverService);
+                    break;
 
-            case "START_RIDE":
-                rideID = parts[1];
-                int N = Integer.parseInt(parts[2]);
-                riderID = parts[3];
+                case "START_RIDE":
+                    rideID = parts[1];
+                    int N = Integer.parseInt(parts[2]);
+                    riderID = parts[3];
 
-                rideService.startRide(rideID, N, riderID, driverService);
-                break;
+                    rideService.startRide(rideID, N, riderID, driverService);
+                    break;
 
-            case "STOP_RIDE":
-                rideID = parts[1];
-                int dest_x_coordinate = Integer.parseInt(parts[2]);
-                int dest_y_coordinate = Integer.parseInt(parts[3]);
-                int timeTakenInMins = Integer.parseInt(parts[4]);
+                case "STOP_RIDE":
+                    rideID = parts[1];
+                    int dest_x_coordinate = Integer.parseInt(parts[2]);
+                    int dest_y_coordinate = Integer.parseInt(parts[3]);
+                    int timeTakenInMins = Integer.parseInt(parts[4]);
 
-                rideService.stopRide(rideID,dest_x_coordinate, dest_y_coordinate, timeTakenInMins, driverService);
-                break;
+                    rideService.stopRide(rideID,dest_x_coordinate, dest_y_coordinate, timeTakenInMins, driverService);
+                    break;
 
-            case "BILL":
-                rideID = parts[1];
+                case "BILL":
+                    rideID = parts[1];
 
-                rideService.billRide(rideID);
-                break;
+                    rideService.billRide(rideID);
+                    break;
 
-            default:
-                System.out.println("Incorrect input!");
-                break;
+                default:
+                    break;
+            }
+        }
+        catch (RideService.InvalidRideException e) {
+            System.out.println(e.getMessage());
         }
     }
 }
