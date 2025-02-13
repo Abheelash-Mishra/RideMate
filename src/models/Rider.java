@@ -12,6 +12,8 @@ public class Rider {
 
     public void addMoney(float amount) {
         walletAmount += amount;
+
+        System.out.println("CURRENT_BALANCE " + riderID + " " + walletAmount);
     }
 
     public void deductMoney(float amount) {
@@ -21,5 +23,6 @@ public class Rider {
         }
 
         walletAmount -= amount;
+        System.out.println("PAID " + amount + " SUCCESSFULLY | CURRENT_BALANCE " + walletAmount);
     }
 }
