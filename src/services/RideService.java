@@ -55,7 +55,7 @@ public class RideService {
         }
     }
 
-    public void driversMatched(String riderID, PriorityQueue<DriverDistancePair> nearestDrivers) throws NoDriversException {
+    private void driversMatched(String riderID, PriorityQueue<DriverDistancePair> nearestDrivers) throws NoDriversException {
         if (nearestDrivers.isEmpty()) {
             throw new NoDriversException();
         }
