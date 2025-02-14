@@ -1,5 +1,6 @@
 package services;
 
+import database.InMemoryDB;
 import models.Driver;
 import models.Ride;
 import models.Rider;
@@ -11,25 +12,24 @@ import java.util.List;
 import java.util.PriorityQueue;
 
 public class RideService {
-    private final HashMap<String, Rider> riderDetails = new HashMap<>();
-    private final HashMap<String, Ride> rideDetails = new HashMap<>();
-    private final HashMap<String, List<String>> riderDriverMapping = new HashMap<>();
-
+    private final InMemoryDB db;
     private final PaymentService paymentService;
 
-    public RideService() {
-        this.paymentService = new PaymentService(rideDetails, riderDetails);
+    public RideService(InMemoryDB db) {
+        this.db = db;
+
+        this.paymentService = new PaymentService(db);
     }
 
     public void addRider(String riderID, int x_coordinate, int y_coordinate) {
-        riderDetails.put(riderID, new Rider(riderID, x_coordinate, y_coordinate));
+        db.riderDetails.put(riderID, new Rider(riderID, x_coordinate, y_coordinate));
     }
 
-    public void matchRider(String riderID, DriverService driverService) {
+    public void matchRider(String riderID) {
         final double LIMIT = 5.0;
-        int[] riderCoordinates = riderDetails.get(riderID).coordinates;
+        int[] riderCoordinates = db.riderDetails.get(riderID).coordinates;
 
-        HashMap<String, Driver> allDrivers = driverService.driverDetails;
+        HashMap<String, Driver> allDrivers = db.driverDetails;
         PriorityQueue<DriverDistancePair> nearestDrivers = new PriorityQueue<>((pair1, pair2) -> {
             if (pair1.distance < pair2.distance) {
                 return -1;
@@ -66,52 +66,52 @@ public class RideService {
         }
 
         System.out.print("DRIVERS_MATCHED");
-        riderDriverMapping.putIfAbsent(riderID, new ArrayList<>());
+        db.riderDriverMapping.putIfAbsent(riderID, new ArrayList<>());
         int size = Math.min(nearestDrivers.size(), 5);
 
         for (int i = 0; i < size; i++) {
             DriverDistancePair driver = nearestDrivers.poll();
             if (driver != null) {
-                riderDriverMapping.get(riderID).add(driver.ID);
+                db.riderDriverMapping.get(riderID).add(driver.ID);
                 System.out.print(" " + driver.ID);
             }
         }
         System.out.println();
     }
 
-    public void startRide(String rideID, int N, String riderID, DriverService driverService) throws InvalidRideException {
-        List<String> matchedDrivers = riderDriverMapping.get(riderID);
+    public void startRide(String rideID, int N, String riderID) throws InvalidRideException {
+        List<String> matchedDrivers = db.riderDriverMapping.get(riderID);
 
         if (matchedDrivers.size() < N) {
             throw new InvalidRideException();
         }
 
         String driverID = matchedDrivers.get(N - 1);
-        boolean driverAvailable = driverService.driverDetails.get(driverID).available;
+        boolean driverAvailable = db.driverDetails.get(driverID).available;
 
-        if (!driverAvailable || rideDetails.containsKey(rideID)) {
+        if (!driverAvailable || db.rideDetails.containsKey(rideID)) {
             throw new InvalidRideException();
         }
 
-        rideDetails.put(rideID, new Ride(riderID, driverID));
-        driverService.driverDetails.get(driverID).updateAvailability();
+        db.rideDetails.put(rideID, new Ride(riderID, driverID));
+        db.driverDetails.get(driverID).updateAvailability();
 
         System.out.println("RIDE_STARTED " + rideID);
     }
 
-    public void stopRide(String rideID, int dest_x_coordinate, int dest_y_coordinate, int timeTakenInMins, DriverService driverService) throws InvalidRideException {
-        Ride currentRide = rideDetails.get(rideID);
+    public void stopRide(String rideID, int dest_x_coordinate, int dest_y_coordinate, int timeTakenInMins) throws InvalidRideException {
+        Ride currentRide = db.rideDetails.get(rideID);
         if (currentRide == null || currentRide.hasFinished) {
             throw new InvalidRideException();
         }
 
         System.out.println("RIDE_STOPPED " + rideID);
-        driverService.driverDetails.get(currentRide.driverID).updateAvailability();
+        db.driverDetails.get(currentRide.driverID).updateAvailability();
         currentRide.finishRide(dest_x_coordinate, dest_y_coordinate, timeTakenInMins);
     }
 
     public void billRide(String rideID) {
-        Ride currentRide = rideDetails.get(rideID);
+        Ride currentRide = db.rideDetails.get(rideID);
 
         final double BASE_FARE = 50.0;
         final double PER_KM = 6.5;
@@ -120,7 +120,7 @@ public class RideService {
 
         double finalBill = BASE_FARE;
 
-        int[] startCoordinates = riderDetails.get(currentRide.riderID).coordinates;
+        int[] startCoordinates = db.riderDetails.get(currentRide.riderID).coordinates;
         int[] destCoordinates = currentRide.destinationCoordinates;
         double distanceTravelled = DistanceUtility.calculate(startCoordinates, destCoordinates);
         finalBill += (distanceTravelled * PER_KM);

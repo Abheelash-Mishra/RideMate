@@ -1,3 +1,4 @@
+import database.InMemoryDB;
 import services.DriverService;
 import services.RideService;
 
@@ -5,14 +6,17 @@ import java.util.Scanner;
 
 public class RiderApp {
     private static Scanner scanner = new Scanner(System.in);
-    private static DriverService driverService = new DriverService();
-    private static RideService rideService = new RideService();
+
+    private static final InMemoryDB db = InMemoryDB.getInstance();
+    private static RideService rideService = new RideService(db);
+    private static DriverService driverService = new DriverService(db);
 
     public static void reset() {
-        rideService = new RideService();
-        driverService = new DriverService();
+        InMemoryDB db = InMemoryDB.reset();
 
         scanner = new Scanner(System.in);
+        rideService = new RideService(db);
+        driverService = new DriverService(db);
     }
 
     public static void main(String[] args) {
@@ -52,7 +56,7 @@ public class RiderApp {
                 case "MATCH":
                     riderID = parts[1];
 
-                    rideService.matchRider(riderID, driverService);
+                    rideService.matchRider(riderID);
                     break;
 
                 case "START_RIDE":
@@ -60,7 +64,7 @@ public class RiderApp {
                     int N = Integer.parseInt(parts[2]);
                     riderID = parts[3];
 
-                    rideService.startRide(rideID, N, riderID, driverService);
+                    rideService.startRide(rideID, N, riderID);
                     break;
 
                 case "STOP_RIDE":
@@ -69,7 +73,7 @@ public class RiderApp {
                     int dest_y_coordinate = Integer.parseInt(parts[3]);
                     int timeTakenInMins = Integer.parseInt(parts[4]);
 
-                    rideService.stopRide(rideID, dest_x_coordinate, dest_y_coordinate, timeTakenInMins, driverService);
+                    rideService.stopRide(rideID, dest_x_coordinate, dest_y_coordinate, timeTakenInMins);
                     break;
 
                 case "RATE_DRIVER":

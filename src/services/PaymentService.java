@@ -1,28 +1,26 @@
 package services;
 
+import database.InMemoryDB;
 import models.Ride;
 import models.Rider;
 
-import java.util.HashMap;
 
 public class PaymentService {
-    private final HashMap<String, Ride> rideDetails;
-    private final HashMap<String, Rider> riderDetails;
+    private final InMemoryDB db;
 
-    public PaymentService(HashMap<String, Ride> rideDetails, HashMap<String, Rider> riderDetails) {
-        this.rideDetails = rideDetails;
-        this.riderDetails = riderDetails;
+    public PaymentService(InMemoryDB db) {
+        this.db = db;
     }
 
     public void payViaWallet(String rideID) {
-        Ride currentRide = rideDetails.get(rideID);
-        Rider rider = riderDetails.get(currentRide.riderID);
+        Ride currentRide = db.rideDetails.get(rideID);
+        Rider rider = db.riderDetails.get(currentRide.riderID);
 
         rider.deductMoney(currentRide.bill);
     }
 
     public void addMoney(String riderID, float amount) {
-        Rider rider = riderDetails.get(riderID);
+        Rider rider = db.riderDetails.get(riderID);
 
         rider.addMoney(amount);
     }
