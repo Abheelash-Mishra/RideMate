@@ -15,6 +15,12 @@ public class RideService {
     private final HashMap<String, Ride> rideDetails = new HashMap<>();
     private final HashMap<String, List<String>> riderDriverMapping = new HashMap<>();
 
+    private final PaymentService paymentService;
+
+    public RideService() {
+        this.paymentService = new PaymentService(rideDetails, riderDetails);
+    }
+
     public void addRider(String riderID, int x_coordinate, int y_coordinate) {
         riderDetails.put(riderID, new Rider(riderID, x_coordinate, y_coordinate));
     }
@@ -128,17 +134,8 @@ public class RideService {
         System.out.println("BILL " + rideID + " " + currentRide.driverID + " " + String.format("%.1f", finalBill));
     }
 
-    public void payViaWallet(String rideID) {
-        Ride currentRide = rideDetails.get(rideID);
-        Rider rider = riderDetails.get(currentRide.riderID);
-
-        rider.deductMoney(currentRide.bill);
-    }
-
-    public void addMoney(String riderID, float amount) {
-        Rider rider = riderDetails.get(riderID);
-
-        rider.addMoney(amount);
+    public PaymentService getPaymentService() {
+        return paymentService;
     }
 
 

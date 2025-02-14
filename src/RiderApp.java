@@ -88,14 +88,14 @@ public class RiderApp {
                 case "PAY_VIA_WALLET":
                     rideID = parts[1];
 
-                    rideService.payViaWallet(rideID);
+                    rideService.getPaymentService().payViaWallet(rideID);
                     break;
 
                 case "ADD_MONEY":
                     riderID = parts[1];
                     float amount = Float.parseFloat(parts[2]);
 
-                    rideService.addMoney(riderID, amount);
+                    rideService.getPaymentService().addMoney(riderID, amount);
                     break;
 
                 default:
