@@ -17,6 +17,6 @@ public class DriverService {
     public void rateDriver(String driverID, float rating) {
         Driver driver = db.driverDetails.get(driverID);
 
-        System.out.println("CURRENT_RATING " + driverID + " " + driver.updateDriverRating(rating));
+        System.out.printf("CURRENT_RATING %s %.1f%n", driverID, driver.updateDriverRating(rating));
     }
 }
