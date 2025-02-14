@@ -10,10 +10,9 @@ public class AdminService {
         this.db = db;
     }
 
-    public void removeDriver(String driverID) {
+    public void removeDriver(String driverID) throws InvalidDriverIDException {
         if (db.driverDetails.get(driverID) == null) {
-            System.out.println("INVALID_DRIVER_ID");
-            return;
+            throw new InvalidDriverIDException();
         }
 
         db.driverDetails.remove(driverID);
@@ -31,6 +30,13 @@ public class AdminService {
             Driver driver = db.driverDetails.get(driverID);
 
             System.out.printf("DRIVER_%s (X=%d, Y=%d) RATING %.1f%n", driverID, driver.coordinates[0], driver.coordinates[1], driver.rating);
+        }
+    }
+
+
+    public static class InvalidDriverIDException extends Exception {
+        public InvalidDriverIDException() {
+            super("INVALID_DRIVER_ID");
         }
     }
 }

@@ -117,7 +117,7 @@ public class RiderApp {
                 default:
                     break;
             }
-        } catch (RideService.InvalidRideException e) {
+        } catch (RideService.InvalidRideException | AdminService.InvalidDriverIDException e) {
             System.out.println(e.getMessage());
         }
     }
