@@ -24,9 +24,10 @@ public class InMemoryDB {
         return instance;
     }
 
-    public static InMemoryDB reset() {
-        instance = new InMemoryDB();
-
-        return instance;
+    public static void reset() {
+        instance.riderDetails.clear();
+        instance.rideDetails.clear();
+        instance.driverDetails.clear();
+        instance.riderDriverMapping.clear();
     }
 }
