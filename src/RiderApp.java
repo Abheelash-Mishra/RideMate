@@ -1,4 +1,5 @@
 import database.InMemoryDB;
+import services.AdminService;
 import services.DriverService;
 import services.RideService;
 
@@ -10,6 +11,7 @@ public class RiderApp {
     private static final InMemoryDB db = InMemoryDB.getInstance();
     private static RideService rideService = new RideService(db);
     private static DriverService driverService = new DriverService(db);
+    private static AdminService admin = new AdminService(db);
 
     public static void reset() {
         InMemoryDB db = InMemoryDB.reset();
@@ -17,6 +19,7 @@ public class RiderApp {
         scanner = new Scanner(System.in);
         rideService = new RideService(db);
         driverService = new DriverService(db);
+        admin = new AdminService(db);
     }
 
     public static void main(String[] args) {
@@ -32,7 +35,7 @@ public class RiderApp {
 
     public static void processCommands(String command) {
         String[] parts = command.split(" ");
-        int x_coordinate, y_coordinate;
+        int x_coordinate, y_coordinate, N;
         String riderID, rideID, driverID;
 
         try {
@@ -61,7 +64,7 @@ public class RiderApp {
 
                 case "START_RIDE":
                     rideID = parts[1];
-                    int N = Integer.parseInt(parts[2]);
+                    N = Integer.parseInt(parts[2]);
                     riderID = parts[3];
 
                     rideService.startRide(rideID, N, riderID);
@@ -100,6 +103,18 @@ public class RiderApp {
                     float amount = Float.parseFloat(parts[2]);
 
                     rideService.getPaymentService().addMoney(riderID, amount);
+                    break;
+
+                case "ADMIN_REMOVE_DRIVER":
+                    driverID = parts[1];
+
+                    admin.removeDriver(driverID);
+                    break;
+
+                case "ADMIN_LIST_DRIVERS":
+                    N = Integer.parseInt(parts[1]);
+
+                    admin.listNDriverDetails(N);
                     break;
 
                 default:

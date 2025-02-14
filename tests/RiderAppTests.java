@@ -310,6 +310,36 @@ class RiderAppTests {
         runTest(input, expectedOutput);
     }
 
+    @Test
+    void TestAdminCommands() {
+        String input = """
+                ADD_DRIVER D1 1 1
+                ADD_DRIVER D2 4 5
+                ADD_DRIVER D3 2 2
+                ADD_RIDER R1 0 0
+                MATCH R1
+                START_RIDE RIDE-001 2 R1
+                STOP_RIDE RIDE-001 4 5 32
+                BILL RIDE-001
+                RATE_DRIVER D3 4.5
+                ADMIN_REMOVE_DRIVER D2
+                ADMIN_LIST_DRIVERS 2
+                """;
+
+        String expectedOutput = """
+                DRIVERS_MATCHED D1 D3
+                RIDE_STARTED RIDE-001
+                RIDE_STOPPED RIDE-001
+                BILL RIDE-001 D3 186.7
+                CURRENT_RATING D3 4.5
+                REMOVED_DRIVER D2
+                DRIVER_D1 (X=1, Y=1) RATING 0.0
+                DRIVER_D3 (X=2, Y=2) RATING 4.5
+                """;
+
+        runTest(input, expectedOutput);
+    }
+
 
     private void runTest(String input, String expectedOutput) {
         ByteArrayInputStream testInput = new ByteArrayInputStream(input.getBytes());
