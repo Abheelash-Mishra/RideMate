@@ -9,17 +9,14 @@ public class RiderApp {
     private static Scanner scanner = new Scanner(System.in);
 
     private static final InMemoryDB db = InMemoryDB.getInstance();
-    private static RideService rideService = new RideService(db);
-    private static DriverService driverService = new DriverService(db);
-    private static AdminService admin = new AdminService(db);
+    private static final AdminService admin = new AdminService(db);
+    private static final RideService rideService = new RideService(db);
+    private static final DriverService driverService = new DriverService(db);
 
     public static void reset() {
-        InMemoryDB db = InMemoryDB.reset();
+        InMemoryDB.reset();
 
         scanner = new Scanner(System.in);
-        rideService = new RideService(db);
-        driverService = new DriverService(db);
-        admin = new AdminService(db);
     }
 
     public static void main(String[] args) {
