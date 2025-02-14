@@ -22,6 +22,7 @@ public class PaymentService {
     public void addMoney(String riderID, float amount) {
         Rider rider = db.riderDetails.get(riderID);
 
-        rider.addMoney(amount);
+        float walletAmount = rider.addMoney(amount);
+        System.out.println("CURRENT_BALANCE " + riderID + " " + walletAmount);
     }
 }

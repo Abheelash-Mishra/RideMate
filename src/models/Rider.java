@@ -1,19 +1,17 @@
 package models;
 
 public class Rider {
-    public String riderID;
     public int[] coordinates;
     private float walletAmount = 0;
 
-    public Rider(String riderID, int x_coordinate, int y_coordinate) {
-        this.riderID = riderID;
+    public Rider(int x_coordinate, int y_coordinate) {
         this.coordinates = new int[]{x_coordinate, y_coordinate};
     }
 
-    public void addMoney(float amount) {
+    public float addMoney(float amount) {
         walletAmount += amount;
 
-        System.out.println("CURRENT_BALANCE " + riderID + " " + walletAmount);
+        return walletAmount;
     }
 
     public void deductMoney(float amount) {

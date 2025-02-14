@@ -22,7 +22,7 @@ public class RideService {
     }
 
     public void addRider(String riderID, int x_coordinate, int y_coordinate) {
-        db.riderDetails.put(riderID, new Rider(riderID, x_coordinate, y_coordinate));
+        db.riderDetails.put(riderID, new Rider(x_coordinate, y_coordinate));
     }
 
     public void matchRider(String riderID) {
