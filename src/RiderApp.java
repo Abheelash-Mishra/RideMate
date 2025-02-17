@@ -114,6 +114,12 @@ public class RiderApp {
                     admin.listNDriverDetails(N);
                     break;
 
+                case "ADMIN_VIEW_DRIVER_EARNINGS":
+                    driverID = parts[1];
+
+                    admin.getDriverEarnings(driverID);
+                    break;
+
                 default:
                     break;
             }

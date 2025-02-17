@@ -33,6 +33,11 @@ public class AdminService {
         }
     }
 
+    public void getDriverEarnings(String driverID) {
+        Driver driver = db.driverDetails.get(driverID);
+        System.out.printf("DRIVER_EARNINGS %s %.1f\n", driverID, driver.earnings);
+    }
+
 
     public static class InvalidDriverIDException extends Exception {
         public InvalidDriverIDException() {

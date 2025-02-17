@@ -3,6 +3,7 @@ package models;
 public class Driver {
     public final int[] coordinates;
     public boolean available = true;
+    public float earnings = 0;
     public float rating = 0;
     private float ratingSum = 0;
     private int ridesDone = 0;
@@ -18,6 +19,10 @@ public class Driver {
         this.rating = ratingSum / ridesDone;
 
         return this.rating;
+    }
+
+    public void updateEarnings(float amount) {
+        earnings += amount;
     }
 
     public void updateAvailability() {

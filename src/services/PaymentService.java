@@ -1,6 +1,7 @@
 package services;
 
 import database.InMemoryDB;
+import models.Driver;
 import models.Ride;
 import models.Rider;
 
@@ -15,8 +16,10 @@ public class PaymentService {
     public void payViaWallet(String rideID) {
         Ride currentRide = db.rideDetails.get(rideID);
         Rider rider = db.riderDetails.get(currentRide.riderID);
+        Driver driver = db.driverDetails.get(currentRide.driverID);
 
         rider.deductMoney(currentRide.bill);
+        driver.updateEarnings(currentRide.bill);
     }
 
     public void addMoney(String riderID, float amount) {
