@@ -25,6 +25,10 @@ public class RideService {
         db.riderDetails.put(riderID, new Rider(x_coordinate, y_coordinate));
     }
 
+    /**
+     * Available drivers need to be matched with the rider that are 5km or closer.
+     * If they are equidistant, the drivers are sorted lexicographically.
+     */
     public void matchRider(String riderID) {
         final double LIMIT = 5.0;
         int[] riderCoordinates = db.riderDetails.get(riderID).coordinates;
