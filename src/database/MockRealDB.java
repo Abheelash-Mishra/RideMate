@@ -7,21 +7,27 @@ import models.Rider;
 import java.util.HashMap;
 import java.util.List;
 
-public class InMemoryDB implements Database {
-    private static InMemoryDB instance;
 
-    public final HashMap<String, Rider> riderDetails = new HashMap<>();
-    public final HashMap<String, Driver> driverDetails = new HashMap<>();
-    public final HashMap<String, Ride> rideDetails = new HashMap<>();
-    public final HashMap<String, List<String>> riderDriverMapping = new HashMap<>();
+public class MockRealDB implements Database {
+    private static MockRealDB instance;
 
-    private InMemoryDB() {} // Private constructor to prevent direct instantiation
+    private final HashMap<String, Rider> riderDetails = new HashMap<>();
+    private final HashMap<String, Driver> driverDetails = new HashMap<>();
+    private final HashMap<String, Ride> rideDetails = new HashMap<>();
+    private final HashMap<String, List<String>> riderDriverMapping = new HashMap<>();
 
-    public static InMemoryDB getInstance() {
+    private MockRealDB() {} // Private constructor to prevent direct instantiation
+
+    public static MockRealDB getInstance() {
         if (instance == null) {
-            instance = new InMemoryDB();
+            instance = new MockRealDB();
         }
         return instance;
+    }
+
+    @Override
+    public void connect() {
+        System.out.println("CONNECTED TO MOCK DATABASE");
     }
 
     public static void reset() {
@@ -29,11 +35,6 @@ public class InMemoryDB implements Database {
         instance.rideDetails.clear();
         instance.driverDetails.clear();
         instance.riderDriverMapping.clear();
-    }
-
-    @Override
-    public void connect() {
-        System.out.println("CONNECTED TO IN-MEMORY DATABASE");
     }
 
     @Override

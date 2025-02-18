@@ -1,16 +1,16 @@
 package services.payment;
 
-import database.InMemoryDB;
+import database.Database;
 
 
 public class PaymentService {
     private Payment paymentMethod;
 
-    public PaymentService(PaymentMethodType paymentMethodType, InMemoryDB db) {
+    public PaymentService(PaymentMethodType paymentMethodType, Database db) {
         this.paymentMethod = paymentMethodType.getPaymentMethod(db);
     }
 
-    public void setPaymentMethod(PaymentMethodType paymentMethodType, InMemoryDB db) {
+    public void setPaymentMethod(PaymentMethodType paymentMethodType, Database db) {
         this.paymentMethod = paymentMethodType.getPaymentMethod(db);
     }
 

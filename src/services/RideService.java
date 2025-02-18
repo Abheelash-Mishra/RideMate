@@ -1,6 +1,7 @@
 package services;
 
-import database.InMemoryDB;
+import database.Database;
+
 import models.Driver;
 import models.Ride;
 import models.Rider;
@@ -12,14 +13,14 @@ import java.util.List;
 import java.util.PriorityQueue;
 
 public class RideService {
-    private final InMemoryDB db;
+    private final Database db;
 
-    public RideService(InMemoryDB db) {
+    public RideService(Database db) {
         this.db = db;
     }
 
     public void addRider(String riderID, int x_coordinate, int y_coordinate) {
-        db.riderDetails.put(riderID, new Rider(x_coordinate, y_coordinate));
+        db.getRiderDetails().put(riderID, new Rider(x_coordinate, y_coordinate));
     }
 
     /**
@@ -28,9 +29,9 @@ public class RideService {
      */
     public void matchRider(String riderID) {
         final double LIMIT = 5.0;
-        int[] riderCoordinates = db.riderDetails.get(riderID).coordinates;
+        int[] riderCoordinates = db.getRiderDetails().get(riderID).coordinates;
 
-        HashMap<String, Driver> allDrivers = db.driverDetails;
+        HashMap<String, Driver> allDrivers = db.getDriverDetails();
         PriorityQueue<DriverDistancePair> nearestDrivers = new PriorityQueue<>((pair1, pair2) -> {
             if (pair1.distance < pair2.distance) {
                 return -1;
@@ -67,13 +68,13 @@ public class RideService {
         }
 
         System.out.print("DRIVERS_MATCHED");
-        db.riderDriverMapping.putIfAbsent(riderID, new ArrayList<>());
+        db.getRiderDriverMapping().putIfAbsent(riderID, new ArrayList<>());
         int size = Math.min(nearestDrivers.size(), 5);
 
         for (int i = 0; i < size; i++) {
             DriverDistancePair driver = nearestDrivers.poll();
             if (driver != null) {
-                db.riderDriverMapping.get(riderID).add(driver.ID);
+                db.getRiderDriverMapping().get(riderID).add(driver.ID);
                 System.out.print(" " + driver.ID);
             }
         }
@@ -81,38 +82,38 @@ public class RideService {
     }
 
     public void startRide(String rideID, int N, String riderID) throws InvalidRideException {
-        List<String> matchedDrivers = db.riderDriverMapping.get(riderID);
+        List<String> matchedDrivers = db.getRiderDriverMapping().get(riderID);
 
         if (matchedDrivers.size() < N) {
             throw new InvalidRideException();
         }
 
         String driverID = matchedDrivers.get(N - 1);
-        boolean driverAvailable = db.driverDetails.get(driverID).available;
+        boolean driverAvailable = db.getDriverDetails().get(driverID).available;
 
-        if (!driverAvailable || db.rideDetails.containsKey(rideID)) {
+        if (!driverAvailable || db.getRideDetails().containsKey(rideID)) {
             throw new InvalidRideException();
         }
 
-        db.rideDetails.put(rideID, new Ride(riderID, driverID));
-        db.driverDetails.get(driverID).updateAvailability();
+        db.getRideDetails().put(rideID, new Ride(riderID, driverID));
+        db.getDriverDetails().get(driverID).updateAvailability();
 
         System.out.println("RIDE_STARTED " + rideID);
     }
 
     public void stopRide(String rideID, int dest_x_coordinate, int dest_y_coordinate, int timeTakenInMins) throws InvalidRideException {
-        Ride currentRide = db.rideDetails.get(rideID);
+        Ride currentRide = db.getRideDetails().get(rideID);
         if (currentRide == null || currentRide.hasFinished) {
             throw new InvalidRideException();
         }
 
         System.out.println("RIDE_STOPPED " + rideID);
-        db.driverDetails.get(currentRide.driverID).updateAvailability();
+        db.getDriverDetails().get(currentRide.driverID).updateAvailability();
         currentRide.finishRide(dest_x_coordinate, dest_y_coordinate, timeTakenInMins);
     }
 
     public void billRide(String rideID) {
-        Ride currentRide = db.rideDetails.get(rideID);
+        Ride currentRide = db.getRideDetails().get(rideID);
 
         final double BASE_FARE = 50.0;
         final double PER_KM = 6.5;
@@ -121,7 +122,7 @@ public class RideService {
 
         double finalBill = BASE_FARE;
 
-        int[] startCoordinates = db.riderDetails.get(currentRide.riderID).coordinates;
+        int[] startCoordinates = db.getRiderDetails().get(currentRide.riderID).coordinates;
         int[] destCoordinates = currentRide.destinationCoordinates;
         double distanceTravelled = DistanceUtility.calculate(startCoordinates, destCoordinates);
         finalBill += (distanceTravelled * PER_KM);

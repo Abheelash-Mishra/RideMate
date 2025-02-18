@@ -1,21 +1,22 @@
 package services.payment.payment_impl;
 
-import database.InMemoryDB;
+import database.Database;
+
 import models.Driver;
 import models.Ride;
 import services.payment.Payment;
 
 public class UpiPayment implements Payment {
-    private final InMemoryDB db;
+    private final Database db;
 
-    public UpiPayment(InMemoryDB db) {
+    public UpiPayment(Database db) {
         this.db = db;
     }
 
     @Override
     public void sendMoney(String rideID) {
-        Ride currentRide = db.rideDetails.get(rideID);
-        Driver driver = db.driverDetails.get(currentRide.driverID);
+        Ride currentRide = db.getRideDetails().get(rideID);
+        Driver driver = db.getDriverDetails().get(currentRide.driverID);
 
         driver.updateEarnings(currentRide.bill);
         System.out.printf("PAID %s %.1f VIA UPI\n", currentRide.driverID, currentRide.bill);

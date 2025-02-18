@@ -1,4 +1,6 @@
+import database.Database;
 import database.InMemoryDB;
+import database.MockRealDB;
 import services.AdminService;
 import services.DriverService;
 import services.RideService;
@@ -11,7 +13,7 @@ import java.util.Scanner;
 public class RiderApp {
     private static Scanner scanner = new Scanner(System.in);
 
-    private static final InMemoryDB db = InMemoryDB.getInstance();
+    private static Database db = InMemoryDB.getInstance();
     private static final AdminService admin = new AdminService(db);
     private static final RideService rideService = new RideService(db);
     private static final DriverService driverService = new DriverService(db);
@@ -24,6 +26,8 @@ public class RiderApp {
     }
 
     public static void main(String[] args) {
+        db = InMemoryDB.getInstance();
+
         while (scanner.hasNextLine()) {
             String command = scanner.nextLine().trim();
             if (command.isEmpty()) break;
@@ -41,6 +45,16 @@ public class RiderApp {
 
         try {
             switch (parts[0]) {
+                case "CONNECT_MRD":
+                    db = MockRealDB.getInstance();
+                    db.connect();
+                    break;
+
+                case "CONNECT_IMD":
+                    db = InMemoryDB.getInstance();
+                    db.connect();
+                    break;
+
                 case "ADD_DRIVER":
                     driverID = parts[1];
                     x_coordinate = Integer.parseInt(parts[2]);

@@ -1,12 +1,12 @@
 package services.payment;
 
-import database.InMemoryDB;
+import database.Database;
 import services.payment.payment_impl.*;
 
 public enum PaymentMethodType {
     CASH, CARD, UPI, WALLET;
 
-    public Payment getPaymentMethod(InMemoryDB db) {
+    public Payment getPaymentMethod(Database db) {
         return switch (this) {
             case CASH -> new CashPayment(db);
             case CARD -> new CardPayment(db);
