@@ -1,7 +1,6 @@
 package services.payment;
 
 import database.InMemoryDB;
-import services.payment.payment_impl.Payment;
 
 
 public class PaymentService {

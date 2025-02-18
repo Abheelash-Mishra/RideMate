@@ -4,6 +4,7 @@ import database.InMemoryDB;
 import models.Driver;
 import models.Ride;
 import models.Rider;
+import services.payment.Payment;
 
 public class WalletPayment implements Payment {
     private final InMemoryDB db;

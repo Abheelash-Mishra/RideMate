@@ -2,6 +2,7 @@ package services.payment.payment_impl;
 
 import database.InMemoryDB;
 import models.Ride;
+import services.payment.Payment;
 
 public class CashPayment implements Payment {
     private final InMemoryDB db;
