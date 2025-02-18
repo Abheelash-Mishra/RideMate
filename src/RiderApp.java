@@ -2,6 +2,9 @@ import database.InMemoryDB;
 import services.AdminService;
 import services.DriverService;
 import services.RideService;
+import services.payment.PaymentMethodType;
+import services.payment.PaymentService;
+import services.payment.payment_impl.WalletPayment;
 
 import java.util.Scanner;
 
@@ -12,6 +15,7 @@ public class RiderApp {
     private static final AdminService admin = new AdminService(db);
     private static final RideService rideService = new RideService(db);
     private static final DriverService driverService = new DriverService(db);
+    private static final PaymentService paymentService = new PaymentService(PaymentMethodType.CASH, db);
 
     public static void reset() {
         InMemoryDB.reset();
@@ -89,17 +93,23 @@ public class RiderApp {
                     rideService.billRide(rideID);
                     break;
 
-                case "PAY_VIA_WALLET":
+                case "PAY":
                     rideID = parts[1];
+                    String method = parts[2];
 
-                    rideService.getPaymentService().payViaWallet(rideID);
+                    PaymentMethodType paymentMethodType = PaymentMethodType.valueOf(method.toUpperCase());
+                    paymentService.setPaymentMethod(paymentMethodType, db);
+
+                    paymentService.processPayment(rideID);
                     break;
 
                 case "ADD_MONEY":
                     riderID = parts[1];
                     float amount = Float.parseFloat(parts[2]);
 
-                    rideService.getPaymentService().addMoney(riderID, amount);
+                    paymentService.setPaymentMethod(PaymentMethodType.WALLET, db);
+                    WalletPayment wallet = (WalletPayment) paymentService.getPaymentMethod();
+                    wallet.addMoney(riderID, amount);
                     break;
 
                 case "ADMIN_REMOVE_DRIVER":

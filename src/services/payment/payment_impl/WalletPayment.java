@@ -1,19 +1,19 @@
-package services;
+package services.payment.payment_impl;
 
 import database.InMemoryDB;
 import models.Driver;
 import models.Ride;
 import models.Rider;
 
-
-public class PaymentService {
+public class WalletPayment implements Payment {
     private final InMemoryDB db;
 
-    public PaymentService(InMemoryDB db) {
+    public WalletPayment(InMemoryDB db) {
         this.db = db;
     }
 
-    public void payViaWallet(String rideID) {
+    @Override
+    public void sendMoney(String rideID) {
         Ride currentRide = db.rideDetails.get(rideID);
         Rider rider = db.riderDetails.get(currentRide.riderID);
         Driver driver = db.driverDetails.get(currentRide.driverID);

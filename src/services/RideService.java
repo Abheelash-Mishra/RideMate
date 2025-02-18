@@ -4,6 +4,7 @@ import database.InMemoryDB;
 import models.Driver;
 import models.Ride;
 import models.Rider;
+import services.payment.PaymentService;
 import utilities.DistanceUtility;
 
 import java.util.ArrayList;
@@ -13,12 +14,9 @@ import java.util.PriorityQueue;
 
 public class RideService {
     private final InMemoryDB db;
-    private final PaymentService paymentService;
 
     public RideService(InMemoryDB db) {
         this.db = db;
-
-        this.paymentService = new PaymentService(db);
     }
 
     public void addRider(String riderID, int x_coordinate, int y_coordinate) {
@@ -136,10 +134,6 @@ public class RideService {
 
         currentRide.bill = (float) (Math.round(finalBill * 10.0) / 10.0);
         System.out.printf("BILL %s %s %.1f%n", rideID, currentRide.driverID, finalBill);
-    }
-
-    public PaymentService getPaymentService() {
-        return paymentService;
     }
 
 
