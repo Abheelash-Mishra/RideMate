@@ -117,7 +117,7 @@ class RiderAppTests {
                 START_RIDE RIDE-001 2 R1
                 STOP_RIDE RIDE-001 4 5 32
                 BILL RIDE-001
-                PAY_VIA_WALLET RIDE-001
+                PAY RIDE-001 WALLET
                 ADMIN_VIEW_DRIVER_EARNINGS D3
                 """;
 
@@ -146,7 +146,7 @@ class RiderAppTests {
                 START_RIDE RIDE-001 2 R1
                 STOP_RIDE RIDE-001 4 5 32
                 BILL RIDE-001
-                PAY_VIA_WALLET RIDE-001
+                PAY RIDE-001 WALLET
                 """;
 
         String expectedOutput = """
@@ -156,6 +156,93 @@ class RiderAppTests {
                 RIDE_STOPPED RIDE-001
                 BILL RIDE-001 D3 186.7
                 LOW_BALANCE
+                """;
+
+        runTest(input, expectedOutput);
+    }
+
+    @Test
+    void BillRiderUsingCash() {
+        String input = """
+                ADD_DRIVER D1 1 1
+                ADD_DRIVER D2 4 5
+                ADD_DRIVER D3 2 2
+                ADD_RIDER R1 0 0
+                ADD_MONEY R1 520
+                MATCH R1
+                START_RIDE RIDE-001 2 R1
+                STOP_RIDE RIDE-001 4 5 32
+                BILL RIDE-001
+                PAY RIDE-001 CASH
+                ADMIN_VIEW_DRIVER_EARNINGS D3
+                """;
+
+        String expectedOutput = """
+                CURRENT_BALANCE R1 520.0
+                DRIVERS_MATCHED D1 D3
+                RIDE_STARTED RIDE-001
+                RIDE_STOPPED RIDE-001
+                BILL RIDE-001 D3 186.7
+                PAID D3 186.7 VIA CASH
+                DRIVER_EARNINGS D3 186.7
+                """;
+
+        runTest(input, expectedOutput);
+    }
+
+    @Test
+    void BillRiderUsingCard() {
+        String input = """
+                ADD_DRIVER D1 1 1
+                ADD_DRIVER D2 4 5
+                ADD_DRIVER D3 2 2
+                ADD_RIDER R1 0 0
+                ADD_MONEY R1 520
+                MATCH R1
+                START_RIDE RIDE-001 2 R1
+                STOP_RIDE RIDE-001 4 5 32
+                BILL RIDE-001
+                PAY RIDE-001 CARD
+                ADMIN_VIEW_DRIVER_EARNINGS D3
+                """;
+
+        String expectedOutput = """
+                CURRENT_BALANCE R1 520.0
+                DRIVERS_MATCHED D1 D3
+                RIDE_STARTED RIDE-001
+                RIDE_STOPPED RIDE-001
+                BILL RIDE-001 D3 186.7
+                PAID D3 186.7 VIA CARD
+                DRIVER_EARNINGS D3 186.7
+                """;
+
+        runTest(input, expectedOutput);
+    }
+
+    @Test
+    void BillRiderUsingUPI() {
+        String input = """
+                ADD_DRIVER D1 1 1
+                ADD_DRIVER D2 4 5
+                ADD_DRIVER D3 2 2
+                ADD_RIDER R1 0 0
+                ADD_MONEY R1 520
+                MATCH R1
+                START_RIDE RIDE-001 2 R1
+                STOP_RIDE RIDE-001 4 5 32
+                BILL RIDE-001
+                PAY RIDE-001 UPI
+                ADMIN_VIEW_DRIVER_EARNINGS D3
+                """;
+
+        String expectedOutput = """
+                CURRENT_BALANCE R1 520.0
+                DRIVERS_MATCHED D1 D3
+                RIDE_STARTED RIDE-001
+                RIDE_STOPPED RIDE-001
+                BILL RIDE-001 D3 186.7
+                PAID D3 186.7 VIA UPI
+                DRIVER_EARNINGS D3 186.7
                 """;
 
         runTest(input, expectedOutput);
