@@ -16,7 +16,7 @@ public class MockRealDB implements Database {
     private final HashMap<String, Ride> rideDetails = new HashMap<>();
     private final HashMap<String, List<String>> riderDriverMapping = new HashMap<>();
 
-    private MockRealDB() {} // Private constructor to prevent direct instantiation
+    private MockRealDB() {}
 
     public static MockRealDB getInstance() {
         if (instance == null) {
@@ -31,10 +31,12 @@ public class MockRealDB implements Database {
     }
 
     public static void reset() {
-        instance.riderDetails.clear();
-        instance.rideDetails.clear();
-        instance.driverDetails.clear();
-        instance.riderDriverMapping.clear();
+        if (instance != null) {
+            instance.riderDetails.clear();
+            instance.rideDetails.clear();
+            instance.driverDetails.clear();
+            instance.riderDriverMapping.clear();
+        }
     }
 
     @Override

@@ -21,6 +21,7 @@ public class RiderApp {
 
     public static void reset() {
         InMemoryDB.reset();
+        MockRealDB.reset();
 
         scanner = new Scanner(System.in);
     }
@@ -46,11 +47,13 @@ public class RiderApp {
         try {
             switch (parts[0]) {
                 case "CONNECT_MRD":
+                    MockRealDB.reset();
                     db = MockRealDB.getInstance();
                     db.connect();
                     break;
 
-                case "CONNECT_IMD":
+                case "CONNECT_IMDB":
+                    InMemoryDB.reset();
                     db = InMemoryDB.getInstance();
                     db.connect();
                     break;
