@@ -1,7 +1,7 @@
 package services.payment;
 
 import database.Database;
-import services.payment.payment_impl.*;
+import services.payment.impl.*;
 
 public enum PaymentMethodType {
     CASH, CARD, UPI, WALLET;
