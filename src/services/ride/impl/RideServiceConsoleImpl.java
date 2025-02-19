@@ -1,10 +1,13 @@
-package services;
+package services.ride.impl;
 
 import database.Database;
-
 import models.Driver;
 import models.Ride;
 import models.Rider;
+
+import services.ride.RideServiceInterface;
+import services.ride.exceptions.InvalidRideException;
+import services.ride.exceptions.NoDriversException;
 import utilities.DistanceUtility;
 
 import java.util.ArrayList;
@@ -12,21 +15,19 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.PriorityQueue;
 
-public class RideService {
+public class RideServiceConsoleImpl implements RideServiceInterface {
     private final Database db;
 
-    public RideService(Database db) {
+    public RideServiceConsoleImpl(Database db) {
         this.db = db;
     }
 
+    @Override
     public void addRider(String riderID, int x_coordinate, int y_coordinate) {
         db.getRiderDetails().put(riderID, new Rider(x_coordinate, y_coordinate));
     }
 
-    /**
-     * Available drivers need to be matched with the rider that are 5km or closer.
-     * If they are equidistant, the drivers are sorted lexicographically.
-     */
+    @Override
     public void matchRider(String riderID) {
         final double LIMIT = 5.0;
         int[] riderCoordinates = db.getRiderDetails().get(riderID).coordinates;
@@ -81,7 +82,8 @@ public class RideService {
         System.out.println();
     }
 
-    public void startRide(String rideID, int N, String riderID) throws InvalidRideException {
+    @Override
+    public void startRide(String rideID, int N, String riderID) {
         List<String> matchedDrivers = db.getRiderDriverMapping().get(riderID);
 
         if (matchedDrivers.size() < N) {
@@ -101,7 +103,8 @@ public class RideService {
         System.out.println("RIDE_STARTED " + rideID);
     }
 
-    public void stopRide(String rideID, int dest_x_coordinate, int dest_y_coordinate, int timeTakenInMins) throws InvalidRideException {
+    @Override
+    public void stopRide(String rideID, int dest_x_coordinate, int dest_y_coordinate, int timeTakenInMins) {
         Ride currentRide = db.getRideDetails().get(rideID);
         if (currentRide == null || currentRide.hasFinished) {
             throw new InvalidRideException();
@@ -112,6 +115,7 @@ public class RideService {
         currentRide.finishRide(dest_x_coordinate, dest_y_coordinate, timeTakenInMins);
     }
 
+    @Override
     public void billRide(String rideID) {
         Ride currentRide = db.getRideDetails().get(rideID);
 
@@ -136,19 +140,6 @@ public class RideService {
         System.out.printf("BILL %s %s %.1f%n", rideID, currentRide.driverID, finalBill);
     }
 
-
     public record DriverDistancePair(String ID, double distance) {
-    }
-
-    public static class InvalidRideException extends Exception {
-        public InvalidRideException() {
-            super("INVALID_RIDE");
-        }
-    }
-
-    public static class NoDriversException extends Exception {
-        public NoDriversException() {
-            super("NO_DRIVERS_AVAILABLE");
-        }
     }
 }

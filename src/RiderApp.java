@@ -6,12 +6,15 @@ import services.admin.exceptions.InvalidDriverIDException;
 import services.admin.impl.AdminServiceConsoleImpl;
 import services.admin.impl.AdminServiceRestImpl;
 import services.driver.DriverService;
-import services.RideService;
+import services.ride.RideService;
 import services.driver.impl.DriverServiceConsoleImpl;
 import services.driver.impl.DriverServiceRestImpl;
 import services.payment.PaymentMethodType;
 import services.payment.PaymentService;
 import services.payment.impl.WalletPayment;
+import services.ride.exceptions.InvalidRideException;
+import services.ride.impl.RideServiceConsoleImpl;
+import services.ride.impl.RideServiceRestImpl;
 
 import java.util.Scanner;
 
@@ -20,7 +23,7 @@ public class RiderApp {
 
     private static Database db = InMemoryDB.getInstance();
     private static AdminService adminService = new AdminService(new AdminServiceConsoleImpl(db));
-    private static RideService rideService = new RideService(db);
+    private static RideService rideService = new RideService(new RideServiceConsoleImpl(db));
     private static DriverService driverService = new DriverService(new DriverServiceConsoleImpl(db));
     private static PaymentService paymentService = new PaymentService(PaymentMethodType.CASH, db);
 
@@ -65,6 +68,7 @@ public class RiderApp {
 
                 case "USE_RESTAPI":
                     adminService = new AdminService(new AdminServiceRestImpl(db));
+                    rideService = new RideService(new RideServiceRestImpl(db));
                     driverService = new DriverService(new DriverServiceRestImpl(db));
 
                     break;
@@ -161,7 +165,7 @@ public class RiderApp {
                 default:
                     break;
             }
-        } catch (RideService.InvalidRideException | InvalidDriverIDException e) {
+        } catch (InvalidRideException | InvalidDriverIDException e) {
             System.out.println(e.getMessage());
         }
     }
