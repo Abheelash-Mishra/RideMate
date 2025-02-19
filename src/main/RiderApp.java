@@ -33,6 +33,11 @@ public class RiderApp {
         InMemoryDB.reset();
         MockRealDB.reset();
 
+        adminService = new AdminService(new AdminServiceConsoleImpl(db));
+        rideService = new RideService(new RideServiceConsoleImpl(db));
+        driverService = new DriverService(new DriverServiceConsoleImpl(db));
+        paymentService = new PaymentService(PaymentMethodType.CASH, db);
+
         scanner = new Scanner(System.in);
     }
 
