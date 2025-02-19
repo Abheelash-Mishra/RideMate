@@ -68,7 +68,7 @@ public class RiderApp {
                     db.connect();
                     break;
 
-                case "USE_RESTAPI":
+                case "USE_REST_IMPL":
                     adminService = new AdminService(new AdminServiceRestImpl(db));
                     rideService = new RideService(new RideServiceRestImpl(db));
                     driverService = new DriverService(new DriverServiceRestImpl(db));
