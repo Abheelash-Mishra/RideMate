@@ -2,11 +2,13 @@ import database.Database;
 import database.InMemoryDB;
 import database.MockRealDB;
 import services.AdminService;
-import services.DriverService;
+import services.driver.DriverService;
 import services.RideService;
+import services.driver.impl.DriverServiceConsoleImpl;
+import services.driver.impl.DriverServiceRestImpl;
 import services.payment.PaymentMethodType;
 import services.payment.PaymentService;
-import services.payment.payment_impl.WalletPayment;
+import services.payment.impl.WalletPayment;
 
 import java.util.Scanner;
 
@@ -14,10 +16,10 @@ public class RiderApp {
     private static Scanner scanner = new Scanner(System.in);
 
     private static Database db = InMemoryDB.getInstance();
-    private static final AdminService admin = new AdminService(db);
-    private static final RideService rideService = new RideService(db);
-    private static final DriverService driverService = new DriverService(db);
-    private static final PaymentService paymentService = new PaymentService(PaymentMethodType.CASH, db);
+    private static AdminService admin = new AdminService(db);
+    private static RideService rideService = new RideService(db);
+    private static DriverService driverService = new DriverService(new DriverServiceConsoleImpl(db));
+    private static PaymentService paymentService = new PaymentService(PaymentMethodType.CASH, db);
 
     public static void reset() {
         InMemoryDB.reset();
@@ -56,6 +58,11 @@ public class RiderApp {
                     InMemoryDB.reset();
                     db = InMemoryDB.getInstance();
                     db.connect();
+                    break;
+
+                case "USE_RESTAPI":
+                    driverService = new DriverService(new DriverServiceRestImpl(db));
+
                     break;
 
                 case "ADD_DRIVER":
