@@ -1,3 +1,5 @@
+package main;
+
 import database.Database;
 import database.InMemoryDB;
 import database.MockRealDB;
@@ -6,12 +8,12 @@ import services.admin.exceptions.InvalidDriverIDException;
 import services.admin.impl.AdminServiceConsoleImpl;
 import services.admin.impl.AdminServiceRestImpl;
 import services.driver.DriverService;
-import services.ride.RideService;
 import services.driver.impl.DriverServiceConsoleImpl;
 import services.driver.impl.DriverServiceRestImpl;
 import services.payment.PaymentMethodType;
 import services.payment.PaymentService;
 import services.payment.impl.WalletPayment;
+import services.ride.RideService;
 import services.ride.exceptions.InvalidRideException;
 import services.ride.impl.RideServiceConsoleImpl;
 import services.ride.impl.RideServiceRestImpl;
