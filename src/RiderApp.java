@@ -1,12 +1,20 @@
 import database.Database;
 import database.InMemoryDB;
 import database.MockRealDB;
-import services.AdminService;
-import services.DriverService;
-import services.RideService;
+import services.admin.AdminService;
+import services.admin.exceptions.InvalidDriverIDException;
+import services.admin.impl.AdminServiceConsoleImpl;
+import services.admin.impl.AdminServiceRestImpl;
+import services.driver.DriverService;
+import services.ride.RideService;
+import services.driver.impl.DriverServiceConsoleImpl;
+import services.driver.impl.DriverServiceRestImpl;
 import services.payment.PaymentMethodType;
 import services.payment.PaymentService;
-import services.payment.payment_impl.WalletPayment;
+import services.payment.impl.WalletPayment;
+import services.ride.exceptions.InvalidRideException;
+import services.ride.impl.RideServiceConsoleImpl;
+import services.ride.impl.RideServiceRestImpl;
 
 import java.util.Scanner;
 
@@ -14,10 +22,10 @@ public class RiderApp {
     private static Scanner scanner = new Scanner(System.in);
 
     private static Database db = InMemoryDB.getInstance();
-    private static final AdminService admin = new AdminService(db);
-    private static final RideService rideService = new RideService(db);
-    private static final DriverService driverService = new DriverService(db);
-    private static final PaymentService paymentService = new PaymentService(PaymentMethodType.CASH, db);
+    private static AdminService adminService = new AdminService(new AdminServiceConsoleImpl(db));
+    private static RideService rideService = new RideService(new RideServiceConsoleImpl(db));
+    private static DriverService driverService = new DriverService(new DriverServiceConsoleImpl(db));
+    private static PaymentService paymentService = new PaymentService(PaymentMethodType.CASH, db);
 
     public static void reset() {
         InMemoryDB.reset();
@@ -56,6 +64,13 @@ public class RiderApp {
                     InMemoryDB.reset();
                     db = InMemoryDB.getInstance();
                     db.connect();
+                    break;
+
+                case "USE_RESTAPI":
+                    adminService = new AdminService(new AdminServiceRestImpl(db));
+                    rideService = new RideService(new RideServiceRestImpl(db));
+                    driverService = new DriverService(new DriverServiceRestImpl(db));
+
                     break;
 
                 case "ADD_DRIVER":
@@ -132,25 +147,25 @@ public class RiderApp {
                 case "ADMIN_REMOVE_DRIVER":
                     driverID = parts[1];
 
-                    admin.removeDriver(driverID);
+                    adminService.removeDriver(driverID);
                     break;
 
                 case "ADMIN_LIST_DRIVERS":
                     N = Integer.parseInt(parts[1]);
 
-                    admin.listNDriverDetails(N);
+                    adminService.listNDriverDetails(N);
                     break;
 
                 case "ADMIN_VIEW_DRIVER_EARNINGS":
                     driverID = parts[1];
 
-                    admin.getDriverEarnings(driverID);
+                    adminService.getDriverEarnings(driverID);
                     break;
 
                 default:
                     break;
             }
-        } catch (RideService.InvalidRideException | AdminService.InvalidDriverIDException e) {
+        } catch (InvalidRideException | InvalidDriverIDException e) {
             System.out.println(e.getMessage());
         }
     }

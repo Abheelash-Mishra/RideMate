@@ -1,16 +1,19 @@
-package services;
+package services.admin.impl;
 
 import database.Database;
 import models.Driver;
+import services.admin.AdminServiceInterface;
+import services.admin.exceptions.InvalidDriverIDException;
 
-public class AdminService {
+public class AdminServiceConsoleImpl implements AdminServiceInterface {
     private final Database db;
 
-    public AdminService(Database db) {
+    public AdminServiceConsoleImpl(Database db) {
         this.db = db;
     }
 
-    public void removeDriver(String driverID) throws InvalidDriverIDException {
+    @Override
+    public void removeDriver(String driverID) {
         if (db.getDriverDetails().get(driverID) == null) {
             throw new InvalidDriverIDException();
         }
@@ -19,6 +22,7 @@ public class AdminService {
         System.out.println("REMOVED_DRIVER " + driverID);
     }
 
+    @Override
     public void listNDriverDetails(int N) {
         int size = Math.min(db.getDriverDetails().size(), N);
         int idx = 0;
@@ -33,15 +37,10 @@ public class AdminService {
         }
     }
 
+    @Override
     public void getDriverEarnings(String driverID) {
         Driver driver = db.getDriverDetails().get(driverID);
+
         System.out.printf("DRIVER_EARNINGS %s %.1f\n", driverID, driver.earnings);
-    }
-
-
-    public static class InvalidDriverIDException extends Exception {
-        public InvalidDriverIDException() {
-            super("INVALID_DRIVER_ID");
-        }
     }
 }
