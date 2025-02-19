@@ -1,7 +1,10 @@
 import database.Database;
 import database.InMemoryDB;
 import database.MockRealDB;
-import services.AdminService;
+import services.admin.AdminService;
+import services.admin.exceptions.InvalidDriverIDException;
+import services.admin.impl.AdminServiceConsoleImpl;
+import services.admin.impl.AdminServiceRestImpl;
 import services.driver.DriverService;
 import services.RideService;
 import services.driver.impl.DriverServiceConsoleImpl;
@@ -16,7 +19,7 @@ public class RiderApp {
     private static Scanner scanner = new Scanner(System.in);
 
     private static Database db = InMemoryDB.getInstance();
-    private static AdminService admin = new AdminService(db);
+    private static AdminService adminService = new AdminService(new AdminServiceConsoleImpl(db));
     private static RideService rideService = new RideService(db);
     private static DriverService driverService = new DriverService(new DriverServiceConsoleImpl(db));
     private static PaymentService paymentService = new PaymentService(PaymentMethodType.CASH, db);
@@ -61,6 +64,7 @@ public class RiderApp {
                     break;
 
                 case "USE_RESTAPI":
+                    adminService = new AdminService(new AdminServiceRestImpl(db));
                     driverService = new DriverService(new DriverServiceRestImpl(db));
 
                     break;
@@ -139,25 +143,25 @@ public class RiderApp {
                 case "ADMIN_REMOVE_DRIVER":
                     driverID = parts[1];
 
-                    admin.removeDriver(driverID);
+                    adminService.removeDriver(driverID);
                     break;
 
                 case "ADMIN_LIST_DRIVERS":
                     N = Integer.parseInt(parts[1]);
 
-                    admin.listNDriverDetails(N);
+                    adminService.listNDriverDetails(N);
                     break;
 
                 case "ADMIN_VIEW_DRIVER_EARNINGS":
                     driverID = parts[1];
 
-                    admin.getDriverEarnings(driverID);
+                    adminService.getDriverEarnings(driverID);
                     break;
 
                 default:
                     break;
             }
-        } catch (RideService.InvalidRideException | AdminService.InvalidDriverIDException e) {
+        } catch (RideService.InvalidRideException | InvalidDriverIDException e) {
             System.out.println(e.getMessage());
         }
     }
