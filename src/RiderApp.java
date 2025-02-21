@@ -1,5 +1,3 @@
-package main;
-
 import database.Database;
 import database.InMemoryDB;
 import database.MockRealDB;

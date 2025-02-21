@@ -1,6 +1,6 @@
 # Overview
 
-main.RiderApp is a Java-based ride management system that facilitates booking, tracking, and completing rides. It ensures
+RiderApp is a Java-based ride management system that facilitates booking, tracking, and completing rides. It ensures
 seamless interactions between riders and drivers while maintaining structured ride operations.
 
 ## Class Structure
