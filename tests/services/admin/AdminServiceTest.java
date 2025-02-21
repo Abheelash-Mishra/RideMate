@@ -7,6 +7,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import services.admin.exceptions.InvalidDriverIDException;
 import services.admin.impl.AdminServiceConsoleImpl;
+import utils.TestUtils;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
@@ -56,14 +57,9 @@ class AdminServiceTest {
 
         when(mockDB.getDriverDetails()).thenReturn(drivers);
 
-        // Captures output
-        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        System.setOut(new PrintStream(outputStream));
-
+        TestUtils.captureOutput();
         adminService.listNDriverDetails(N);
-
-        System.setOut(System.out);      // Restore sysout
-        String output = outputStream.toString();
+        String output = TestUtils.getCapturedOutput();
 
         assertTrue(output.contains("DRIVER_D1 (X=5, Y=5)"), "D1 should be in output");
         assertTrue(output.contains("DRIVER_D2 (X=2, Y=7)"), "D2 should be in output");
