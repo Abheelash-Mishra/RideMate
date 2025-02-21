@@ -7,8 +7,6 @@ import org.junit.jupiter.api.Test;
 import services.admin.exceptions.InvalidDriverIDException;
 import services.driver.impl.DriverServiceConsoleImpl;
 
-import java.io.ByteArrayOutputStream;
-import java.io.PrintStream;
 import java.util.HashMap;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -45,8 +43,6 @@ class DriverServiceTest {
         String driverID = "D1";
         Driver driver = new Driver(5, 8);
         drivers.put(driverID, driver);
-
-        when(mockDB.getDriverDetails()).thenReturn(drivers);
 
         driverService.rateDriver("D1", 4.9F);
 
