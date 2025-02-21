@@ -23,4 +23,8 @@ public class Rider {
         walletAmount -= amount;
         System.out.println("PAID " + amount + " SUCCESSFULLY | CURRENT_BALANCE " + walletAmount);
     }
+
+    public float getWalletAmount() {
+        return walletAmount;
+    }
 }
