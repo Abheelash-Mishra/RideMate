@@ -118,6 +118,9 @@ public class RideServiceConsoleImpl implements RideServiceInterface {
     @Override
     public void billRide(String rideID) {
         Ride currentRide = db.getRideDetails().get(rideID);
+        if (currentRide == null || !currentRide.hasFinished) {
+            throw new InvalidRideException();
+        }
 
         final double BASE_FARE = 50.0;
         final double PER_KM = 6.5;
