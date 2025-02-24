@@ -1,4 +1,4 @@
-package services.ride;
+package unit;
 
 import database.Database;
 import models.Driver;
@@ -7,6 +7,8 @@ import models.Rider;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import services.ride.RideService;
+import services.ride.RideServiceInterface;
 import services.ride.exceptions.InvalidRideException;
 import services.ride.impl.RideServiceConsoleImpl;
 import utils.TestUtils;
@@ -143,10 +145,6 @@ class RideServiceTest {
 
     @Test
     void stopInvalidRide_ThrowsException() {
-        Ride ride = new Ride("R1", "D3");
-        mockDB.getRideDetails().put("RIDE-001", ride);
-        mockDB.getDriverDetails().get("D3").updateAvailability();
-
         Exception exception = assertThrows(InvalidRideException.class, () -> {
             rideService.stopRide("RIDE-001", 4, 5, 32);
         });

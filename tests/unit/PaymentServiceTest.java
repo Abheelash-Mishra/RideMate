@@ -1,4 +1,4 @@
-package services.payment;
+package unit;
 
 import database.Database;
 
@@ -7,6 +7,8 @@ import models.Ride;
 import models.Rider;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import services.payment.PaymentMethodType;
+import services.payment.PaymentService;
 import utils.TestUtils;
 
 import java.util.HashMap;
