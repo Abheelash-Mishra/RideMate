@@ -1,14 +1,13 @@
-package org.example.services.admin.impl;
+package org.example.services.admin;
 
 import org.example.database.Database;
 import org.example.models.Driver;
-import org.example.services.admin.AdminServiceInterface;
-import org.example.services.admin.exceptions.InvalidDriverIDException;
+import org.example.exceptions.InvalidDriverIDException;
 
-public class AdminServiceConsoleImpl implements AdminServiceInterface {
+public class AdminServiceImpl implements AdminService {
     private final Database db;
 
-    public AdminServiceConsoleImpl(Database db) {
+    public AdminServiceImpl(Database db) {
         this.db = db;
     }
 

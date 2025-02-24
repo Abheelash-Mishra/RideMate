@@ -8,9 +8,8 @@ import org.example.models.Rider;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.example.services.ride.RideService;
-import org.example.services.ride.RideServiceInterface;
-import org.example.services.ride.exceptions.InvalidRideException;
-import org.example.services.ride.impl.RideServiceConsoleImpl;
+import org.example.exceptions.InvalidRideException;
+import org.example.services.ride.RideServiceImpl;
 import org.example.utils.TestUtils;
 
 import java.util.ArrayList;
@@ -29,7 +28,7 @@ class RideServiceTest {
     void setUp() {
         mockDB = mock(Database.class);
 
-        RideServiceInterface rideServiceImpl = new RideServiceConsoleImpl(mockDB);
+        RideService rideServiceImpl = new RideServiceImpl(mockDB);
         rideService = new RideService(rideServiceImpl);
 
         HashMap<String, Rider> riderDetails = new HashMap<>();

@@ -3,20 +3,14 @@ package org.example;
 import org.example.database.Database;
 import org.example.database.InMemoryDB;
 import org.example.database.MockRealDB;
-import org.example.services.admin.AdminService;
-import org.example.services.admin.exceptions.InvalidDriverIDException;
-import org.example.services.admin.impl.AdminServiceConsoleImpl;
-import org.example.services.admin.impl.AdminServiceRestImpl;
-import org.example.services.driver.DriverService;
-import org.example.services.driver.impl.DriverServiceConsoleImpl;
-import org.example.services.driver.impl.DriverServiceRestImpl;
+import org.example.exceptions.InvalidDriverIDException;
+import org.example.services.admin.AdminServiceImpl;
+import org.example.services.driver.DriverServiceImpl;
 import org.example.services.payment.PaymentMethodType;
 import org.example.services.payment.PaymentService;
 import org.example.services.payment.impl.WalletPayment;
-import org.example.services.ride.RideService;
-import org.example.services.ride.exceptions.InvalidRideException;
-import org.example.services.ride.impl.RideServiceConsoleImpl;
-import org.example.services.ride.impl.RideServiceRestImpl;
+import org.example.exceptions.InvalidRideException;
+import org.example.services.ride.RideServiceImpl;
 
 import java.util.Scanner;
 
@@ -24,18 +18,18 @@ public class RiderApp {
     private static Scanner scanner = new Scanner(System.in);
 
     private static Database db = InMemoryDB.getInstance();
-    private static AdminService adminService = new AdminService(new AdminServiceConsoleImpl(db));
-    private static RideService rideService = new RideService(new RideServiceConsoleImpl(db));
-    private static DriverService driverService = new DriverService(new DriverServiceConsoleImpl(db));
+    private static AdminService adminService = new AdminService(new AdminServiceImpl(db));
+    private static RideService rideService = new RideService(new RideServiceImpl(db));
+    private static DriverService driverService = new DriverService(new DriverServiceImpl(db));
     private static PaymentService paymentService = new PaymentService(PaymentMethodType.CASH, db);
 
     public static void reset() {
         InMemoryDB.reset();
         MockRealDB.reset();
 
-        adminService = new AdminService(new AdminServiceConsoleImpl(db));
-        rideService = new RideService(new RideServiceConsoleImpl(db));
-        driverService = new DriverService(new DriverServiceConsoleImpl(db));
+        adminService = new AdminService(new AdminServiceImpl(db));
+        rideService = new RideService(new RideServiceImpl(db));
+        driverService = new DriverService(new DriverServiceImpl(db));
         paymentService = new PaymentService(PaymentMethodType.CASH, db);
 
         scanner = new Scanner(System.in);
@@ -71,13 +65,6 @@ public class RiderApp {
                     InMemoryDB.reset();
                     db = InMemoryDB.getInstance();
                     db.connect();
-                    break;
-
-                case "USE_REST_IMPL":
-                    adminService = new AdminService(new AdminServiceRestImpl(db));
-                    rideService = new RideService(new RideServiceRestImpl(db));
-                    driverService = new DriverService(new DriverServiceRestImpl(db));
-
                     break;
 
                 case "ADD_DRIVER":

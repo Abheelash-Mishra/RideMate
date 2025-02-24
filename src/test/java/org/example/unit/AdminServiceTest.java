@@ -6,9 +6,8 @@ import org.example.models.Driver;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.example.services.admin.AdminService;
-import org.example.services.admin.AdminServiceInterface;
-import org.example.services.admin.exceptions.InvalidDriverIDException;
-import org.example.services.admin.impl.AdminServiceConsoleImpl;
+import org.example.exceptions.InvalidDriverIDException;
+import org.example.services.admin.AdminServiceImpl;
 import org.example.utils.TestUtils;
 
 import java.util.HashMap;
@@ -26,7 +25,7 @@ class AdminServiceTest {
     void setup() {
         mockDB = mock(Database.class);
 
-        AdminServiceInterface adminServiceImpl = new AdminServiceConsoleImpl(mockDB);
+        AdminService adminServiceImpl = new AdminServiceImpl(mockDB);
         adminService = new AdminService(adminServiceImpl);
     }
 

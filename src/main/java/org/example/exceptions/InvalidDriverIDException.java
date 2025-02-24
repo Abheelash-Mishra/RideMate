@@ -1,4 +1,4 @@
-package org.example.services.admin.exceptions;
+package org.example.exceptions;
 
 public class InvalidDriverIDException extends RuntimeException {
     public InvalidDriverIDException() {

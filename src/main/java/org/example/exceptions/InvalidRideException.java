@@ -1,4 +1,4 @@
-package org.example.services.ride.exceptions;
+package org.example.exceptions;
 
 public class InvalidRideException extends RuntimeException {
     public InvalidRideException() {

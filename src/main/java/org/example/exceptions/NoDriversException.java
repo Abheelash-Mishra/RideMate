@@ -1,4 +1,4 @@
-package org.example.services.ride.exceptions;
+package org.example.exceptions;
 
 public class NoDriversException extends RuntimeException {
     public NoDriversException() {

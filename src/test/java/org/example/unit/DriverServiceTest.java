@@ -4,10 +4,9 @@ import org.example.database.Database;
 import org.example.models.Driver;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.example.services.admin.exceptions.InvalidDriverIDException;
+import org.example.exceptions.InvalidDriverIDException;
 import org.example.services.driver.DriverService;
-import org.example.services.driver.DriverServiceInterface;
-import org.example.services.driver.impl.DriverServiceConsoleImpl;
+import org.example.services.driver.DriverServiceImpl;
 
 import java.util.HashMap;
 
@@ -23,7 +22,7 @@ class DriverServiceTest {
     void setUp() {
         mockDB = mock(Database.class);
 
-        DriverServiceInterface driverServiceImpl = new DriverServiceConsoleImpl(mockDB);
+        DriverService driverServiceImpl = new DriverServiceImpl(mockDB);
         driverService = new DriverService(driverServiceImpl);
     }
 

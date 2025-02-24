@@ -1,13 +1,12 @@
-package org.example.services.ride.impl;
+package org.example.services.ride;
 
 import org.example.database.Database;
 import org.example.models.Driver;
 import org.example.models.Ride;
 import org.example.models.Rider;
 
-import org.example.services.ride.RideServiceInterface;
-import org.example.services.ride.exceptions.InvalidRideException;
-import org.example.services.ride.exceptions.NoDriversException;
+import org.example.exceptions.InvalidRideException;
+import org.example.exceptions.NoDriversException;
 import org.example.utilities.DistanceUtility;
 
 import java.util.ArrayList;
@@ -15,10 +14,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.PriorityQueue;
 
-public class RideServiceConsoleImpl implements RideServiceInterface {
+public class RideServiceImpl implements RideService {
     private final Database db;
 
-    public RideServiceConsoleImpl(Database db) {
+    public RideServiceImpl(Database db) {
         this.db = db;
     }
 

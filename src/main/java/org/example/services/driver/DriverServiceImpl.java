@@ -1,13 +1,12 @@
-package org.example.services.driver.impl;
+package org.example.services.driver;
 
 import org.example.database.Database;
 import org.example.models.Driver;
-import org.example.services.driver.DriverServiceInterface;
 
-public class DriverServiceConsoleImpl implements DriverServiceInterface {
+public class DriverServiceImpl implements DriverService {
     private final Database db;
 
-    public DriverServiceConsoleImpl(Database db) {
+    public DriverServiceImpl(Database db) {
         this.db = db;
     }
 
