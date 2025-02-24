@@ -1,0 +1,18 @@
+package org.example.services.payment;
+
+import org.example.database.Database;
+import org.example.services.payment.impl.*;
+
+public enum PaymentMethodType {
+    CASH, CARD, UPI, WALLET;
+
+    public Payment getPaymentMethod(Database db) {
+        return switch (this) {
+            case CASH -> new CashPayment(db);
+            case CARD -> new CardPayment(db);
+            case UPI -> new UpiPayment(db);
+            case WALLET -> new WalletPayment(db);
+        };
+    }
+}
+
