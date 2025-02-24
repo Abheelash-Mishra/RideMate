@@ -9,12 +9,10 @@ import services.admin.exceptions.InvalidDriverIDException;
 import services.admin.impl.AdminServiceConsoleImpl;
 import utils.TestUtils;
 
-import java.io.ByteArrayOutputStream;
-import java.io.PrintStream;
 import java.util.HashMap;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -31,7 +29,7 @@ class AdminServiceTest {
     }
 
     @Test
-    void removeDriver() throws InvalidDriverIDException {
+    void removeDriver() {
         String driverID = "D2";
         HashMap<String, Driver> drivers = new HashMap<>();
 
@@ -64,5 +62,23 @@ class AdminServiceTest {
         assertTrue(output.contains("DRIVER_D1 (X=5, Y=5)"), "D1 should be in output");
         assertTrue(output.contains("DRIVER_D2 (X=2, Y=7)"), "D2 should be in output");
         assertTrue(output.contains("DRIVER_D3 (X=9, Y=3)"), "D3 should be in output");
+    }
+
+    @Test
+    void removeNonExistentDriver_ThrowsException() {
+        String driverID = "D2";
+        HashMap<String, Driver> drivers = new HashMap<>();
+
+        drivers.put("D1", new Driver(5, 5));
+        drivers.put("D3", new Driver(9, 3));
+
+        when(mockDB.getDriverDetails()).thenReturn(drivers);
+
+        Exception exception = assertThrows(InvalidDriverIDException.class, () -> {
+            adminService.removeDriver(driverID);
+        });
+
+
+        assertEquals("INVALID_DRIVER_ID", exception.getMessage(), "Ride was not supposed to start");
     }
 }
