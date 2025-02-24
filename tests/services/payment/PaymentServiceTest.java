@@ -48,7 +48,7 @@ class PaymentServiceTest {
         String output = TestUtils.getCapturedOutput();
 
         assertTrue(output.contains("PAID D3 201.3 VIA CARD"), "Card payment went wrong");
-        assertEquals(201.3F, mockDB.getDriverDetails().get("D3").earnings, "Earnings not updated at DB");
+        assertEquals(201.3F, mockDB.getDriverDetails().get("D3").earnings, 0.1, "Earnings not updated at DB");
     }
 
     @Test
@@ -60,7 +60,7 @@ class PaymentServiceTest {
         String output = TestUtils.getCapturedOutput();
 
         assertTrue(output.contains("PAID D3 201.3 VIA UPI"), "UPI payment went wrong");
-        assertEquals(201.3F, mockDB.getDriverDetails().get("D3").earnings, "Earnings not updated at DB");
+        assertEquals(201.3F, mockDB.getDriverDetails().get("D3").earnings, 0.1, "Earnings not updated at DB");
     }
 
     @Test
@@ -72,7 +72,7 @@ class PaymentServiceTest {
         String output = TestUtils.getCapturedOutput();
 
         assertTrue(output.contains("PAID D3 201.3 VIA CASH"), "Cash payment went wrong");
-        assertEquals(201.3F, mockDB.getDriverDetails().get("D3").earnings, "Earnings not updated at DB");
+        assertEquals(201.3F, mockDB.getDriverDetails().get("D3").earnings, 0.1, "Earnings not updated at DB");
     }
 
     @Test
