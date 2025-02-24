@@ -28,5 +28,5 @@ seamless interactions between riders and drivers while maintaining structured ri
 
 **9. DistanceUtility:** Utility class that calculates the distance between 2 points.
 
-**10. RiderAppTests:** Automated testcases using `JUnit 5`, testing various scenarios and points-of-failures. (Resets
+**10. RiderAppTests:** Automated integration tests using `JUnit 5`, testing various scenarios and points-of-failures. (Resets
 `InMemoryDB` between each testcase)
