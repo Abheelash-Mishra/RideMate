@@ -1,10 +1,13 @@
 package org.example.models;
 
+import lombok.Data;
+
+@Data
 public class Driver {
-    public final int[] coordinates;
-    public boolean available = true;
-    public float earnings = 0;
-    public float rating = 0;
+    private final int[] coordinates;
+    private boolean available = true;
+    private float earnings = 0;
+    private float rating = 0;
     private float ratingSum = 0;
     private int ridesDone = 0;
 
@@ -15,7 +18,6 @@ public class Driver {
     public float updateDriverRating(float newRate) {
         ridesDone++;
         ratingSum += newRate;
-
         this.rating = ratingSum / ridesDone;
 
         return this.rating;

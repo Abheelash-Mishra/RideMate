@@ -1,7 +1,10 @@
 package org.example.models;
 
+import lombok.Data;
+
+@Data
 public class Rider {
-    public int[] coordinates;
+    private int[] coordinates;
     private float walletAmount = 0;
 
     public Rider(int x_coordinate, int y_coordinate) {
@@ -22,9 +25,5 @@ public class Rider {
 
         walletAmount -= amount;
         System.out.println("PAID " + amount + " SUCCESSFULLY | CURRENT_BALANCE " + walletAmount);
-    }
-
-    public float getWalletAmount() {
-        return walletAmount;
     }
 }
