@@ -1,7 +1,7 @@
 package org.example.unit;
 
 
-import org.example.database.Database;
+import org.example.repository.Database;
 import org.example.models.Driver;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

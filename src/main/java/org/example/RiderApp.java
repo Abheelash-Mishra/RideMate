@@ -1,43 +1,43 @@
 package org.example;
 
-import org.example.database.Database;
-import org.example.database.InMemoryDB;
-import org.example.database.MockRealDB;
+import org.example.config.AppConfig;
+import org.example.repository.Database;
+import org.example.repository.InMemoryDB;
 import org.example.exceptions.InvalidDriverIDException;
+import org.example.services.admin.AdminService;
 import org.example.services.admin.AdminServiceImpl;
+import org.example.services.driver.DriverService;
 import org.example.services.driver.DriverServiceImpl;
 import org.example.services.payment.PaymentMethodType;
 import org.example.services.payment.PaymentService;
 import org.example.services.payment.impl.WalletPayment;
 import org.example.exceptions.InvalidRideException;
+import org.example.services.ride.RideService;
 import org.example.services.ride.RideServiceImpl;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
 import java.util.Scanner;
 
 public class RiderApp {
+    private static final ApplicationContext context = new AnnotationConfigApplicationContext(AppConfig.class);
     private static Scanner scanner = new Scanner(System.in);
 
-    private static Database db = InMemoryDB.getInstance();
-    private static AdminService adminService = new AdminService(new AdminServiceImpl(db));
-    private static RideService rideService = new RideService(new RideServiceImpl(db));
-    private static DriverService driverService = new DriverService(new DriverServiceImpl(db));
-    private static PaymentService paymentService = new PaymentService(PaymentMethodType.CASH, db);
+    @Autowired
+    private static Database db;
+    private static final AdminService adminService = context.getBean(AdminServiceImpl.class);
+    private static final RideService rideService = context.getBean(RideServiceImpl.class);
+    private static final DriverService driverService = context.getBean(DriverServiceImpl.class);
+    private static final PaymentService paymentService = context.getBean(PaymentService.class);
 
     public static void reset() {
-        InMemoryDB.reset();
-        MockRealDB.reset();
-
-        adminService = new AdminService(new AdminServiceImpl(db));
-        rideService = new RideService(new RideServiceImpl(db));
-        driverService = new DriverService(new DriverServiceImpl(db));
-        paymentService = new PaymentService(PaymentMethodType.CASH, db);
+        db.reset();
 
         scanner = new Scanner(System.in);
     }
 
     public static void main(String[] args) {
-        db = InMemoryDB.getInstance();
-
         while (scanner.hasNextLine()) {
             String command = scanner.nextLine().trim();
             if (command.isEmpty()) break;
@@ -55,18 +55,6 @@ public class RiderApp {
 
         try {
             switch (parts[0]) {
-                case "CONNECT_MRD":
-                    MockRealDB.reset();
-                    db = MockRealDB.getInstance();
-                    db.connect();
-                    break;
-
-                case "CONNECT_IMDB":
-                    InMemoryDB.reset();
-                    db = InMemoryDB.getInstance();
-                    db.connect();
-                    break;
-
                 case "ADD_DRIVER":
                     driverID = parts[1];
                     x_coordinate = Integer.parseInt(parts[2]);
@@ -124,7 +112,7 @@ public class RiderApp {
                     String method = parts[2];
 
                     PaymentMethodType paymentMethodType = PaymentMethodType.valueOf(method.toUpperCase());
-                    paymentService.setPaymentMethod(paymentMethodType, db);
+                    paymentService.setPaymentMethod(paymentMethodType);
 
                     paymentService.processPayment(rideID);
                     break;
@@ -133,7 +121,7 @@ public class RiderApp {
                     riderID = parts[1];
                     float amount = Float.parseFloat(parts[2]);
 
-                    paymentService.setPaymentMethod(PaymentMethodType.WALLET, db);
+                    paymentService.setPaymentMethod(PaymentMethodType.WALLET);
                     WalletPayment wallet = (WalletPayment) paymentService.getPaymentMethod();
                     wallet.addMoney(riderID, amount);
                     break;

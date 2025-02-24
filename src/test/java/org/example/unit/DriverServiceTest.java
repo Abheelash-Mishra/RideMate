@@ -1,6 +1,6 @@
 package org.example.unit;
 
-import org.example.database.Database;
+import org.example.repository.Database;
 import org.example.models.Driver;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -49,7 +49,7 @@ class DriverServiceTest {
 
         assertEquals(
                 4.9F,
-                mockDB.getDriverDetails().get(driverID).rating,
+                mockDB.getDriverDetails().get(driverID).getRating(),
                 0.1,
                 "Driver rating should be updated correctly"
         );

@@ -1,42 +1,30 @@
-package org.example.database;
+package org.example.repository;
 
 import org.example.models.Driver;
 import org.example.models.Ride;
 import org.example.models.Rider;
+import org.springframework.stereotype.Repository;
 
 import java.util.HashMap;
 import java.util.List;
 
-
-public class MockRealDB implements Database {
-    private static MockRealDB instance;
-
+@Repository
+public class InMemoryDB implements Database {
     private final HashMap<String, Rider> riderDetails = new HashMap<>();
     private final HashMap<String, Driver> driverDetails = new HashMap<>();
     private final HashMap<String, Ride> rideDetails = new HashMap<>();
     private final HashMap<String, List<String>> riderDriverMapping = new HashMap<>();
 
-    private MockRealDB() {}
-
-    public static MockRealDB getInstance() {
-        if (instance == null) {
-            instance = new MockRealDB();
-        }
-        return instance;
+    public void reset() {
+        riderDetails.clear();
+        driverDetails.clear();
+        rideDetails.clear();
+        riderDriverMapping.clear();
     }
 
     @Override
     public void connect() {
-        System.out.println("CONNECTED TO MOCK DATABASE");
-    }
-
-    public static void reset() {
-        if (instance != null) {
-            instance.riderDetails.clear();
-            instance.rideDetails.clear();
-            instance.driverDetails.clear();
-            instance.riderDriverMapping.clear();
-        }
+        System.out.println("CONNECTED TO IN-MEMORY DATABASE");
     }
 
     @Override

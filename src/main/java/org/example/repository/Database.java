@@ -1,4 +1,4 @@
-package org.example.database;
+package org.example.repository;
 
 import org.example.models.Driver;
 import org.example.models.Ride;
@@ -9,6 +9,7 @@ import java.util.List;
 
 public interface Database {
     void connect();
+    void reset();
 
     HashMap<String, Rider> getRiderDetails();
     HashMap<String, Driver> getDriverDetails();

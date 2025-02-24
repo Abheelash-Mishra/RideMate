@@ -1,12 +1,16 @@
 package org.example.services.admin;
 
-import org.example.database.Database;
+import org.example.repository.Database;
 import org.example.models.Driver;
 import org.example.exceptions.InvalidDriverIDException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
+@Service
 public class AdminServiceImpl implements AdminService {
     private final Database db;
 
+    @Autowired
     public AdminServiceImpl(Database db) {
         this.db = db;
     }
@@ -32,7 +36,7 @@ public class AdminServiceImpl implements AdminService {
             idx++;
             Driver driver = db.getDriverDetails().get(driverID);
 
-            System.out.printf("DRIVER_%s (X=%d, Y=%d) RATING %.1f%n", driverID, driver.coordinates[0], driver.coordinates[1], driver.rating);
+            System.out.printf("DRIVER_%s (X=%d, Y=%d) RATING %.1f%n", driverID, driver.getCoordinates()[0], driver.getCoordinates()[1], driver.getRating());
         }
     }
 
@@ -40,6 +44,6 @@ public class AdminServiceImpl implements AdminService {
     public void getDriverEarnings(String driverID) {
         Driver driver = db.getDriverDetails().get(driverID);
 
-        System.out.printf("DRIVER_EARNINGS %s %.1f\n", driverID, driver.earnings);
+        System.out.printf("DRIVER_EARNINGS %s %.1f\n", driverID, driver.getEarnings());
     }
 }

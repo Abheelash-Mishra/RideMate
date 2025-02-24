@@ -1,11 +1,15 @@
 package org.example.services.driver;
 
-import org.example.database.Database;
+import org.example.repository.Database;
 import org.example.models.Driver;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
+@Service
 public class DriverServiceImpl implements DriverService {
     private final Database db;
 
+    @Autowired
     public DriverServiceImpl(Database db) {
         this.db = db;
     }

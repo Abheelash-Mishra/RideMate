@@ -1,6 +1,6 @@
 package org.example.services.payment.impl;
 
-import org.example.database.Database;
+import org.example.repository.Database;
 
 import org.example.models.Driver;
 import org.example.models.Ride;
@@ -16,9 +16,9 @@ public class UpiPayment implements Payment {
     @Override
     public void sendMoney(String rideID) {
         Ride currentRide = db.getRideDetails().get(rideID);
-        Driver driver = db.getDriverDetails().get(currentRide.driverID);
+        Driver driver = db.getDriverDetails().get(currentRide.getDriverID());
 
-        driver.updateEarnings(currentRide.bill);
-        System.out.printf("PAID %s %.1f VIA UPI\n", currentRide.driverID, currentRide.bill);
+        driver.updateEarnings(currentRide.getBill());
+        System.out.printf("PAID %s %.1f VIA UPI\n", currentRide.getDriverID(), currentRide.getBill());
     }
 }

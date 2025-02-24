@@ -1,6 +1,6 @@
 package org.example.unit;
 
-import org.example.database.Database;
+import org.example.repository.Database;
 import org.example.models.Driver;
 import org.example.models.Ride;
 import org.example.models.Rider;

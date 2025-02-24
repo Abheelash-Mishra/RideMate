@@ -1,6 +1,6 @@
 package org.example.unit;
 
-import org.example.database.Database;
+import org.example.repository.Database;
 
 import org.example.models.Driver;
 import org.example.models.Ride;
@@ -37,49 +37,49 @@ class PaymentServiceTest {
 
         Ride ride = new Ride("R1", "D3");
         ride.finishRide(5, 5, 20);
-        ride.bill = 201.3F;
+        ride.setBill(201.3F);
         rides.put("RIDE-001", ride);
     }
 
     @Test
     void processCardPayment() {
-        paymentService = new PaymentService(PaymentMethodType.CARD, mockDB);
+        paymentService = new PaymentService(mockDB);
 
         TestUtils.captureOutput();
         paymentService.processPayment("RIDE-001");
         String output = TestUtils.getCapturedOutput();
 
         assertTrue(output.contains("PAID D3 201.3 VIA CARD"), "Card payment went wrong");
-        assertEquals(201.3F, mockDB.getDriverDetails().get("D3").earnings, 0.1, "Earnings not updated at DB");
+        assertEquals(201.3F, mockDB.getDriverDetails().get("D3").getEarnings(), 0.1, "Earnings not updated at DB");
     }
 
     @Test
     void processUPIPayment() {
-        paymentService = new PaymentService(PaymentMethodType.UPI, mockDB);
+        paymentService = new PaymentService(mockDB);
 
         TestUtils.captureOutput();
         paymentService.processPayment("RIDE-001");
         String output = TestUtils.getCapturedOutput();
 
         assertTrue(output.contains("PAID D3 201.3 VIA UPI"), "UPI payment went wrong");
-        assertEquals(201.3F, mockDB.getDriverDetails().get("D3").earnings, 0.1, "Earnings not updated at DB");
+        assertEquals(201.3F, mockDB.getDriverDetails().get("D3").getEarnings(), 0.1, "Earnings not updated at DB");
     }
 
     @Test
     void processCashPayment() {
-        paymentService = new PaymentService(PaymentMethodType.CASH, mockDB);
+        paymentService = new PaymentService(mockDB);
 
         TestUtils.captureOutput();
         paymentService.processPayment("RIDE-001");
         String output = TestUtils.getCapturedOutput();
 
         assertTrue(output.contains("PAID D3 201.3 VIA CASH"), "Cash payment went wrong");
-        assertEquals(201.3F, mockDB.getDriverDetails().get("D3").earnings, 0.1, "Earnings not updated at DB");
+        assertEquals(201.3F, mockDB.getDriverDetails().get("D3").getEarnings(), 0.1, "Earnings not updated at DB");
     }
 
     @Test
     void processWalletPayment() {
-        paymentService = new PaymentService(PaymentMethodType.WALLET, mockDB);
+        paymentService = new PaymentService(mockDB);
 
         Rider rider = new Rider(0, 0);
         rider.addMoney(500);
@@ -87,7 +87,7 @@ class PaymentServiceTest {
 
         paymentService.processPayment("RIDE-001");
 
-        assertEquals(201.3, mockDB.getDriverDetails().get("D3").earnings, 0.1, "Earnings not updated at DB");
+        assertEquals(201.3, mockDB.getDriverDetails().get("D3").getEarnings(), 0.1, "Earnings not updated at DB");
         assertEquals(298.7, rider.getWalletAmount(), 0.1, "Wallet amount has a mismatch");
     }
 }

@@ -1,6 +1,6 @@
 package org.example.services.payment.impl;
 
-import org.example.database.Database;
+import org.example.repository.Database;
 
 import org.example.models.Driver;
 import org.example.models.Ride;
@@ -17,12 +17,12 @@ public class WalletPayment implements Payment {
     @Override
     public void sendMoney(String rideID) {
         Ride currentRide = db.getRideDetails().get(rideID);
-        Rider rider = db.getRiderDetails().get(currentRide.riderID);
+        Rider rider = db.getRiderDetails().get(currentRide.getRiderID());
 
-        Driver driver = db.getDriverDetails().get(currentRide.driverID);
+        Driver driver = db.getDriverDetails().get(currentRide.getDriverID());
 
-        rider.deductMoney(currentRide.bill);
-        driver.updateEarnings(currentRide.bill);
+        rider.deductMoney(currentRide.getBill());
+        driver.updateEarnings(currentRide.getBill());
     }
 
     public void addMoney(String riderID, float amount) {

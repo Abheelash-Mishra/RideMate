@@ -1,6 +1,6 @@
 package org.example.services.ride;
 
-import org.example.database.Database;
+import org.example.repository.Database;
 import org.example.models.Driver;
 import org.example.models.Ride;
 import org.example.models.Rider;
@@ -8,15 +8,20 @@ import org.example.models.Rider;
 import org.example.exceptions.InvalidRideException;
 import org.example.exceptions.NoDriversException;
 import org.example.utilities.DistanceUtility;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.PriorityQueue;
 
+
+@Service
 public class RideServiceImpl implements RideService {
     private final Database db;
 
+    @Autowired
     public RideServiceImpl(Database db) {
         this.db = db;
     }
@@ -29,7 +34,7 @@ public class RideServiceImpl implements RideService {
     @Override
     public void matchRider(String riderID) {
         final double LIMIT = 5.0;
-        int[] riderCoordinates = db.getRiderDetails().get(riderID).coordinates;
+        int[] riderCoordinates = db.getRiderDetails().get(riderID).getCoordinates();
 
         HashMap<String, Driver> allDrivers = db.getDriverDetails();
         PriorityQueue<DriverDistancePair> nearestDrivers = new PriorityQueue<>((pair1, pair2) -> {
@@ -45,8 +50,8 @@ public class RideServiceImpl implements RideService {
         for (String driverID : allDrivers.keySet()) {
             Driver driver = allDrivers.get(driverID);
 
-            if (driver.available) {
-                double distance = DistanceUtility.calculate(riderCoordinates, driver.coordinates);
+            if (driver.isAvailable()) {
+                double distance = DistanceUtility.calculate(riderCoordinates, driver.getCoordinates());
 
                 if (distance <= LIMIT) {
                     DriverDistancePair pair = new DriverDistancePair(driverID, distance);
@@ -90,7 +95,7 @@ public class RideServiceImpl implements RideService {
         }
 
         String driverID = matchedDrivers.get(N - 1);
-        boolean driverAvailable = db.getDriverDetails().get(driverID).available;
+        boolean driverAvailable = db.getDriverDetails().get(driverID).isAvailable();
 
         if (!driverAvailable || db.getRideDetails().containsKey(rideID)) {
             throw new InvalidRideException();
@@ -105,19 +110,19 @@ public class RideServiceImpl implements RideService {
     @Override
     public void stopRide(String rideID, int dest_x_coordinate, int dest_y_coordinate, int timeTakenInMins) {
         Ride currentRide = db.getRideDetails().get(rideID);
-        if (currentRide == null || currentRide.hasFinished) {
+        if (currentRide == null || currentRide.isFinished()) {
             throw new InvalidRideException();
         }
 
         System.out.println("RIDE_STOPPED " + rideID);
-        db.getDriverDetails().get(currentRide.driverID).updateAvailability();
+        db.getDriverDetails().get(currentRide.getDriverID()).updateAvailability();
         currentRide.finishRide(dest_x_coordinate, dest_y_coordinate, timeTakenInMins);
     }
 
     @Override
     public void billRide(String rideID) {
         Ride currentRide = db.getRideDetails().get(rideID);
-        if (currentRide == null || !currentRide.hasFinished) {
+        if (currentRide == null || !currentRide.isFinished()) {
             throw new InvalidRideException();
         }
 
@@ -128,18 +133,18 @@ public class RideServiceImpl implements RideService {
 
         double finalBill = BASE_FARE;
 
-        int[] startCoordinates = db.getRiderDetails().get(currentRide.riderID).coordinates;
-        int[] destCoordinates = currentRide.destinationCoordinates;
+        int[] startCoordinates = db.getRiderDetails().get(currentRide.getRiderID()).getCoordinates();
+        int[] destCoordinates = currentRide.getDestinationCoordinates();
         double distanceTravelled = DistanceUtility.calculate(startCoordinates, destCoordinates);
         finalBill += (distanceTravelled * PER_KM);
 
-        int timeTakenInMins = currentRide.timeTakenInMins;
+        int timeTakenInMins = currentRide.getTimeTakenInMins();
         finalBill += (timeTakenInMins * PER_MIN);
 
         finalBill *= SERVICE_TAX;
 
-        currentRide.bill = (float) (Math.round(finalBill * 10.0) / 10.0);
-        System.out.printf("BILL %s %s %.1f%n", rideID, currentRide.driverID, finalBill);
+        currentRide.setBill((float) (Math.round(finalBill * 10.0) / 10.0));
+        System.out.printf("BILL %s %s %.1f%n", rideID, currentRide.getDriverID(), finalBill);
     }
 
     public record DriverDistancePair(String ID, double distance) {

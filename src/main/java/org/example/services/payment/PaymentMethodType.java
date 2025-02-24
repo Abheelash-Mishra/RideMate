@@ -1,7 +1,8 @@
 package org.example.services.payment;
 
-import org.example.database.Database;
+import org.example.repository.Database;
 import org.example.services.payment.impl.*;
+
 
 public enum PaymentMethodType {
     CASH, CARD, UPI, WALLET;
