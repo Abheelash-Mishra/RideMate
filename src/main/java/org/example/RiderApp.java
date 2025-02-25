@@ -2,7 +2,6 @@ package org.example;
 
 import org.example.config.AppConfig;
 import org.example.repository.Database;
-import org.example.repository.InMemoryDB;
 import org.example.exceptions.InvalidDriverIDException;
 import org.example.services.admin.AdminService;
 import org.example.services.admin.AdminServiceImpl;
@@ -21,7 +20,7 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 import java.util.Scanner;
 
 public class RiderApp {
-    private static final ApplicationContext context = new AnnotationConfigApplicationContext(AppConfig.class);
+    public static final ApplicationContext context = new AnnotationConfigApplicationContext(AppConfig.class);
     private static Scanner scanner = new Scanner(System.in);
 
     @Autowired
@@ -32,12 +31,17 @@ public class RiderApp {
     private static final PaymentService paymentService = context.getBean(PaymentService.class);
 
     public static void reset() {
-        db.reset();
-
         scanner = new Scanner(System.in);
     }
 
     public static void main(String[] args) {
+        // Prints all beans created
+//        String[] beanNames = context.getBeanDefinitionNames();
+//        System.out.println("Registered Beans:");
+//        for (String beanName : beanNames) {
+//            System.out.println(beanName);
+//        }
+
         while (scanner.hasNextLine()) {
             String command = scanner.nextLine().trim();
             if (command.isEmpty()) break;

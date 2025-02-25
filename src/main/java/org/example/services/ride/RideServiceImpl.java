@@ -9,7 +9,6 @@ import org.example.exceptions.InvalidRideException;
 import org.example.exceptions.NoDriversException;
 import org.example.utilities.DistanceUtility;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -17,7 +16,6 @@ import java.util.List;
 import java.util.PriorityQueue;
 
 
-@Service
 public class RideServiceImpl implements RideService {
     private final Database db;
 
