@@ -59,18 +59,18 @@ public class RideServiceImpl implements RideService {
         }
 
         try {
-            return driversMatched(riderID, nearestDrivers);
+            driversMatched(riderID, nearestDrivers);
         } catch (NoDriversException e) {
-            return e.getMessage();
+            System.out.println(e.getMessage());
         }
     }
 
-    private String driversMatched(String riderID, PriorityQueue<DriverDistancePair> nearestDrivers) throws NoDriversException {
+    private void driversMatched(String riderID, PriorityQueue<DriverDistancePair> nearestDrivers) throws NoDriversException {
         if (nearestDrivers.isEmpty()) {
             throw new NoDriversException();
         }
 
-        StringBuilder result = new StringBuilder("DRIVERS_MATCHED");
+        System.out.print("DRIVERS_MATCHED");
         db.getRiderDriverMapping().putIfAbsent(riderID, new ArrayList<>());
         int size = Math.min(nearestDrivers.size(), 5);
 
@@ -78,16 +78,14 @@ public class RideServiceImpl implements RideService {
             DriverDistancePair driver = nearestDrivers.poll();
             if (driver != null) {
                 db.getRiderDriverMapping().get(riderID).add(driver.ID);
-                result.append(" ").append(driver.ID);
+                System.out.print(" " + driver.ID);
             }
         }
-
-        return result.toString();
+        System.out.println();
     }
 
-
     @Override
-    public String startRide(String rideID, int N, String riderID) {
+    public void startRide(String rideID, int N, String riderID) {
         List<String> matchedDrivers = db.getRiderDriverMapping().get(riderID);
 
         if (matchedDrivers.size() < N) {
@@ -104,24 +102,23 @@ public class RideServiceImpl implements RideService {
         db.getRideDetails().put(rideID, new Ride(riderID, driverID));
         db.getDriverDetails().get(driverID).updateAvailability();
 
-        return "RIDE_STARTED " + rideID;
+        System.out.println("RIDE_STARTED " + rideID);
     }
 
     @Override
-    public String stopRide(String rideID, int dest_x_coordinate, int dest_y_coordinate, int timeTakenInMins) {
+    public void stopRide(String rideID, int dest_x_coordinate, int dest_y_coordinate, int timeTakenInMins) {
         Ride currentRide = db.getRideDetails().get(rideID);
         if (currentRide == null || currentRide.isFinished()) {
             throw new InvalidRideException();
         }
 
+        System.out.println("RIDE_STOPPED " + rideID);
         db.getDriverDetails().get(currentRide.getDriverID()).updateAvailability();
         currentRide.finishRide(dest_x_coordinate, dest_y_coordinate, timeTakenInMins);
-
-        return "RIDE_STOPPED " + rideID;
     }
 
     @Override
-    public double billRide(String rideID) {
+    public void billRide(String rideID) {
         Ride currentRide = db.getRideDetails().get(rideID);
         if (currentRide == null || !currentRide.isFinished()) {
             throw new InvalidRideException();
@@ -145,7 +142,7 @@ public class RideServiceImpl implements RideService {
         finalBill *= SERVICE_TAX;
 
         currentRide.setBill((float) (Math.round(finalBill * 10.0) / 10.0));
-        return currentRide.getBill();
+        System.out.printf("BILL %s %s %.1f%n", rideID, currentRide.getDriverID(), finalBill);
     }
 
     public record DriverDistancePair(String ID, double distance) {
