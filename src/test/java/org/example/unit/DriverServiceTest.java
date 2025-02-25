@@ -1,30 +1,32 @@
 package org.example.unit;
 
+import org.example.config.TestConfig;
 import org.example.repository.Database;
 import org.example.models.Driver;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.example.exceptions.InvalidDriverIDException;
 import org.example.services.driver.DriverService;
-import org.example.services.driver.DriverServiceImpl;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.util.HashMap;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+
+@ExtendWith(SpringExtension.class)
+@ContextConfiguration(classes = TestConfig.class)
 class DriverServiceTest {
+    @Autowired
     private Database mockDB;
+
+    @Autowired
+    @InjectMocks
     private DriverService driverService;
-
-    @BeforeEach
-    void setUp() {
-        mockDB = mock(Database.class);
-
-        DriverService driverServiceImpl = new DriverServiceImpl(mockDB);
-        driverService = new DriverService(driverServiceImpl);
-    }
 
     @Test
     void addDriver() {

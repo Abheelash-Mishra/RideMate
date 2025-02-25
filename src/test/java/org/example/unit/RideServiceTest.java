@@ -1,5 +1,6 @@
 package org.example.unit;
 
+import org.example.config.TestConfig;
 import org.example.repository.Database;
 import org.example.models.Driver;
 import org.example.models.Ride;
@@ -9,28 +10,33 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.example.services.ride.RideService;
 import org.example.exceptions.InvalidRideException;
-import org.example.services.ride.RideServiceImpl;
 import org.example.utils.TestUtils;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+
+@ExtendWith(SpringExtension.class)
+@ContextConfiguration(classes = TestConfig.class)
 class RideServiceTest {
+    @Autowired
     private Database mockDB;
+
+    @Autowired
+    @InjectMocks
     private RideService rideService;
 
     @BeforeEach
     void setUp() {
-        mockDB = mock(Database.class);
-
-        RideService rideServiceImpl = new RideServiceImpl(mockDB);
-        rideService = new RideService(rideServiceImpl);
-
         HashMap<String, Rider> riderDetails = new HashMap<>();
         HashMap<String, Driver> driverDetails = new HashMap<>();
         HashMap<String, Ride> rideDetails = new HashMap<>();
