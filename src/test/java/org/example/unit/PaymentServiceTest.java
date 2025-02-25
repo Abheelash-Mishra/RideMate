@@ -1,30 +1,40 @@
 package org.example.unit;
 
+import org.example.config.TestConfig;
 import org.example.repository.Database;
 
 import org.example.models.Driver;
 import org.example.models.Ride;
 import org.example.models.Rider;
+import org.example.services.payment.PaymentMethodType;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.example.services.payment.PaymentMethodType;
 import org.example.services.payment.PaymentService;
 import org.example.utils.TestUtils;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.util.HashMap;
 
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.junit.jupiter.api.Assertions.*;
 
+
+@ExtendWith(SpringExtension.class)
+@ContextConfiguration(classes = TestConfig.class)
 class PaymentServiceTest {
+    @Autowired
     private Database mockDB;
+
+    @Autowired
+    @InjectMocks
     private PaymentService paymentService;
 
     @BeforeEach
     void setUp() {
-        mockDB = mock(Database.class);
-
         HashMap<String, Ride> rides = new HashMap<>();
         HashMap<String, Driver> drivers = new HashMap<>();
         HashMap<String, Rider> riders = new HashMap<>();
@@ -43,7 +53,7 @@ class PaymentServiceTest {
 
     @Test
     void processCardPayment() {
-        paymentService = new PaymentService(mockDB);
+        paymentService.setPaymentMethod(PaymentMethodType.CARD);
 
         TestUtils.captureOutput();
         paymentService.processPayment("RIDE-001");
@@ -55,7 +65,7 @@ class PaymentServiceTest {
 
     @Test
     void processUPIPayment() {
-        paymentService = new PaymentService(mockDB);
+        paymentService.setPaymentMethod(PaymentMethodType.UPI);
 
         TestUtils.captureOutput();
         paymentService.processPayment("RIDE-001");
@@ -67,7 +77,7 @@ class PaymentServiceTest {
 
     @Test
     void processCashPayment() {
-        paymentService = new PaymentService(mockDB);
+        paymentService.setPaymentMethod(PaymentMethodType.CASH);
 
         TestUtils.captureOutput();
         paymentService.processPayment("RIDE-001");
@@ -79,7 +89,7 @@ class PaymentServiceTest {
 
     @Test
     void processWalletPayment() {
-        paymentService = new PaymentService(mockDB);
+        paymentService.setPaymentMethod(PaymentMethodType.WALLET);
 
         Rider rider = new Rider(0, 0);
         rider.addMoney(500);
