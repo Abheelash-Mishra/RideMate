@@ -1,5 +1,8 @@
 package org.example.config;
 
+import org.example.controllers.AdminController;
+import org.example.controllers.DriverController;
+import org.example.controllers.RideController;
 import org.example.repository.Database;
 import org.example.repository.InMemoryDB;
 import org.example.services.admin.AdminService;
@@ -37,5 +40,20 @@ public class AppConfig {
     @Bean
     public PaymentService paymentService(Database database) {
         return new PaymentService(database);
+    }
+
+    @Bean
+    public RideController rideController(Database database) {
+        return new RideController(database);
+    }
+
+    @Bean
+    public DriverController driverController() {
+        return new DriverController();
+    }
+
+    @Bean
+    public AdminController adminController() {
+        return new AdminController();
     }
 }
