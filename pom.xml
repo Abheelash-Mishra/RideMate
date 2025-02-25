@@ -23,11 +23,16 @@
 
         <dependency>
             <groupId>org.springframework</groupId>
+            <artifactId>spring-web</artifactId>
+            <version>7.0.0-M2</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework</groupId>
             <artifactId>spring-test</artifactId>
             <version>7.0.0-M2</version>
             <scope>test</scope>
         </dependency>
-
 
         <dependency>
             <groupId>org.projectlombok</groupId>
