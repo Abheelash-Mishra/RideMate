@@ -1,6 +1,7 @@
 package org.example;
 
 import org.example.config.AppConfig;
+import org.example.models.Ride;
 import org.example.repository.Database;
 import org.example.exceptions.InvalidDriverIDException;
 import org.example.services.admin.AdminService;
@@ -17,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
+import java.util.List;
 import java.util.Scanner;
 
 public class RiderApp {
@@ -53,9 +55,12 @@ public class RiderApp {
     }
 
     public static void processCommands(String command) {
+        db = context.getBean(Database.class);
         String[] parts = command.split(" ");
+
         int x_coordinate, y_coordinate, N;
         String riderID, rideID, driverID;
+        String output;
 
         try {
             switch (parts[0]) {
@@ -78,7 +83,8 @@ public class RiderApp {
                 case "MATCH":
                     riderID = parts[1];
 
-                    rideService.matchRider(riderID);
+                    output = rideService.matchRider(riderID);
+                    System.out.println(output);
                     break;
 
                 case "START_RIDE":
@@ -86,7 +92,8 @@ public class RiderApp {
                     N = Integer.parseInt(parts[2]);
                     riderID = parts[3];
 
-                    rideService.startRide(rideID, N, riderID);
+                    output = rideService.startRide(rideID, N, riderID);
+                    System.out.println(output);
                     break;
 
                 case "STOP_RIDE":
@@ -95,20 +102,24 @@ public class RiderApp {
                     int dest_y_coordinate = Integer.parseInt(parts[3]);
                     int timeTakenInMins = Integer.parseInt(parts[4]);
 
-                    rideService.stopRide(rideID, dest_x_coordinate, dest_y_coordinate, timeTakenInMins);
+                    output = rideService.stopRide(rideID, dest_x_coordinate, dest_y_coordinate, timeTakenInMins);
+                    System.out.println(output);
                     break;
 
                 case "RATE_DRIVER":
                     driverID = parts[1];
                     float rating = Float.parseFloat(parts[2]);
 
-                    driverService.rateDriver(driverID, rating);
+                    output = driverService.rateDriver(driverID, rating);
+                    System.out.print(output);
                     break;
 
                 case "BILL":
                     rideID = parts[1];
 
-                    rideService.billRide(rideID);
+                    double bill = rideService.billRide(rideID);
+                    Ride currentRide = db.getRideDetails().get(rideID);
+                    System.out.printf("BILL %s %s %.1f\n", rideID, currentRide.getDriverID(), bill);
                     break;
 
                 case "PAY":
@@ -118,7 +129,8 @@ public class RiderApp {
                     PaymentMethodType paymentMethodType = PaymentMethodType.valueOf(method.toUpperCase());
                     paymentService.setPaymentMethod(paymentMethodType);
 
-                    paymentService.processPayment(rideID);
+                    output = paymentService.processPayment(rideID);
+                    System.out.println(output);
                     break;
 
                 case "ADD_MONEY":
@@ -127,25 +139,32 @@ public class RiderApp {
 
                     paymentService.setPaymentMethod(PaymentMethodType.WALLET);
                     WalletPayment wallet = (WalletPayment) paymentService.getPaymentMethod();
-                    wallet.addMoney(riderID, amount);
+
+                    float balance = wallet.addMoney(riderID, amount);
+                    System.out.println("CURRENT_BALANCE " + riderID + " " + balance);
                     break;
 
                 case "ADMIN_REMOVE_DRIVER":
                     driverID = parts[1];
 
-                    adminService.removeDriver(driverID);
+                    output = adminService.removeDriver(driverID);
+                    System.out.println(output);
                     break;
 
                 case "ADMIN_LIST_DRIVERS":
                     N = Integer.parseInt(parts[1]);
 
-                    adminService.listNDriverDetails(N);
+                    List<String> driverDetails = adminService.listNDriverDetails(N);
+                    for (String detail : driverDetails) {
+                        System.out.println(detail);
+                    }
                     break;
 
                 case "ADMIN_VIEW_DRIVER_EARNINGS":
                     driverID = parts[1];
 
-                    adminService.getDriverEarnings(driverID);
+                    float earnings = adminService.getDriverEarnings(driverID);
+                    System.out.printf("DRIVER_EARNINGS %s %.1f\n", driverID, earnings);
                     break;
 
                 default:
