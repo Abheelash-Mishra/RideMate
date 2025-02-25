@@ -20,7 +20,7 @@ import static org.example.RiderApp.context;
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = AppConfig.class)
-class RiderAppIT {
+class RiderAppTest {
     private final Database db = context.getBean(Database.class);
     private final InputStream originalSystemIn = System.in;
     private final PrintStream originalSystemOut = System.out;
