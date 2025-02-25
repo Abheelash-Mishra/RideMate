@@ -17,13 +17,12 @@ public class Rider {
         return walletAmount;
     }
 
-    public void deductMoney(float amount) {
+    public boolean deductMoney(float amount) {
         if (walletAmount <= amount) {
-            System.out.println("LOW_BALANCE");
-            return;
+            return false;
         }
 
         walletAmount -= amount;
-        System.out.println("PAID " + amount + " SUCCESSFULLY | CURRENT_BALANCE " + walletAmount);
+        return true;
     }
 }

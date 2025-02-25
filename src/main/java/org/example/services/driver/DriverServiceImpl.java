@@ -18,9 +18,9 @@ public class DriverServiceImpl implements DriverService {
     }
 
     @Override
-    public void rateDriver(String driverID, float rating) {
+    public String rateDriver(String driverID, float rating) {
         Driver driver = db.getDriverDetails().get(driverID);
 
-        System.out.printf("CURRENT_RATING %s %.1f%n", driverID, driver.updateDriverRating(rating));
+        return String.format("CURRENT_RATING %s %.1f%n", driverID, driver.updateDriverRating(rating));
     }
 }

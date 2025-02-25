@@ -14,11 +14,11 @@ public class UpiPayment implements Payment {
     }
 
     @Override
-    public void sendMoney(String rideID) {
+    public String sendMoney(String rideID) {
         Ride currentRide = db.getRideDetails().get(rideID);
         Driver driver = db.getDriverDetails().get(currentRide.getDriverID());
 
         driver.updateEarnings(currentRide.getBill());
-        System.out.printf("PAID %s %.1f VIA UPI\n", currentRide.getDriverID(), currentRide.getBill());
+        return String.format("PAID %s %.1f VIA UPI", currentRide.getDriverID(), currentRide.getBill());
     }
 }

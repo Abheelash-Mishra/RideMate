@@ -5,6 +5,9 @@ import org.example.models.Driver;
 import org.example.exceptions.InvalidDriverIDException;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class AdminServiceImpl implements AdminService {
     private final Database db;
 
@@ -14,34 +17,42 @@ public class AdminServiceImpl implements AdminService {
     }
 
     @Override
-    public void removeDriver(String driverID) {
+    public String removeDriver(String driverID) {
         if (db.getDriverDetails().get(driverID) == null) {
             throw new InvalidDriverIDException();
         }
 
         db.getDriverDetails().remove(driverID);
-        System.out.println("REMOVED_DRIVER " + driverID);
+        return "REMOVED_DRIVER " + driverID;
     }
 
     @Override
-    public void listNDriverDetails(int N) {
+    public List<String> listNDriverDetails(int N) {
+        List<String> driverDetailsList = new ArrayList<>();
         int size = Math.min(db.getDriverDetails().size(), N);
         int idx = 0;
 
         for (String driverID : db.getDriverDetails().keySet()) {
             if (idx == size) break;
-
             idx++;
-            Driver driver = db.getDriverDetails().get(driverID);
 
-            System.out.printf("DRIVER_%s (X=%d, Y=%d) RATING %.1f%n", driverID, driver.getCoordinates()[0], driver.getCoordinates()[1], driver.getRating());
+            Driver driver = db.getDriverDetails().get(driverID);
+            String driverInfo = String.format(
+                    "DRIVER_%s (X=%d, Y=%d) RATING %.1f",
+                    driverID, driver.getCoordinates()[0], driver.getCoordinates()[1], driver.getRating()
+            );
+
+            driverDetailsList.add(driverInfo);
         }
+
+        return driverDetailsList;
     }
 
+
     @Override
-    public void getDriverEarnings(String driverID) {
+    public float getDriverEarnings(String driverID) {
         Driver driver = db.getDriverDetails().get(driverID);
 
-        System.out.printf("DRIVER_EARNINGS %s %.1f\n", driverID, driver.getEarnings());
+        return driver.getEarnings();
     }
 }

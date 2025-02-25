@@ -1,7 +1,9 @@
 package org.example.services.admin;
 
+import java.util.List;
+
 public interface AdminService {
-    void removeDriver(String driverID);
-    void listNDriverDetails(int N);
-    void getDriverEarnings(String driverID);
+    String removeDriver(String driverID);
+    List<String> listNDriverDetails(int N);
+    float getDriverEarnings(String driverID);
 }

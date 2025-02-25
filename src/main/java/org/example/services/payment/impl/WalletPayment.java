@@ -15,20 +15,25 @@ public class WalletPayment implements Payment {
     }
 
     @Override
-    public void sendMoney(String rideID) {
+    public String sendMoney(String rideID) {
         Ride currentRide = db.getRideDetails().get(rideID);
         Rider rider = db.getRiderDetails().get(currentRide.getRiderID());
 
         Driver driver = db.getDriverDetails().get(currentRide.getDriverID());
 
-        rider.deductMoney(currentRide.getBill());
-        driver.updateEarnings(currentRide.getBill());
+        boolean success = rider.deductMoney(currentRide.getBill());
+
+        if (success){
+            driver.updateEarnings(currentRide.getBill());
+            return "PAID " + currentRide.getBill() + " SUCCESSFULLY | CURRENT_BALANCE " + rider.getWalletAmount();
+        }
+
+        return "LOW_BALANCE";
     }
 
-    public void addMoney(String riderID, float amount) {
+    public float addMoney(String riderID, float amount) {
         Rider rider = db.getRiderDetails().get(riderID);
 
-        float walletAmount = rider.addMoney(amount);
-        System.out.println("CURRENT_BALANCE " + riderID + " " + walletAmount);
+        return rider.addMoney(amount);
     }
 }

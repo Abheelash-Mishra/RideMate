@@ -20,8 +20,8 @@ public class PaymentService {
         this.paymentMethod = paymentMethodType.getPaymentMethod(db);
     }
 
-    public void processPayment(String rideID) {
-        paymentMethod.sendMoney(rideID);
+    public String processPayment(String rideID) {
+        return paymentMethod.sendMoney(rideID);
     }
 }
 
