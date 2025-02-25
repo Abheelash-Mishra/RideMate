@@ -1,17 +1,27 @@
 package org.example.integration;
 
 import org.example.RiderApp;
+import org.example.config.AppConfig;
+import org.example.repository.Database;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.io.PrintStream;
 
-class RiderAppTests {
+import static org.example.RiderApp.context;
+
+@ExtendWith(SpringExtension.class)
+@ContextConfiguration(classes = AppConfig.class)
+class RiderAppIT {
+    private final Database db = context.getBean(Database.class);
     private final InputStream originalSystemIn = System.in;
     private final PrintStream originalSystemOut = System.out;
     private ByteArrayOutputStream testOutput;
@@ -20,6 +30,11 @@ class RiderAppTests {
     void setUp() {
         testOutput = new ByteArrayOutputStream();
         System.setOut(new PrintStream(testOutput));
+    }
+
+    @BeforeEach
+    void resetDatabase() {
+        db.reset();
     }
 
     @AfterEach
