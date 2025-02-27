@@ -11,17 +11,16 @@ public class DriverController {
     @Autowired
     private DriverService driverService;
 
-    @GetMapping("/add")
-    public String addDriver(
+    @PostMapping("/add")
+    public void addDriver(
             @RequestParam("driverID") String driverID,
             @RequestParam("x") int x,
             @RequestParam("y") int y
     ) {
         driverService.addDriver(driverID, x, y);
-        return "Added";
     }
 
-    @GetMapping("/rate")
+    @PostMapping("/rate")
     public String rateDriver(
             @RequestParam("driverID") String driverID,
             @RequestParam("rating") float rating

@@ -25,7 +25,9 @@ public class AdminController {
     }
 
     @GetMapping("/drivers/earnings")
-    public float getDriverEarnings(@RequestParam("driverID") String driverID) {
-        return adminService.getDriverEarnings(driverID);
+    public String getDriverEarnings(@RequestParam("driverID") String driverID) {
+        float earnings =  adminService.getDriverEarnings(driverID);
+
+        return String.format("DRIVER_EARNINGS %s %.1f\n", driverID, earnings);
     }
 }

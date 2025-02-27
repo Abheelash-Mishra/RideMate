@@ -14,7 +14,7 @@ public class RideController {
     @Autowired
     private RideService rideService;
 
-    @GetMapping("/rider/add")
+    @PostMapping("/rider/add")
     public void addRider(
             @RequestParam("riderID") String riderID,
             @RequestParam("x") int x,
@@ -28,7 +28,7 @@ public class RideController {
         return rideService.matchRider(riderID);
     }
 
-    @GetMapping("/start")
+    @PostMapping("/start")
     public String startRide(
             @RequestParam("rideID") String rideID,
             @RequestParam("N") int N,
@@ -37,7 +37,7 @@ public class RideController {
         return rideService.startRide(rideID, N, riderID);
     }
 
-    @GetMapping("/stop")
+    @PostMapping("/stop")
     public String stopRide(
             @RequestParam("rideID") String rideID,
             @RequestParam("x") int x,
@@ -51,6 +51,6 @@ public class RideController {
     public String billRide(@RequestParam("rideID") String rideID) {
         double bill = rideService.billRide(rideID);
 
-        return String.format("BILL %s %.1f\n", rideID, bill);
+        return String.format("BILL %s %.1f", rideID, bill);
     }
 }
