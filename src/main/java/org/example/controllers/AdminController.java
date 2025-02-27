@@ -2,31 +2,30 @@ package org.example.controllers;
 
 import org.example.services.admin.AdminService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@RestController
+@RequestMapping("/admin")
 public class AdminController {
     @Autowired
     private AdminService adminService;
 
-    @GetMapping("/admin/drivers/remove")
-    @ResponseBody
-    public String removeDriver(@RequestParam String driverID) {
+    @GetMapping("/drivers/remove")
+    public String removeDriver(@RequestParam("driverID") String driverID) {
         return adminService.removeDriver(driverID);
     }
 
-    @GetMapping("/admin/drivers/list")
-    @ResponseBody
-    public List<String> listNDrivers(@RequestParam int N) {
-        return adminService.listNDriverDetails(N);
+    @GetMapping("/drivers/list")
+    public String listNDrivers(@RequestParam("N") int N) {
+        List<String> driverDetails = adminService.listNDriverDetails(N);
+
+        return String.join(", ", driverDetails);
     }
 
-    @GetMapping("/admin/drivers/earnings")
-    @ResponseBody
-    public float getDriverEarnings(@RequestParam String driverID) {
+    @GetMapping("/drivers/earnings")
+    public float getDriverEarnings(@RequestParam("driverID") String driverID) {
         return adminService.getDriverEarnings(driverID);
     }
 }

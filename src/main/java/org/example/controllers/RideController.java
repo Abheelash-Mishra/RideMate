@@ -5,10 +5,10 @@ import org.example.models.Ride;
 import org.example.repository.Database;
 import org.example.services.ride.RideService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
+@RestController
+@RequestMapping("/ride")
 public class RideController {
     private final Database db;
 
@@ -21,32 +21,40 @@ public class RideController {
     }
 
     @GetMapping("/rider/add")
-    @ResponseBody
-    public void addRider(@RequestParam String riderID, @RequestParam int x, @RequestParam int y) {
+    public void addRider(
+            @RequestParam("riderID") String riderID,
+            @RequestParam("x") int x,
+            @RequestParam("y") int y
+    ) {
         rideService.addRider(riderID, x, y);
     }
 
     @GetMapping("/rider/match")
-    @ResponseBody
-    public String matchRider(@RequestParam String riderID) {
+    public String matchRider(@RequestParam("riderID") String riderID) {
         return rideService.matchRider(riderID);
     }
 
-    @GetMapping("/ride/start")
-    @ResponseBody
-    public String startRide(@RequestParam String rideID, @RequestParam int N, @RequestParam String riderID) {
+    @GetMapping("/start")
+    public String startRide(
+            @RequestParam("rideID") String rideID,
+            @RequestParam("N") int N,
+            @RequestParam("riderID") String riderID
+    ) {
         return rideService.startRide(rideID, N, riderID);
     }
 
-    @GetMapping("/ride/stop")
-    @ResponseBody
-    public String stopRide(@RequestParam String rideID, @RequestParam int x, @RequestParam int y, @RequestParam int timeInMins) {
+    @GetMapping("/stop")
+    public String stopRide(
+            @RequestParam("rideID") String rideID,
+            @RequestParam("x") int x,
+            @RequestParam("y") int y,
+            @RequestParam("timeInMins") int timeInMins
+    ) {
         return rideService.stopRide(rideID, x, y, timeInMins);
     }
 
-    @GetMapping("/ride/bill")
-    @ResponseBody
-    public String billRide(@RequestParam String rideID) {
+    @GetMapping("/bill")
+    public String billRide(@RequestParam("rideID") String rideID) {
         double bill = rideService.billRide(rideID);
         Ride currentRide = db.getRideDetails().get(rideID);
 
