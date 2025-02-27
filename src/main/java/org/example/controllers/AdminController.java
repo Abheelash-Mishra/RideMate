@@ -12,7 +12,7 @@ public class AdminController {
     @Autowired
     private AdminService adminService;
 
-    @GetMapping("/drivers/remove")
+    @DeleteMapping("/drivers/remove")
     public String removeDriver(@RequestParam("driverID") String driverID) {
         return adminService.removeDriver(driverID);
     }
