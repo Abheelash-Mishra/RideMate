@@ -22,18 +22,28 @@ import java.util.List;
 import java.util.Scanner;
 
 public class RiderApp {
-    public static final ApplicationContext context = new AnnotationConfigApplicationContext(AppConfig.class);
+    public static AnnotationConfigApplicationContext context;
     private static Scanner scanner = new Scanner(System.in);
 
     @Autowired
     private static Database db;
-    private static final AdminService adminService = context.getBean(AdminServiceImpl.class);
-    private static final RideService rideService = context.getBean(RideServiceImpl.class);
-    private static final DriverService driverService = context.getBean(DriverServiceImpl.class);
-    private static final PaymentService paymentService = context.getBean(PaymentService.class);
+    private static AdminService adminService;
+    private static RideService rideService;
+    private static DriverService driverService;
+    private static PaymentService paymentService;
 
     public static void reset() {
         scanner = new Scanner(System.in);
+    }
+
+    public static void initContext() {
+        System.setProperty("spring.profiles.active", "cli");
+        context = new AnnotationConfigApplicationContext(AppConfig.class);
+
+        adminService = context.getBean(AdminServiceImpl.class);
+        rideService = context.getBean(RideServiceImpl.class);
+        driverService = context.getBean(DriverServiceImpl.class);
+        paymentService = context.getBean(PaymentService.class);
     }
 
     public static void main(String[] args) {
@@ -43,6 +53,8 @@ public class RiderApp {
 //        for (String beanName : beanNames) {
 //            System.out.println(beanName);
 //        }
+
+        initContext();
 
         while (scanner.hasNextLine()) {
             String command = scanner.nextLine().trim();
@@ -124,9 +136,9 @@ public class RiderApp {
 
                 case "PAY":
                     rideID = parts[1];
-                    String method = parts[2];
+                    String type = parts[2];
 
-                    PaymentMethodType paymentMethodType = PaymentMethodType.valueOf(method.toUpperCase());
+                    PaymentMethodType paymentMethodType = PaymentMethodType.valueOf(type.toUpperCase());
                     paymentService.setPaymentMethod(paymentMethodType);
 
                     output = paymentService.processPayment(rideID);
