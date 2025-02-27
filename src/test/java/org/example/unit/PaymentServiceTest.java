@@ -10,7 +10,6 @@ import org.example.services.payment.PaymentMethodType;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.example.services.payment.PaymentService;
-import org.example.utils.TestUtils;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -55,9 +54,7 @@ class PaymentServiceTest {
     void processCardPayment() {
         paymentService.setPaymentMethod(PaymentMethodType.CARD);
 
-        TestUtils.captureOutput();
-        paymentService.processPayment("RIDE-001");
-        String output = TestUtils.getCapturedOutput();
+        String output = paymentService.processPayment("RIDE-001");
 
         assertTrue(output.contains("PAID D3 201.3 VIA CARD"), "Card payment went wrong");
         assertEquals(201.3F, mockDB.getDriverDetails().get("D3").getEarnings(), 0.1, "Earnings not updated at DB");
@@ -67,9 +64,7 @@ class PaymentServiceTest {
     void processUPIPayment() {
         paymentService.setPaymentMethod(PaymentMethodType.UPI);
 
-        TestUtils.captureOutput();
-        paymentService.processPayment("RIDE-001");
-        String output = TestUtils.getCapturedOutput();
+        String output = paymentService.processPayment("RIDE-001");
 
         assertTrue(output.contains("PAID D3 201.3 VIA UPI"), "UPI payment went wrong");
         assertEquals(201.3F, mockDB.getDriverDetails().get("D3").getEarnings(), 0.1, "Earnings not updated at DB");
@@ -79,9 +74,7 @@ class PaymentServiceTest {
     void processCashPayment() {
         paymentService.setPaymentMethod(PaymentMethodType.CASH);
 
-        TestUtils.captureOutput();
-        paymentService.processPayment("RIDE-001");
-        String output = TestUtils.getCapturedOutput();
+        String output = paymentService.processPayment("RIDE-001");
 
         assertTrue(output.contains("PAID D3 201.3 VIA CASH"), "Cash payment went wrong");
         assertEquals(201.3F, mockDB.getDriverDetails().get("D3").getEarnings(), 0.1, "Earnings not updated at DB");

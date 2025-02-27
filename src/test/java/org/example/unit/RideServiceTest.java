@@ -10,7 +10,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.example.services.ride.RideService;
 import org.example.exceptions.InvalidRideException;
-import org.example.utils.TestUtils;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -65,9 +64,7 @@ class RideServiceTest {
         String riderID = "R1";
         mockDB.getRiderDetails().put(riderID, new Rider(0, 0));
 
-        TestUtils.captureOutput();
-        rideService.matchRider("R1");
-        String output = TestUtils.getCapturedOutput();
+        String output = rideService.matchRider("R1");
 
         assertTrue(output.contains("DRIVERS_MATCHED D1 D3"), "Wrong drivers were matched");
     }
@@ -82,9 +79,7 @@ class RideServiceTest {
 
         mockDB.getRiderDriverMapping().put(riderID, matchedDrivers);
 
-        TestUtils.captureOutput();
-        rideService.startRide("RIDE-001", N, riderID);
-        String output = TestUtils.getCapturedOutput();
+        String output = rideService.startRide("RIDE-001", N, riderID);
 
         assertTrue(output.contains("RIDE_STARTED RIDE-001"), "Ride did not start");
     }
@@ -95,9 +90,7 @@ class RideServiceTest {
         mockDB.getRideDetails().put("RIDE-001", ride);
         mockDB.getDriverDetails().get("D3").updateAvailability();
 
-        TestUtils.captureOutput();
-        rideService.stopRide("RIDE-001", 4, 5, 32);
-        String output = TestUtils.getCapturedOutput();
+        String output = rideService.stopRide("RIDE-001", 4, 5, 32);
 
         assertTrue(output.contains("RIDE_STOPPED RIDE-001"), "Ride did not stop");
     }
@@ -111,11 +104,9 @@ class RideServiceTest {
         ride.finishRide(4, 5, 32);
         mockDB.getRideDetails().put("RIDE-001", ride);
 
-        TestUtils.captureOutput();
-        rideService.billRide("RIDE-001");
-        String output = TestUtils.getCapturedOutput();
+        double bill = rideService.billRide("RIDE-001");
 
-        assertTrue(output.contains("BILL RIDE-001 D3 186.7"), "Bill was not generated correctly");
+        assertEquals(186.7, bill, 0.1);
     }
 
     @Test
@@ -123,9 +114,7 @@ class RideServiceTest {
         String riderID = "R1";
         mockDB.getRiderDetails().put(riderID, new Rider(10, 10));
 
-        TestUtils.captureOutput();
-        rideService.matchRider("R1");
-        String output = TestUtils.getCapturedOutput();
+        String output = rideService.matchRider("R1");
 
         assertTrue(output.contains("NO_DRIVERS_AVAILABLE"), "Drivers were still matched");
     }

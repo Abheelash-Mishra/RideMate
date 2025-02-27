@@ -7,7 +7,6 @@ import org.example.models.Driver;
 import org.junit.jupiter.api.Test;
 import org.example.services.admin.AdminService;
 import org.example.exceptions.InvalidDriverIDException;
-import org.example.utils.TestUtils;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +14,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.util.HashMap;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -57,13 +57,11 @@ class AdminServiceTest {
 
         when(mockDB.getDriverDetails()).thenReturn(drivers);
 
-        TestUtils.captureOutput();
-        adminService.listNDriverDetails(N);
-        String output = TestUtils.getCapturedOutput();
+        List<String> output = adminService.listNDriverDetails(N);
 
-        assertTrue(output.contains("DRIVER_D1 (X=5, Y=5)"), "D1 should be in output");
-        assertTrue(output.contains("DRIVER_D2 (X=2, Y=7)"), "D2 should be in output");
-        assertTrue(output.contains("DRIVER_D3 (X=9, Y=3)"), "D3 should be in output");
+        assertTrue(output.contains("DRIVER_D1 (X=5, Y=5) RATING 0.0"), "D1 should be in output");
+        assertTrue(output.contains("DRIVER_D2 (X=2, Y=7) RATING 0.0"), "D2 should be in output");
+        assertTrue(output.contains("DRIVER_D3 (X=9, Y=3) RATING 0.0"), "D3 should be in output");
     }
 
     @Test
