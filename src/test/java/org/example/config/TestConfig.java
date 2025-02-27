@@ -15,28 +15,8 @@ import static org.mockito.Mockito.mock;
 
 @Configuration
 public class TestConfig {
-    @Bean
-    public Database mockDatabase() {
-        return mock(Database.class);
-    }
-
-    @Bean
-    public AdminService adminService(Database database) {
-        return new AdminServiceImpl(database);
-    }
-
-    @Bean
-    public DriverService driverService(Database database) {
-        return new DriverServiceImpl(database);
-    }
-
-    @Bean
-    public RideService rideService(Database database) {
-        return new RideServiceImpl(database);
-    }
-
-    @Bean
-    public PaymentService paymentService(Database database) {
-        return new PaymentService(database);
-    }
+//    @Bean
+//    public Database mockDatabase() {
+//        return mock(Database.class);
+//    }
 }
