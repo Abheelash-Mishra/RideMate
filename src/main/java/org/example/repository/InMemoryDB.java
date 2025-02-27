@@ -3,10 +3,12 @@ package org.example.repository;
 import org.example.models.Driver;
 import org.example.models.Ride;
 import org.example.models.Rider;
+import org.springframework.stereotype.Repository;
 
 import java.util.HashMap;
 import java.util.List;
 
+@Repository
 public class InMemoryDB implements Database {
     private final HashMap<String, Rider> riderDetails = new HashMap<>();
     private final HashMap<String, Driver> driverDetails = new HashMap<>();

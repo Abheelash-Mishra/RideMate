@@ -4,8 +4,10 @@ import lombok.Getter;
 import org.example.repository.Database;
 import org.example.services.payment.impl.WalletPayment;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 @Getter
+@Service
 public class PaymentService {
     private final Database db;
     private Payment paymentMethod;
