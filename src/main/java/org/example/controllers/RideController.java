@@ -10,15 +10,9 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/ride")
 public class RideController {
-    private final Database db;
 
     @Autowired
     private RideService rideService;
-
-    @Autowired
-    public RideController(Database db) {
-        this.db = db;
-    }
 
     @GetMapping("/rider/add")
     public void addRider(
@@ -56,8 +50,7 @@ public class RideController {
     @GetMapping("/bill")
     public String billRide(@RequestParam("rideID") String rideID) {
         double bill = rideService.billRide(rideID);
-        Ride currentRide = db.getRideDetails().get(rideID);
 
-        return String.format("BILL %s %s %.1f\n", rideID, currentRide.getDriverID(), bill);
+        return String.format("BILL %s %.1f\n", rideID, bill);
     }
 }
