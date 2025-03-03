@@ -8,5 +8,5 @@
            http://www.springframework.org/schema/context/spring-context.xsd">
 
     <!-- Scan services, repositories, etc. -->
-    <context:component-scan base-package="org.example.controllers, org.example.services, org.example.repository, org.example.utilities"/>
+    <context:component-scan base-package="org.example.controllers, org.example.services, org.example.repository, org.example.utilities, org.example.exceptions"/>
 </beans>

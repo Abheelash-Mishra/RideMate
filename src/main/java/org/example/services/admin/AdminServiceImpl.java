@@ -23,7 +23,7 @@ public class AdminServiceImpl implements AdminService {
     @Override
     public boolean removeDriver(String driverID) {
         if (db.getDriverDetails().get(driverID) == null) {
-            return false;
+            throw new InvalidDriverIDException();
         }
 
         db.getDriverDetails().remove(driverID);
@@ -57,7 +57,7 @@ public class AdminServiceImpl implements AdminService {
     public DriverEarningsDTO getDriverEarnings(String driverID) {
         Driver driver = db.getDriverDetails().get(driverID);
         if (driver == null) {
-            throw new InvalidDriverIDException(); // Handle invalid driver ID
+            throw new InvalidDriverIDException();
         }
         return new DriverEarningsDTO(driverID, driver.getEarnings());
     }
