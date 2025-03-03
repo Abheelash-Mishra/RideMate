@@ -3,7 +3,10 @@ package org.example.controllers;
 import org.example.services.driver.DriverService;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Map;
 
 @RestController
 @RequestMapping("/driver")
@@ -21,10 +24,10 @@ public class DriverController {
     }
 
     @PostMapping("/rate")
-    public String rateDriver(
+    public ResponseEntity<Map<String, Object>> rateDriver(
             @RequestParam("driverID") String driverID,
             @RequestParam("rating") float rating
     ) {
-        return driverService.rateDriver(driverID, rating);
+        return ResponseEntity.ok(driverService.rateDriver(driverID, rating));
     }
 }

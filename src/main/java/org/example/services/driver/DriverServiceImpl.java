@@ -1,9 +1,13 @@
 package org.example.services.driver;
 
+import org.example.exceptions.InvalidDriverIDException;
 import org.example.repository.Database;
 import org.example.models.Driver;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.HashMap;
+import java.util.Map;
 
 @Service
 public class DriverServiceImpl implements DriverService {
@@ -20,9 +24,19 @@ public class DriverServiceImpl implements DriverService {
     }
 
     @Override
-    public String rateDriver(String driverID, float rating) {
+    public Map<String, Object> rateDriver(String driverID, float rating) {
         Driver driver = db.getDriverDetails().get(driverID);
+        if (driver == null) {
+            throw new InvalidDriverIDException();
+        }
 
-        return String.format("CURRENT_RATING %s %.1f%n", driverID, driver.updateDriverRating(rating));
+        float updatedRating = driver.updateDriverRating(rating);
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("driverID", driverID);
+        response.put("rating", updatedRating);
+
+        return response;
     }
+
 }
