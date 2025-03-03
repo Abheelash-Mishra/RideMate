@@ -1,5 +1,7 @@
 package org.example.services.admin;
 
+import org.example.dto.DriverDTO;
+import org.example.dto.DriverEarningsDTO;
 import org.example.repository.Database;
 import org.example.models.Driver;
 import org.example.exceptions.InvalidDriverIDException;
@@ -19,18 +21,18 @@ public class AdminServiceImpl implements AdminService {
     }
 
     @Override
-    public String removeDriver(String driverID) {
+    public boolean removeDriver(String driverID) {
         if (db.getDriverDetails().get(driverID) == null) {
-            throw new InvalidDriverIDException();
+            return false;
         }
 
         db.getDriverDetails().remove(driverID);
-        return "REMOVED_DRIVER " + driverID;
+        return true;
     }
 
     @Override
-    public List<String> listNDriverDetails(int N) {
-        List<String> driverDetailsList = new ArrayList<>();
+    public List<DriverDTO> listNDriverDetails(int N) {
+        List<DriverDTO> driverDetailsList = new ArrayList<>();
         int size = Math.min(db.getDriverDetails().size(), N);
         int idx = 0;
 
@@ -39,12 +41,12 @@ public class AdminServiceImpl implements AdminService {
             idx++;
 
             Driver driver = db.getDriverDetails().get(driverID);
-            String driverInfo = String.format(
-                    "DRIVER_%s (X=%d, Y=%d) RATING %.1f",
-                    driverID, driver.getCoordinates()[0], driver.getCoordinates()[1], driver.getRating()
-            );
-
-            driverDetailsList.add(driverInfo);
+            driverDetailsList.add(new DriverDTO(
+                    driverID,
+                    driver.getCoordinates()[0],
+                    driver.getCoordinates()[1],
+                    driver.getRating()
+            ));
         }
 
         return driverDetailsList;
@@ -52,9 +54,12 @@ public class AdminServiceImpl implements AdminService {
 
 
     @Override
-    public float getDriverEarnings(String driverID) {
+    public DriverEarningsDTO getDriverEarnings(String driverID) {
         Driver driver = db.getDriverDetails().get(driverID);
-
-        return driver.getEarnings();
+        if (driver == null) {
+            throw new InvalidDriverIDException(); // Handle invalid driver ID
+        }
+        return new DriverEarningsDTO(driverID, driver.getEarnings());
     }
+
 }

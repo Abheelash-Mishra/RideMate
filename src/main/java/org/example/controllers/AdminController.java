@@ -1,7 +1,10 @@
 package org.example.controllers;
 
+import org.example.dto.DriverDTO;
+import org.example.dto.DriverEarningsDTO;
 import org.example.services.admin.AdminService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -13,21 +16,17 @@ public class AdminController {
     private AdminService adminService;
 
     @DeleteMapping("/drivers/remove")
-    public String removeDriver(@RequestParam("driverID") String driverID) {
+    public boolean removeDriver(@RequestParam("driverID") String driverID) {
         return adminService.removeDriver(driverID);
     }
 
-    @GetMapping("/drivers/list")
-    public String listNDrivers(@RequestParam("N") int N) {
-        List<String> driverDetails = adminService.listNDriverDetails(N);
-
-        return String.join(", ", driverDetails);
+    @GetMapping(value = "/drivers/list", produces = "application/json")
+    public ResponseEntity<List<DriverDTO>> listNDriverDetails(@RequestParam("N") int N) {
+        return ResponseEntity.ok(adminService.listNDriverDetails(N));
     }
 
-    @GetMapping("/drivers/earnings")
-    public String getDriverEarnings(@RequestParam("driverID") String driverID) {
-        float earnings =  adminService.getDriverEarnings(driverID);
-
-        return String.format("DRIVER_EARNINGS %s %.1f\n", driverID, earnings);
+    @GetMapping(value = "/drivers/earnings", produces = "application/json")
+    public ResponseEntity<DriverEarningsDTO> getDriverEarnings(@RequestParam("driverID") String driverID) {
+        return ResponseEntity.ok(adminService.getDriverEarnings(driverID));
     }
 }
