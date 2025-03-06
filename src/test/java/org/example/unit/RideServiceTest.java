@@ -1,6 +1,9 @@
 package org.example.unit;
 
 import org.example.config.TestConfig;
+import org.example.dto.MatchedDriversDTO;
+import org.example.dto.RideStatusDTO;
+import org.example.models.RideStatus;
 import org.example.repository.Database;
 import org.example.models.Driver;
 import org.example.models.Ride;
@@ -17,6 +20,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
@@ -64,9 +68,12 @@ class RideServiceTest {
         String riderID = "R1";
         mockDB.getRiderDetails().put(riderID, new Rider(0, 0));
 
-        String output = rideService.matchRider("R1");
+        MatchedDriversDTO response = rideService.matchRider("R1");
 
-        assertTrue(output.contains("DRIVERS_MATCHED D1 D3"), "Wrong drivers were matched");
+        List<String> output = response.matchedDrivers();
+        List<String> expected = List.of("D1", "D3");
+
+        assertEquals(expected, output, "Drivers are not matched correctly");
     }
 
     @Test
@@ -79,9 +86,12 @@ class RideServiceTest {
 
         mockDB.getRiderDriverMapping().put(riderID, matchedDrivers);
 
-        String output = rideService.startRide("RIDE-001", N, riderID);
+        RideStatusDTO output = rideService.startRide("RIDE-001", N, riderID);
 
-        assertTrue(output.contains("RIDE_STARTED RIDE-001"), "Ride did not start");
+        assertEquals("RIDE-001", output.rideID(), "Ride ID is not matching");
+        assertEquals("R1", output.riderID(), "Rider ID is not matching");
+        assertEquals("D3", output.driverID(), "Driver ID is not matching");
+        assertEquals(RideStatus.ONGOING, output.status(), "Ride status should be on ONGOING");
     }
 
     @Test
@@ -90,9 +100,12 @@ class RideServiceTest {
         mockDB.getRideDetails().put("RIDE-001", ride);
         mockDB.getDriverDetails().get("D3").updateAvailability();
 
-        String output = rideService.stopRide("RIDE-001", 4, 5, 32);
+        RideStatusDTO output = rideService.stopRide("RIDE-001", 4, 5, 32);
 
-        assertTrue(output.contains("RIDE_STOPPED RIDE-001"), "Ride did not stop");
+        assertEquals("RIDE-001", output.rideID(), "Ride ID is not matching");
+        assertEquals("R1", output.riderID(), "Rider ID is not matching");
+        assertEquals("D3", output.driverID(), "Driver ID is not matching");
+        assertEquals(RideStatus.FINISHED, output.status(), "Ride status should be on FINISHED");
     }
 
     @Test
@@ -114,9 +127,9 @@ class RideServiceTest {
         String riderID = "R1";
         mockDB.getRiderDetails().put(riderID, new Rider(10, 10));
 
-        String output = rideService.matchRider("R1");
+        MatchedDriversDTO response = rideService.matchRider("R1");
 
-        assertTrue(output.contains("NO_DRIVERS_AVAILABLE"), "Drivers were still matched");
+        assertEquals(Collections.emptyList(), response.matchedDrivers());
     }
 
     @Test
