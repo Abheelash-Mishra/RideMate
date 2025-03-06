@@ -1,6 +1,7 @@
 package org.example.repository;
 
 import org.example.models.Driver;
+import org.example.models.Payment;
 import org.example.models.Ride;
 import org.example.models.Rider;
 
@@ -14,5 +15,6 @@ public interface Database {
     HashMap<String, Rider> getRiderDetails();
     HashMap<String, Driver> getDriverDetails();
     HashMap<String, Ride> getRideDetails();
+    HashMap<String, Payment> getPaymentDetails();
     HashMap<String, List<String>> getRiderDriverMapping();
 }

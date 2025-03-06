@@ -1,6 +1,7 @@
 package org.example.repository;
 
 import org.example.models.Driver;
+import org.example.models.Payment;
 import org.example.models.Ride;
 import org.example.models.Rider;
 import org.springframework.stereotype.Repository;
@@ -13,6 +14,7 @@ public class InMemoryDB implements Database {
     private final HashMap<String, Rider> riderDetails = new HashMap<>();
     private final HashMap<String, Driver> driverDetails = new HashMap<>();
     private final HashMap<String, Ride> rideDetails = new HashMap<>();
+    private final HashMap<String, Payment> paymentDetails = new HashMap<>();
     private final HashMap<String, List<String>> riderDriverMapping = new HashMap<>();
 
     public void reset() {
@@ -40,6 +42,11 @@ public class InMemoryDB implements Database {
     @Override
     public HashMap<String, Ride> getRideDetails() {
         return rideDetails;
+    }
+
+    @Override
+    public HashMap<String, Payment> getPaymentDetails() {
+        return paymentDetails;
     }
 
     @Override
