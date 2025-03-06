@@ -148,7 +148,7 @@ class RiderAppCLITest {
                 RIDE_STARTED RIDE-001
                 RIDE_STOPPED RIDE-001
                 BILL RIDE-001 D3 186.7
-                PAID 186.7 SUCCESSFULLY | CURRENT_BALANCE 333.3
+                PAID D3 186.7 VIA WALLET
                 DRIVER_EARNINGS D3 186.7
                 """;
 
