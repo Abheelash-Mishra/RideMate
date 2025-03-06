@@ -10,19 +10,4 @@ public class Rider {
     public Rider(int x_coordinate, int y_coordinate) {
         this.coordinates = new int[]{x_coordinate, y_coordinate};
     }
-
-    public float addMoney(float amount) {
-        walletAmount += amount;
-
-        return walletAmount;
-    }
-
-    public boolean deductMoney(float amount) {
-        if (walletAmount <= amount) {
-            return false;
-        }
-
-        walletAmount -= amount;
-        return true;
-    }
 }

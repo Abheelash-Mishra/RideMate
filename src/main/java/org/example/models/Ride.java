@@ -1,15 +1,16 @@
 package org.example.models;
 
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
-@Data
+@Getter
 public class Ride {
-    private String riderID;
-    private String driverID;
+    private final String riderID;
+    private final String driverID;
     private int[] destinationCoordinates;
     private RideStatus status;
     private int timeTakenInMins;
-    private float bill;
+    @Setter private float bill;
 
     public Ride(String riderID, String driverID) {
         this.riderID = riderID;

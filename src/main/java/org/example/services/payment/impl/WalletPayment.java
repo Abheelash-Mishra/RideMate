@@ -20,7 +20,14 @@ public class WalletPayment implements IPayment {
 
         Driver driver = db.getDriverDetails().get(currentRide.getDriverID());
 
-        boolean success = rider.deductMoney(currentRide.getBill());
+        boolean success;
+        if (rider.getWalletAmount() <= currentRide.getBill()) {
+            success = false;
+        }
+        else {
+            rider.setWalletAmount(rider.getWalletAmount() - currentRide.getBill());
+            success = true;
+        }
 
         String paymentID = "P-" + rideID;
         if (success) {
@@ -52,7 +59,8 @@ public class WalletPayment implements IPayment {
 
     public float addMoney(String riderID, float amount) {
         Rider rider = db.getRiderDetails().get(riderID);
+        rider.setWalletAmount(rider.getWalletAmount() + amount);
 
-        return rider.addMoney(amount);
+        return rider.getWalletAmount();
     }
 }

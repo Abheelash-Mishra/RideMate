@@ -109,7 +109,7 @@ class PaymentServiceTest {
         paymentService.setPaymentMethod(PaymentMethodType.WALLET);
 
         Rider rider = new Rider(0, 0);
-        rider.addMoney(500);
+        rider.setWalletAmount(rider.getWalletAmount() + 500);
         mockDB.getRiderDetails().put("R1", rider);
 
         paymentService.processPayment("RIDE-001");
