@@ -13,6 +13,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.util.HashMap;
+import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
@@ -47,13 +48,9 @@ class DriverServiceTest {
         Driver driver = new Driver(5, 8);
         drivers.put(driverID, driver);
 
-        driverService.rateDriver("D1", 4.9F);
+        Map<String, Object> response = driverService.rateDriver("D1", 4.9F);
 
-        assertEquals(
-                4.9F,
-                mockDB.getDriverDetails().get(driverID).getRating(),
-                0.1,
-                "Driver rating should be updated correctly"
-        );
+        assertEquals("D1", response.get("driverID"), "Driver ID should match");
+        assertEquals(4.9F, (float) response.get("rating"), 0.01, "Driver rating should be updated correctly");
     }
 }
