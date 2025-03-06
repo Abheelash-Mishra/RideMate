@@ -1,6 +1,11 @@
 package org.example;
 
 import org.example.config.AppConfig;
+import org.example.dto.DriverDTO;
+import org.example.dto.RideStatusDTO;
+import org.example.exceptions.NoDriversException;
+import org.example.models.Payment;
+import org.example.models.PaymentStatus;
 import org.example.models.Ride;
 import org.example.repository.Database;
 import org.example.exceptions.InvalidDriverIDException;
@@ -15,7 +20,6 @@ import org.example.exceptions.InvalidRideException;
 import org.example.services.ride.RideService;
 import org.example.services.ride.RideServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
 import java.util.List;
@@ -47,13 +51,6 @@ public class RiderApp {
     }
 
     public static void main(String[] args) {
-        // Prints all beans created
-//        String[] beanNames = context.getBeanDefinitionNames();
-//        System.out.println("Registered Beans:");
-//        for (String beanName : beanNames) {
-//            System.out.println(beanName);
-//        }
-
         initContext();
 
         while (scanner.hasNextLine()) {
@@ -95,8 +92,17 @@ public class RiderApp {
                 case "MATCH":
                     riderID = parts[1];
 
-                    output = rideService.matchRider(riderID);
-                    System.out.println(output);
+                    List<String> matchedDrivers = rideService.matchRider(riderID).matchedDrivers();
+                    if (matchedDrivers.isEmpty()) {
+                        throw new NoDriversException();
+                    }
+
+                    System.out.print("DRIVERS_MATCHED");
+                    for (String matchedDriver : matchedDrivers) {
+                        System.out.print(" " + matchedDriver);
+                    }
+                    System.out.println();
+
                     break;
 
                 case "START_RIDE":
@@ -104,8 +110,8 @@ public class RiderApp {
                     N = Integer.parseInt(parts[2]);
                     riderID = parts[3];
 
-                    output = rideService.startRide(rideID, N, riderID);
-                    System.out.println(output);
+                    rideService.startRide(rideID, N, riderID);
+                    System.out.println("RIDE_STARTED " + rideID);
                     break;
 
                 case "STOP_RIDE":
@@ -114,16 +120,16 @@ public class RiderApp {
                     int dest_y_coordinate = Integer.parseInt(parts[3]);
                     int timeTakenInMins = Integer.parseInt(parts[4]);
 
-                    output = rideService.stopRide(rideID, dest_x_coordinate, dest_y_coordinate, timeTakenInMins);
-                    System.out.println(output);
+                    rideService.stopRide(rideID, dest_x_coordinate, dest_y_coordinate, timeTakenInMins);
+                    System.out.println("RIDE_STOPPED " + rideID);
                     break;
 
                 case "RATE_DRIVER":
                     driverID = parts[1];
                     float rating = Float.parseFloat(parts[2]);
 
-                    output = driverService.rateDriver(driverID, rating);
-                    System.out.print(output);
+                    float newRating = (float) driverService.rateDriver(driverID, rating).get("rating");
+                    System.out.println("CURRENT_RATING " + driverID + " " + newRating);
                     break;
 
                 case "BILL":
@@ -141,8 +147,13 @@ public class RiderApp {
                     PaymentMethodType paymentMethodType = PaymentMethodType.valueOf(type.toUpperCase());
                     paymentService.setPaymentMethod(paymentMethodType);
 
-                    output = paymentService.processPayment(rideID);
-                    System.out.println(output);
+                    Payment paymentDetails = paymentService.processPayment(rideID);
+                    if (paymentDetails.getPaymentStatus() == PaymentStatus.FAILED) {
+                        System.out.println("LOW_BALANCE");
+                    }
+                    else {
+                        System.out.printf("PAID %s %.1f VIA %s\n", paymentDetails.getReceiver(), paymentDetails.getAmount(), paymentMethodType);
+                    }
                     break;
 
                 case "ADD_MONEY":
@@ -159,30 +170,30 @@ public class RiderApp {
                 case "ADMIN_REMOVE_DRIVER":
                     driverID = parts[1];
 
-                    output = adminService.removeDriver(driverID);
-                    System.out.println(output);
+                    if (adminService.removeDriver(driverID)) System.out.println("REMOVED_DRIVER " + driverID);
                     break;
 
                 case "ADMIN_LIST_DRIVERS":
                     N = Integer.parseInt(parts[1]);
 
-                    List<String> driverDetails = adminService.listNDriverDetails(N);
-                    for (String detail : driverDetails) {
-                        System.out.println(detail);
+                    List<DriverDTO> driverDetails = adminService.listNDriverDetails(N);
+                    for (DriverDTO driver: driverDetails) {
+                        System.out.printf("DRIVER_%s (X=%d, Y=%d) RATING %.1f", driver.driverID(), driver.x(), driver.y(), driver.rating());
+                        System.out.println();
                     }
                     break;
 
                 case "ADMIN_VIEW_DRIVER_EARNINGS":
                     driverID = parts[1];
 
-                    float earnings = adminService.getDriverEarnings(driverID);
+                    float earnings = adminService.getDriverEarnings(driverID).earnings();
                     System.out.printf("DRIVER_EARNINGS %s %.1f\n", driverID, earnings);
                     break;
 
                 default:
                     break;
             }
-        } catch (InvalidRideException | InvalidDriverIDException e) {
+        } catch (InvalidRideException | InvalidDriverIDException | NoDriversException e) {
             System.out.println(e.getMessage());
         }
     }
