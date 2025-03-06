@@ -105,7 +105,7 @@ public class RideServiceImpl implements RideService {
         db.getRideDetails().put(rideID, new Ride(riderID, driverID));
         db.getDriverDetails().get(driverID).updateAvailability();
 
-        return new RideStatusDTO(rideID, riderID, driverID, RideStatus.STARTED);
+        return new RideStatusDTO(rideID, riderID, driverID, RideStatus.ONGOING);
     }
 
     @Override
