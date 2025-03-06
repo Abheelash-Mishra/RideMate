@@ -10,6 +10,7 @@ import org.example.models.Rider;
 
 import org.example.exceptions.InvalidRideException;
 import org.example.exceptions.NoDriversException;
+import org.example.services.driver.DriverService;
 import org.example.utilities.DistanceUtility;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -18,6 +19,9 @@ import java.util.*;
 
 @Service
 public class RideServiceImpl implements RideService {
+    @Autowired
+    private DriverService driverService;
+
     private final Database db;
 
     @Autowired
@@ -103,7 +107,7 @@ public class RideServiceImpl implements RideService {
         }
 
         db.getRideDetails().put(rideID, new Ride(riderID, driverID));
-        db.getDriverDetails().get(driverID).updateAvailability();
+        driverService.updateAvailability(driverID);
 
         return new RideStatusDTO(rideID, riderID, driverID, RideStatus.ONGOING);
     }
@@ -115,7 +119,8 @@ public class RideServiceImpl implements RideService {
             throw new InvalidRideException();
         }
 
-        db.getDriverDetails().get(currentRide.getDriverID()).updateAvailability();
+        String driverID = currentRide.getDriverID();
+        driverService.updateAvailability(driverID);
         currentRide.finishRide(dest_x_coordinate, dest_y_coordinate, timeTakenInMins);
 
         return new RideStatusDTO(rideID, currentRide.getRiderID(), currentRide.getDriverID(), RideStatus.FINISHED);

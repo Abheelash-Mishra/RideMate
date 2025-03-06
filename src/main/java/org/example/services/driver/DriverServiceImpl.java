@@ -30,7 +30,7 @@ public class DriverServiceImpl implements DriverService {
             throw new InvalidDriverIDException();
         }
 
-        float updatedRating = driver.updateDriverRating(rating);
+        float updatedRating = updateDriverRating(driverID, rating);
 
         Map<String, Object> response = new HashMap<>();
         response.put("driverID", driverID);
@@ -39,4 +39,19 @@ public class DriverServiceImpl implements DriverService {
         return response;
     }
 
+    public float updateDriverRating(String driverID, float newRate) {
+        Driver driver = db.getDriverDetails().get(driverID);
+
+        driver.setRidesDone(driver.getRidesDone() + 1);
+        driver.setRatingSum(driver.getRatingSum() + newRate);
+        driver.setRating(driver.getRatingSum() / driver.getRidesDone());
+
+        return driver.getRating();
+    }
+
+    public void updateAvailability(String driverID) {
+        Driver driver = db.getDriverDetails().get(driverID);
+
+        driver.setAvailable(!driver.isAvailable());
+    }
 }

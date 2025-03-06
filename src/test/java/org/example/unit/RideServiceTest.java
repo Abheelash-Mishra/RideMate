@@ -98,7 +98,7 @@ class RideServiceTest {
     void stopRide() {
         Ride ride = new Ride("R1", "D3");
         mockDB.getRideDetails().put("RIDE-001", ride);
-        mockDB.getDriverDetails().get("D3").updateAvailability();
+        mockDB.getDriverDetails().get("D3").setAvailable(false);
 
         RideStatusDTO output = rideService.stopRide("RIDE-001", 4, 5, 32);
 

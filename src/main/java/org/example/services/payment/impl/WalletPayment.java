@@ -33,7 +33,7 @@ public class WalletPayment implements IPayment {
                     PaymentStatus.COMPLETE
             );
             db.getPaymentDetails().put(paymentID, paymentDetails);
-            driver.updateEarnings(currentRide.getBill());
+            driver.setEarnings(driver.getEarnings() + currentRide.getBill());
         }
         else {
             Payment paymentDetails = new Payment(
