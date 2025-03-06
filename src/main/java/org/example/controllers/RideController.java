@@ -1,10 +1,12 @@
 package org.example.controllers;
 
 
-import org.example.models.Ride;
-import org.example.repository.Database;
+import org.example.dto.MatchedDriversDTO;
+import org.example.dto.RideStatusDTO;
 import org.example.services.ride.RideService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -15,42 +17,41 @@ public class RideController {
     private RideService rideService;
 
     @PostMapping("/rider/add")
-    public void addRider(
+    public ResponseEntity<String> addRider(
             @RequestParam("riderID") String riderID,
             @RequestParam("x") int x,
             @RequestParam("y") int y
     ) {
         rideService.addRider(riderID, x, y);
+        return ResponseEntity.status(HttpStatus.CREATED).body("Rider Added!");
     }
 
     @GetMapping("/rider/match")
-    public String matchRider(@RequestParam("riderID") String riderID) {
-        return rideService.matchRider(riderID);
+    public ResponseEntity<MatchedDriversDTO> matchRider(@RequestParam("riderID") String riderID) {
+        return ResponseEntity.ok(rideService.matchRider(riderID));
     }
 
     @PostMapping("/start")
-    public String startRide(
+    public ResponseEntity<RideStatusDTO> startRide(
             @RequestParam("rideID") String rideID,
             @RequestParam("N") int N,
             @RequestParam("riderID") String riderID
     ) {
-        return rideService.startRide(rideID, N, riderID);
+        return ResponseEntity.ok(rideService.startRide(rideID, N, riderID));
     }
 
     @PostMapping("/stop")
-    public String stopRide(
+    public ResponseEntity<RideStatusDTO> stopRide(
             @RequestParam("rideID") String rideID,
             @RequestParam("x") int x,
             @RequestParam("y") int y,
             @RequestParam("timeInMins") int timeInMins
     ) {
-        return rideService.stopRide(rideID, x, y, timeInMins);
+        return ResponseEntity.ok(rideService.stopRide(rideID, x, y, timeInMins));
     }
 
     @GetMapping("/bill")
-    public String billRide(@RequestParam("rideID") String rideID) {
-        double bill = rideService.billRide(rideID);
-
-        return String.format("BILL %s %.1f", rideID, bill);
+    public Double billRide(@RequestParam("rideID") String rideID) {
+        return rideService.billRide(rideID);
     }
 }

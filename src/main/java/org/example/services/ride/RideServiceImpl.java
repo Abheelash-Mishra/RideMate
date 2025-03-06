@@ -1,5 +1,8 @@
 package org.example.services.ride;
 
+import org.example.dto.MatchedDriversDTO;
+import org.example.dto.RideStatusDTO;
+import org.example.models.RideStatus;
 import org.example.repository.Database;
 import org.example.models.Driver;
 import org.example.models.Ride;
@@ -11,10 +14,7 @@ import org.example.utilities.DistanceUtility;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.PriorityQueue;
+import java.util.*;
 
 @Service
 public class RideServiceImpl implements RideService {
@@ -31,7 +31,7 @@ public class RideServiceImpl implements RideService {
     }
 
     @Override
-    public String matchRider(String riderID) {
+    public MatchedDriversDTO matchRider(String riderID) {
         final double LIMIT = 5.0;
         int[] riderCoordinates = db.getRiderDetails().get(riderID).getCoordinates();
 
@@ -62,33 +62,33 @@ public class RideServiceImpl implements RideService {
         try {
             return driversMatched(riderID, nearestDrivers);
         } catch (NoDriversException e) {
-            return e.getMessage();
+            return new MatchedDriversDTO(Collections.emptyList());
         }
     }
 
-    private String driversMatched(String riderID, PriorityQueue<DriverDistancePair> nearestDrivers) throws NoDriversException {
+    private MatchedDriversDTO driversMatched(String riderID, PriorityQueue<DriverDistancePair> nearestDrivers) throws NoDriversException {
         if (nearestDrivers.isEmpty()) {
             throw new NoDriversException();
         }
 
-        StringBuilder result = new StringBuilder("DRIVERS_MATCHED");
         db.getRiderDriverMapping().putIfAbsent(riderID, new ArrayList<>());
         int size = Math.min(nearestDrivers.size(), 5);
 
+        List<String> matchedDrivers = new ArrayList<>();
         for (int i = 0; i < size; i++) {
             DriverDistancePair driver = nearestDrivers.poll();
             if (driver != null) {
                 db.getRiderDriverMapping().get(riderID).add(driver.ID);
-                result.append(" ").append(driver.ID);
+                matchedDrivers.add(driver.ID);
             }
         }
 
-        return result.toString();
+        return new MatchedDriversDTO(matchedDrivers);
     }
 
 
     @Override
-    public String startRide(String rideID, int N, String riderID) {
+    public RideStatusDTO startRide(String rideID, int N, String riderID) {
         List<String> matchedDrivers = db.getRiderDriverMapping().get(riderID);
 
         if (matchedDrivers.size() < N) {
@@ -105,26 +105,26 @@ public class RideServiceImpl implements RideService {
         db.getRideDetails().put(rideID, new Ride(riderID, driverID));
         db.getDriverDetails().get(driverID).updateAvailability();
 
-        return "RIDE_STARTED " + rideID;
+        return new RideStatusDTO(rideID, riderID, driverID, RideStatus.STARTED);
     }
 
     @Override
-    public String stopRide(String rideID, int dest_x_coordinate, int dest_y_coordinate, int timeTakenInMins) {
+    public RideStatusDTO stopRide(String rideID, int dest_x_coordinate, int dest_y_coordinate, int timeTakenInMins) {
         Ride currentRide = db.getRideDetails().get(rideID);
-        if (currentRide == null || currentRide.isFinished()) {
+        if (currentRide == null || currentRide.getStatus() == RideStatus.FINISHED) {
             throw new InvalidRideException();
         }
 
         db.getDriverDetails().get(currentRide.getDriverID()).updateAvailability();
         currentRide.finishRide(dest_x_coordinate, dest_y_coordinate, timeTakenInMins);
 
-        return "RIDE_STOPPED " + rideID;
+        return new RideStatusDTO(rideID, currentRide.getRiderID(), currentRide.getDriverID(), RideStatus.FINISHED);
     }
 
     @Override
     public double billRide(String rideID) {
         Ride currentRide = db.getRideDetails().get(rideID);
-        if (currentRide == null || !currentRide.isFinished()) {
+        if (currentRide == null || currentRide.getStatus() != RideStatus.FINISHED) {
             throw new InvalidRideException();
         }
 
