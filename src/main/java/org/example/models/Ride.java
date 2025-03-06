@@ -5,6 +5,7 @@ import lombok.Setter;
 
 @Getter
 public class Ride {
+    private final String rideID;
     private final String riderID;
     private final String driverID;
     private int[] destinationCoordinates;
@@ -12,7 +13,8 @@ public class Ride {
     private int timeTakenInMins;
     @Setter private float bill;
 
-    public Ride(String riderID, String driverID) {
+    public Ride(String rideID, String riderID, String driverID) {
+        this.rideID = rideID;
         this.riderID = riderID;
         this.driverID = driverID;
         this.status = RideStatus.STARTED;

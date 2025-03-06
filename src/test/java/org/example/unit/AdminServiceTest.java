@@ -36,9 +36,9 @@ class AdminServiceTest {
         String driverID = "D2";
         HashMap<String, Driver> drivers = new HashMap<>();
 
-        drivers.put("D1", new Driver(5, 5));
-        drivers.put("D2", new Driver(2, 7));
-        drivers.put("D3", new Driver(9, 3));
+        drivers.put("D1", new Driver("D1", 5, 5));
+        drivers.put("D2", new Driver("D2", 2, 7));
+        drivers.put("D3", new Driver("D3", 9, 3));
 
         when(mockDB.getDriverDetails()).thenReturn(drivers);
 
@@ -52,9 +52,9 @@ class AdminServiceTest {
         int N = 4;
         HashMap<String, Driver> drivers = new HashMap<>();
 
-        drivers.put("D1", new Driver(5, 5));
-        drivers.put("D2", new Driver(2, 7));
-        drivers.put("D3", new Driver(9, 3));
+        drivers.put("D1", new Driver("D1", 5, 5));
+        drivers.put("D2", new Driver("D2", 2, 7));
+        drivers.put("D3", new Driver("D3", 9, 3));
 
         when(mockDB.getDriverDetails()).thenReturn(drivers);
 
@@ -79,8 +79,8 @@ class AdminServiceTest {
         String driverID = "D2";
         HashMap<String, Driver> drivers = new HashMap<>();
 
-        drivers.put("D1", new Driver(5, 5));
-        drivers.put("D3", new Driver(9, 3));
+        drivers.put("D1", new Driver("D1", 5, 5));
+        drivers.put("D3", new Driver("D3", 9, 3));
 
         when(mockDB.getDriverDetails()).thenReturn(drivers);
 

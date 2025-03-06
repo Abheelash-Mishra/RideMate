@@ -31,7 +31,7 @@ public class RideServiceImpl implements RideService {
 
     @Override
     public void addRider(String riderID, int x_coordinate, int y_coordinate) {
-        db.getRiderDetails().put(riderID, new Rider(x_coordinate, y_coordinate));
+        db.getRiderDetails().put(riderID, new Rider(riderID, x_coordinate, y_coordinate));
     }
 
     @Override
@@ -106,7 +106,7 @@ public class RideServiceImpl implements RideService {
             throw new InvalidRideException();
         }
 
-        db.getRideDetails().put(rideID, new Ride(riderID, driverID));
+        db.getRideDetails().put(rideID, new Ride(rideID, riderID, driverID));
         driverService.updateAvailability(driverID);
 
         return new RideStatusDTO(rideID, riderID, driverID, RideStatus.ONGOING);

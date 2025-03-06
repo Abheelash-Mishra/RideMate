@@ -45,7 +45,7 @@ class DriverServiceTest {
         when(mockDB.getDriverDetails()).thenReturn(drivers);
 
         String driverID = "D1";
-        Driver driver = new Driver(5, 8);
+        Driver driver = new Driver(driverID, 5, 8);
         drivers.put(driverID, driver);
 
         Map<String, Object> response = driverService.rateDriver("D1", 4.9F);

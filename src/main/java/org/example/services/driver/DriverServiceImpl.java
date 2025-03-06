@@ -20,7 +20,7 @@ public class DriverServiceImpl implements DriverService {
 
     @Override
     public void addDriver(String driverID, int x_coordinate, int y_coordinate) {
-        db.getDriverDetails().put(driverID, new Driver(x_coordinate, y_coordinate));
+        db.getDriverDetails().put(driverID, new Driver(driverID, x_coordinate, y_coordinate));
     }
 
     @Override

@@ -42,9 +42,9 @@ class PaymentServiceTest {
         when(mockDB.getRiderDetails()).thenReturn(riders);
         when(mockDB.getPaymentDetails()).thenReturn(payments);
 
-        drivers.put("D3", new Driver(2, 2));
+        drivers.put("D3", new Driver("D3", 2, 2));
 
-        Ride ride = new Ride("R1", "D3");
+        Ride ride = new Ride("RIDE-001", "R1", "D3");
         ride.finishRide(5, 5, 20);
         ride.setBill(201.3F);
         rides.put("RIDE-001", ride);
@@ -108,7 +108,7 @@ class PaymentServiceTest {
     void processWalletPayment() {
         paymentService.setPaymentMethod(PaymentMethodType.WALLET);
 
-        Rider rider = new Rider(0, 0);
+        Rider rider = new Rider("R1", 0, 0);
         rider.setWalletAmount(rider.getWalletAmount() + 500);
         mockDB.getRiderDetails().put("R1", rider);
 

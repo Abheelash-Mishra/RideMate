@@ -50,9 +50,9 @@ class RideServiceTest {
         when(mockDB.getRideDetails()).thenReturn(rideDetails);
         when(mockDB.getRiderDriverMapping()).thenReturn(riderDriverMapping);
 
-        driverDetails.put("D1", new Driver(1, 1));
-        driverDetails.put("D2", new Driver(4, 5));
-        driverDetails.put("D3", new Driver(2, 2));
+        driverDetails.put("D1", new Driver("D1", 1, 1));
+        driverDetails.put("D2", new Driver("D2", 4, 5));
+        driverDetails.put("D3", new Driver("D3", 2, 2));
     }
 
     @Test
@@ -66,7 +66,7 @@ class RideServiceTest {
     @Test
     void matchRider() {
         String riderID = "R1";
-        mockDB.getRiderDetails().put(riderID, new Rider(0, 0));
+        mockDB.getRiderDetails().put(riderID, new Rider("R1", 0, 0));
 
         MatchedDriversDTO response = rideService.matchRider("R1");
 
@@ -96,7 +96,7 @@ class RideServiceTest {
 
     @Test
     void stopRide() {
-        Ride ride = new Ride("R1", "D3");
+        Ride ride = new Ride("RIDE-001", "R1", "D3");
         mockDB.getRideDetails().put("RIDE-001", ride);
         mockDB.getDriverDetails().get("D3").setAvailable(false);
 
@@ -111,9 +111,9 @@ class RideServiceTest {
     @Test
     void billRide() {
         String riderID = "R1";
-        mockDB.getRiderDetails().put(riderID, new Rider(0, 0));
+        mockDB.getRiderDetails().put(riderID, new Rider("R1", 0, 0));
 
-        Ride ride = new Ride("R1", "D3");
+        Ride ride = new Ride("RIDE-001", "R1", "D3");
         ride.finishRide(4, 5, 32);
         mockDB.getRideDetails().put("RIDE-001", ride);
 
@@ -125,7 +125,7 @@ class RideServiceTest {
     @Test
     void matchRiderWhenNoDriversAvailable_ThrowsException() {
         String riderID = "R1";
-        mockDB.getRiderDetails().put(riderID, new Rider(10, 10));
+        mockDB.getRiderDetails().put(riderID, new Rider("R1", 10, 10));
 
         MatchedDriversDTO response = rideService.matchRider("R1");
 
@@ -162,9 +162,9 @@ class RideServiceTest {
     @Test
     void billUnfinishedRide_ThrowsException() {
         String riderID = "R1";
-        mockDB.getRiderDetails().put(riderID, new Rider(0, 0));
+        mockDB.getRiderDetails().put(riderID, new Rider("R1", 0, 0));
 
-        Ride ride = new Ride("R1", "D3");
+        Ride ride = new Ride("RIDE-001", "R1", "D3");
         mockDB.getRideDetails().put("RIDE-001", ride);
 
         Exception exception = assertThrows(InvalidRideException.class, () -> {
