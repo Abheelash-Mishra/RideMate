@@ -2,6 +2,7 @@ package org.example.unit;
 
 
 import org.example.config.TestConfig;
+import org.example.dto.DriverDTO;
 import org.example.repository.Database;
 import org.example.models.Driver;
 import org.junit.jupiter.api.Test;
@@ -57,11 +58,20 @@ class AdminServiceTest {
 
         when(mockDB.getDriverDetails()).thenReturn(drivers);
 
-        List<String> output = adminService.listNDriverDetails(N);
+        List<DriverDTO> output = adminService.listNDriverDetails(N);
 
-        assertTrue(output.contains("DRIVER_D1 (X=5, Y=5) RATING 0.0"), "D1 should be in output");
-        assertTrue(output.contains("DRIVER_D2 (X=2, Y=7) RATING 0.0"), "D2 should be in output");
-        assertTrue(output.contains("DRIVER_D3 (X=9, Y=3) RATING 0.0"), "D3 should be in output");
+        // Expected output list
+        List<DriverDTO> expected = List.of(
+                new DriverDTO("D1", 5, 5, 0f),
+                new DriverDTO("D2", 2, 7, 0f),
+                new DriverDTO("D3", 9, 3, 0f)
+        );
+
+        assertEquals(expected.size(), output.size(), "List size should match");
+
+        for (int i = 0; i < expected.size(); i++) {
+            assertEquals(expected.get(i), output.get(i), "Driver details should match");
+        }
     }
 
     @Test
@@ -79,6 +89,6 @@ class AdminServiceTest {
         });
 
 
-        assertEquals("INVALID_DRIVER_ID", exception.getMessage(), "Ride was not supposed to start");
+        assertEquals("INVALID_DRIVER_ID", exception.getMessage(), "There is no driver that can be deleted");
     }
 }
