@@ -7,7 +7,7 @@ import org.example.services.payment.impl.*;
 public enum PaymentMethodType {
     CASH, CARD, UPI, WALLET;
 
-    public Payment getPaymentMethod(Database db) {
+    public IPayment getPaymentMethod(Database db) {
         return switch (this) {
             case CASH -> new CashPayment(db);
             case CARD -> new CardPayment(db);
