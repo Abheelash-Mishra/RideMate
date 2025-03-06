@@ -1,6 +1,7 @@
 package org.example.services.payment;
 
 import lombok.Getter;
+import org.example.models.Payment;
 import org.example.repository.Database;
 import org.example.services.payment.impl.WalletPayment;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,7 +11,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class PaymentService {
     private final Database db;
-    private Payment paymentMethod;
+    private IPayment paymentMethod;
 
     @Autowired
     public PaymentService(Database db) {
@@ -22,7 +23,7 @@ public class PaymentService {
         this.paymentMethod = paymentMethodType.getPaymentMethod(db);
     }
 
-    public String processPayment(String rideID) {
+    public Payment processPayment(String rideID) {
         return paymentMethod.sendMoney(rideID);
     }
 }
