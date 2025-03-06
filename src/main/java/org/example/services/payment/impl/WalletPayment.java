@@ -1,13 +1,12 @@
 package org.example.services.payment.impl;
 
+import org.example.models.*;
 import org.example.repository.Database;
 
-import org.example.models.Driver;
-import org.example.models.Ride;
-import org.example.models.Rider;
-import org.example.services.payment.Payment;
+import org.example.services.payment.IPayment;
+import org.example.services.payment.PaymentMethodType;
 
-public class WalletPayment implements Payment {
+public class WalletPayment implements IPayment {
     private final Database db;
 
     public WalletPayment(Database db) {
@@ -15,7 +14,7 @@ public class WalletPayment implements Payment {
     }
 
     @Override
-    public String sendMoney(String rideID) {
+    public Payment sendMoney(String rideID) {
         Ride currentRide = db.getRideDetails().get(rideID);
         Rider rider = db.getRiderDetails().get(currentRide.getRiderID());
 
@@ -23,12 +22,34 @@ public class WalletPayment implements Payment {
 
         boolean success = rider.deductMoney(currentRide.getBill());
 
-        if (success){
+        String paymentID = "P-" + rideID;
+        if (success) {
+            db.getPaymentDetails().put(paymentID,
+                    new Payment(
+                            paymentID,
+                            currentRide.getRiderID(),
+                            currentRide.getDriverID(),
+                            currentRide.getBill(),
+                            PaymentMethodType.WALLET,
+                            PaymentStatus.COMPLETE
+                    )
+            );
             driver.updateEarnings(currentRide.getBill());
-            return "PAID " + currentRide.getBill() + " SUCCESSFULLY | CURRENT_BALANCE " + rider.getWalletAmount();
+        }
+        else {
+            db.getPaymentDetails().put(paymentID,
+                    new Payment(
+                            paymentID,
+                            currentRide.getRiderID(),
+                            currentRide.getDriverID(),
+                            currentRide.getBill(),
+                            PaymentMethodType.WALLET,
+                            PaymentStatus.FAILED
+                    )
+            );
         }
 
-        return "LOW_BALANCE";
+        return db.getPaymentDetails().get(paymentID);
     }
 
     public float addMoney(String riderID, float amount) {
