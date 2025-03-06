@@ -1,11 +1,9 @@
 package org.example.unit;
 
 import org.example.config.TestConfig;
+import org.example.models.*;
 import org.example.repository.Database;
 
-import org.example.models.Driver;
-import org.example.models.Ride;
-import org.example.models.Rider;
 import org.example.services.payment.PaymentMethodType;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -37,10 +35,12 @@ class PaymentServiceTest {
         HashMap<String, Ride> rides = new HashMap<>();
         HashMap<String, Driver> drivers = new HashMap<>();
         HashMap<String, Rider> riders = new HashMap<>();
+        HashMap<String, Payment> payments = new HashMap<>();
 
         when(mockDB.getRideDetails()).thenReturn(rides);
         when(mockDB.getDriverDetails()).thenReturn(drivers);
         when(mockDB.getRiderDetails()).thenReturn(riders);
+        when(mockDB.getPaymentDetails()).thenReturn(payments);
 
         drivers.put("D3", new Driver(2, 2));
 
@@ -54,30 +54,54 @@ class PaymentServiceTest {
     void processCardPayment() {
         paymentService.setPaymentMethod(PaymentMethodType.CARD);
 
-        String output = paymentService.processPayment("RIDE-001");
+        Payment result = paymentService.processPayment("RIDE-001");
 
-        assertTrue(output.contains("PAID D3 201.3 VIA CARD"), "Card payment went wrong");
-        assertEquals(201.3F, mockDB.getDriverDetails().get("D3").getEarnings(), 0.1, "Earnings not updated at DB");
+        assertNotNull(result);
+        assertEquals("P-RIDE-001", result.getPaymentID(), "Payment ID should be correctly generated");
+        assertEquals("R1", result.getSender(), "Rider ID should match");
+        assertEquals("D3", result.getReceiver(), "Driver ID should match");
+        assertEquals(201.3F, result.getAmount(), 0.01, "Payment amount should match the ride bill");
+        assertEquals(PaymentMethodType.CARD, result.getPaymentMethodType(), "Payment should be done via card");
+        assertEquals(PaymentStatus.COMPLETE, result.getPaymentStatus(), "Payment should be marked as COMPLETE");
+
+        assertEquals(201.3F, mockDB.getDriverDetails().get("D3").getEarnings(), 0.01, "Driver earnings should be updated correctly");
+        assertTrue(mockDB.getPaymentDetails().containsKey("P-RIDE-001"), "Payment should be stored in database");
     }
 
     @Test
     void processUPIPayment() {
         paymentService.setPaymentMethod(PaymentMethodType.UPI);
 
-        String output = paymentService.processPayment("RIDE-001");
+        Payment result = paymentService.processPayment("RIDE-001");
 
-        assertTrue(output.contains("PAID D3 201.3 VIA UPI"), "UPI payment went wrong");
-        assertEquals(201.3F, mockDB.getDriverDetails().get("D3").getEarnings(), 0.1, "Earnings not updated at DB");
+        assertNotNull(result);
+        assertEquals("P-RIDE-001", result.getPaymentID(), "Payment ID should be correctly generated");
+        assertEquals("R1", result.getSender(), "Rider ID should match");
+        assertEquals("D3", result.getReceiver(), "Driver ID should match");
+        assertEquals(201.3F, result.getAmount(), 0.01, "Payment amount should match the ride bill");
+        assertEquals(PaymentMethodType.UPI, result.getPaymentMethodType(), "Payment should be done via UPI");
+        assertEquals(PaymentStatus.COMPLETE, result.getPaymentStatus(), "Payment should be marked as COMPLETE");
+
+        assertEquals(201.3F, mockDB.getDriverDetails().get("D3").getEarnings(), 0.01, "Driver earnings should be updated correctly");
+        assertTrue(mockDB.getPaymentDetails().containsKey("P-RIDE-001"), "Payment should be stored in database");
     }
 
     @Test
     void processCashPayment() {
         paymentService.setPaymentMethod(PaymentMethodType.CASH);
 
-        String output = paymentService.processPayment("RIDE-001");
+        Payment result = paymentService.processPayment("RIDE-001");
 
-        assertTrue(output.contains("PAID D3 201.3 VIA CASH"), "Cash payment went wrong");
-        assertEquals(201.3F, mockDB.getDriverDetails().get("D3").getEarnings(), 0.1, "Earnings not updated at DB");
+        assertNotNull(result);
+        assertEquals("P-RIDE-001", result.getPaymentID(), "Payment ID should be correctly generated");
+        assertEquals("R1", result.getSender(), "Rider ID should match");
+        assertEquals("D3", result.getReceiver(), "Driver ID should match");
+        assertEquals(201.3F, result.getAmount(), 0.01, "Payment amount should match the ride bill");
+        assertEquals(PaymentMethodType.CASH, result.getPaymentMethodType(), "Payment should be done via cash");
+        assertEquals(PaymentStatus.COMPLETE, result.getPaymentStatus(), "Payment should be marked as COMPLETE");
+
+        assertEquals(201.3F, mockDB.getDriverDetails().get("D3").getEarnings(), 0.01, "Driver earnings should be updated correctly");
+        assertTrue(mockDB.getPaymentDetails().containsKey("P-RIDE-001"), "Payment should be stored in database");
     }
 
     @Test
