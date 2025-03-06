@@ -5,7 +5,7 @@ RiderApp is a console-based and REST API-enabled ride-hailing application writte
 ## Features
 - **CLI Mode**: Interact with the system through terminal commands.
 - **REST API Mode**: Use HTTP requests to manage rides and users.
-- **Spring MVC**: Configured with XML-based Spring setup.
+- **Spring MVC**: Configured with XML-based and annotation-based Spring setup.
 - **In-Memory Database**: Stores data using a `Database` interface implementation.
 - **Flexible Payment System**: Supports multiple payment methods via interfaces.
 - **Unit & Integration Testing**: Tested using JUnit and MockMvc.
@@ -63,7 +63,7 @@ Since RiderApp is packaged as a WAR, deploy it to **Apache Tomcat**:
 | **POST**   | `/ride/start/`            | Start a ride              |
 | **POST**   | `/ride/stop/`             | Stop a ride               |
 | **GET**    | `/ride/bill/`             | Generate bill for a ride  |
-| **GET**    | `/admin/drivers/earnings` | List all drivers          |
+| **GET**    | `/admin/drivers/earnings` | List a driver's earnings  |
 | **DELETE** | `/admin/drivers/remove`   | Remove a driver           |
 | **GET**    | `/admin/drivers/list`     | List N drivers            |
 
