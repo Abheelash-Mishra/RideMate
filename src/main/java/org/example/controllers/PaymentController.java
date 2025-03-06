@@ -1,9 +1,11 @@
 package org.example.controllers;
 
+import org.example.models.Payment;
 import org.example.services.payment.PaymentMethodType;
 import org.example.services.payment.PaymentService;
 import org.example.services.payment.impl.WalletPayment;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -13,7 +15,7 @@ public class PaymentController {
     private PaymentService paymentService;
 
     @PostMapping("/pay")
-    public String pay(
+    public Payment pay(
             @RequestParam("rideID") String rideID,
             @RequestParam("type") String paymentMethodType
     ) {
@@ -24,11 +26,11 @@ public class PaymentController {
     }
 
     @PostMapping("/add-money")
-    public String addMoney(@RequestParam("riderID") String riderID, @RequestParam("amount") float amount) {
+    public ResponseEntity<Float> addMoney(@RequestParam("riderID") String riderID, @RequestParam("amount") float amount) {
         paymentService.setPaymentMethod(PaymentMethodType.WALLET);
         WalletPayment wallet = (WalletPayment) paymentService.getPaymentMethod();
 
         float balance = wallet.addMoney(riderID, amount);
-        return "CURRENT_BALANCE " + riderID + " " + balance;
+        return ResponseEntity.ok(balance);
     }
 }
