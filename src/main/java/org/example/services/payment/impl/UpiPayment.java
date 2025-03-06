@@ -22,16 +22,15 @@ public class UpiPayment implements IPayment {
         Driver driver = db.getDriverDetails().get(currentRide.getDriverID());
 
         String paymentID = "P-" + rideID;
-        db.getPaymentDetails().put(paymentID,
-                new Payment(
-                        paymentID,
-                        currentRide.getRiderID(),
-                        currentRide.getDriverID(),
-                        currentRide.getBill(),
-                        PaymentMethodType.UPI,
-                        PaymentStatus.COMPLETE
-                )
+        Payment paymentDetails = new Payment(
+                paymentID,
+                currentRide.getRiderID(),
+                currentRide.getDriverID(),
+                currentRide.getBill(),
+                PaymentMethodType.UPI,
+                PaymentStatus.COMPLETE
         );
+        db.getPaymentDetails().put(paymentID, paymentDetails);
         driver.updateEarnings(currentRide.getBill());
 
         return db.getPaymentDetails().get(paymentID);

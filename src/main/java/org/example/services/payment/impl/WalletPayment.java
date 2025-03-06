@@ -24,29 +24,27 @@ public class WalletPayment implements IPayment {
 
         String paymentID = "P-" + rideID;
         if (success) {
-            db.getPaymentDetails().put(paymentID,
-                    new Payment(
-                            paymentID,
-                            currentRide.getRiderID(),
-                            currentRide.getDriverID(),
-                            currentRide.getBill(),
-                            PaymentMethodType.WALLET,
-                            PaymentStatus.COMPLETE
-                    )
+            Payment paymentDetails = new Payment(
+                    paymentID,
+                    currentRide.getRiderID(),
+                    currentRide.getDriverID(),
+                    currentRide.getBill(),
+                    PaymentMethodType.WALLET,
+                    PaymentStatus.COMPLETE
             );
+            db.getPaymentDetails().put(paymentID, paymentDetails);
             driver.updateEarnings(currentRide.getBill());
         }
         else {
-            db.getPaymentDetails().put(paymentID,
-                    new Payment(
-                            paymentID,
-                            currentRide.getRiderID(),
-                            currentRide.getDriverID(),
-                            currentRide.getBill(),
-                            PaymentMethodType.WALLET,
-                            PaymentStatus.FAILED
-                    )
+            Payment paymentDetails = new Payment(
+                    paymentID,
+                    currentRide.getRiderID(),
+                    currentRide.getDriverID(),
+                    currentRide.getBill(),
+                    PaymentMethodType.WALLET,
+                    PaymentStatus.FAILED
             );
+            db.getPaymentDetails().put(paymentID, paymentDetails);
         }
 
         return db.getPaymentDetails().get(paymentID);
