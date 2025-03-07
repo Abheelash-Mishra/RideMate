@@ -1,5 +1,5 @@
 package org.example.dto;
 
-public record DriverEarningsDTO(String driverId, float earnings) {
+public record DriverEarningsDTO(String driverID, float earnings) {
 }
 
