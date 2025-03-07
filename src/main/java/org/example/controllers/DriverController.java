@@ -3,6 +3,7 @@ package org.example.controllers;
 import org.example.services.driver.DriverService;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -15,12 +16,13 @@ public class DriverController {
     private DriverService driverService;
 
     @PostMapping("/add")
-    public void addDriver(
+    public ResponseEntity<String> addDriver(
             @RequestParam("driverID") String driverID,
             @RequestParam("x") int x,
             @RequestParam("y") int y
     ) {
         driverService.addDriver(driverID, x, y);
+        return ResponseEntity.status(HttpStatus.CREATED).body("Driver Added!");
     }
 
     @PostMapping("/rate")

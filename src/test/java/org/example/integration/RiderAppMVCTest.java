@@ -41,19 +41,19 @@ public class RiderAppMVCTest {
                         .param("driverID", "D1")
                         .param("x", "1")
                         .param("y", "1"))
-                .andExpect(status().isOk());
+                .andExpect(status().isCreated());
 
         mockMvc.perform(post("/driver/add")
                         .param("driverID", "D2")
                         .param("x", "4")
                         .param("y", "5"))
-                .andExpect(status().isOk());
+                .andExpect(status().isCreated());
 
         mockMvc.perform(post("/driver/add")
                         .param("driverID", "D3")
                         .param("x", "2")
                         .param("y", "2"))
-                .andExpect(status().isOk());
+                .andExpect(status().isCreated());
 
         // Add rider
         mockMvc.perform(post("/ride/rider/add")
@@ -107,19 +107,19 @@ public class RiderAppMVCTest {
                         .param("driverID", "D1")
                         .param("x", "0")
                         .param("y", "1"))
-                .andExpect(status().isOk());
+                .andExpect(status().isCreated());
 
         mockMvc.perform(post("/driver/add")
                         .param("driverID", "D2")
                         .param("x", "2")
                         .param("y", "3"))
-                .andExpect(status().isOk());
+                .andExpect(status().isCreated());
 
         mockMvc.perform(post("/driver/add")
                         .param("driverID", "D3")
                         .param("x", "4")
                         .param("y", "2"))
-                .andExpect(status().isOk());
+                .andExpect(status().isCreated());
 
         // Add riders
         mockMvc.perform(post("/ride/rider/add")
@@ -207,19 +207,19 @@ public class RiderAppMVCTest {
                         .param("driverID", "D1")
                         .param("x", "1")
                         .param("y", "1"))
-                .andExpect(status().isOk());
+                .andExpect(status().isCreated());
 
         mockMvc.perform(post("/driver/add")
                         .param("driverID", "D2")
                         .param("x", "4")
                         .param("y", "5"))
-                .andExpect(status().isOk());
+                .andExpect(status().isCreated());
 
         mockMvc.perform(post("/driver/add")
                         .param("driverID", "D3")
                         .param("x", "2")
                         .param("y", "2"))
-                .andExpect(status().isOk());
+                .andExpect(status().isCreated());
 
         // Add rider
         mockMvc.perform(post("/ride/rider/add")
