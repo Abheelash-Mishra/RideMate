@@ -1,5 +1,6 @@
 package org.example.integration;
 
+import org.example.models.RideStatus;
 import org.example.repository.Database;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -74,7 +75,7 @@ public class RiderAppMVCTest {
                         .param("riderID", "R1"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.rideID").value("RIDE-001"))
-                .andExpect(jsonPath("$.status").value("ONGOING"));
+                .andExpect(jsonPath("$.status").value(RideStatus.ONGOING.toString()));
 
         // Stop ride
         mockMvc.perform(post("/ride/stop")
@@ -84,7 +85,7 @@ public class RiderAppMVCTest {
                         .param("timeInMins", "32"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.rideID").value("RIDE-001"))
-                .andExpect(jsonPath("$.status").value("FINISHED"));
+                .andExpect(jsonPath("$.status").value(RideStatus.FINISHED.toString()));
 
         // Get bill
         String response = mockMvc.perform(get("/ride/bill")
@@ -151,7 +152,7 @@ public class RiderAppMVCTest {
                         .param("riderID", "R1"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.rideID").value("RIDE-101"))
-                .andExpect(jsonPath("$.status").value("ONGOING"));
+                .andExpect(jsonPath("$.status").value(RideStatus.ONGOING.toString()));
 
         mockMvc.perform(post("/ride/start")
                         .param("rideID", "RIDE-102")
@@ -159,7 +160,7 @@ public class RiderAppMVCTest {
                         .param("riderID", "R2"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.rideID").value("RIDE-102"))
-                .andExpect(jsonPath("$.status").value("ONGOING"));
+                .andExpect(jsonPath("$.status").value(RideStatus.ONGOING.toString()));
 
         // Stop rides
         mockMvc.perform(post("/ride/stop")
@@ -169,7 +170,7 @@ public class RiderAppMVCTest {
                         .param("timeInMins", "48"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.rideID").value("RIDE-101"))
-                .andExpect(jsonPath("$.status").value("FINISHED"));
+                .andExpect(jsonPath("$.status").value(RideStatus.FINISHED.toString()));
 
         mockMvc.perform(post("/ride/stop")
                         .param("rideID", "RIDE-102")
@@ -178,7 +179,7 @@ public class RiderAppMVCTest {
                         .param("timeInMins", "50"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.rideID").value("RIDE-102"))
-                .andExpect(jsonPath("$.status").value("FINISHED"));
+                .andExpect(jsonPath("$.status").value(RideStatus.FINISHED.toString()));
 
         // Get bills
         String response = mockMvc.perform(get("/ride/bill").param("rideID", "RIDE-101"))
@@ -252,7 +253,7 @@ public class RiderAppMVCTest {
                         .param("riderID", "R1"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.rideID").value("RIDE-001"))
-                .andExpect(jsonPath("$.status").value("ONGOING"));
+                .andExpect(jsonPath("$.status").value(RideStatus.ONGOING.toString()));
 
         // Stop ride
         mockMvc.perform(post("/ride/stop")
@@ -262,7 +263,7 @@ public class RiderAppMVCTest {
                         .param("timeInMins", "32"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.rideID").value("RIDE-001"))
-                .andExpect(jsonPath("$.status").value("FINISHED"));
+                .andExpect(jsonPath("$.status").value(RideStatus.FINISHED.toString()));
 
         // Get bill
         response = mockMvc.perform(get("/ride/bill")
