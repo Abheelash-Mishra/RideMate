@@ -40,7 +40,6 @@ public class RiderApp {
     }
 
     public static void initContext() {
-        System.setProperty("spring.profiles.active", "cli");
         context = new AnnotationConfigApplicationContext(AppConfig.class);
 
         adminService = context.getBean(AdminServiceImpl.class);
@@ -68,7 +67,6 @@ public class RiderApp {
 
         int x_coordinate, y_coordinate, N;
         String riderID, rideID, driverID;
-        String output;
 
         try {
             switch (parts[0]) {
