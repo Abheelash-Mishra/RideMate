@@ -66,7 +66,9 @@ public class RiderAppMVCTest {
         mockMvc.perform(get("/ride/rider/match")
                         .param("riderID", "R1"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.matchedDrivers").isArray());
+                .andExpect(jsonPath("$.matchedDrivers").isArray())
+                .andExpect(jsonPath("$.matchedDrivers[0]").value("D1"))
+                .andExpect(jsonPath("$.matchedDrivers[1]").value("D3"));
 
         // Start ride
         mockMvc.perform(post("/ride/start")
@@ -138,12 +140,18 @@ public class RiderAppMVCTest {
         mockMvc.perform(get("/ride/rider/match")
                         .param("riderID", "R1"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.matchedDrivers").isArray());
+                .andExpect(jsonPath("$.matchedDrivers").isArray())
+                .andExpect(jsonPath("$.matchedDrivers[0]").value("D2"))
+                .andExpect(jsonPath("$.matchedDrivers[1]").value("D3"))
+                .andExpect(jsonPath("$.matchedDrivers[2]").value("D1"));
 
         mockMvc.perform(get("/ride/rider/match")
                         .param("riderID", "R2"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.matchedDrivers").isArray());
+                .andExpect(jsonPath("$.matchedDrivers").isArray())
+                .andExpect(jsonPath("$.matchedDrivers[0]").value("D1"))
+                .andExpect(jsonPath("$.matchedDrivers[1]").value("D2"))
+                .andExpect(jsonPath("$.matchedDrivers[2]").value("D3"));
 
         // Start rides
         mockMvc.perform(post("/ride/start")
@@ -244,7 +252,9 @@ public class RiderAppMVCTest {
         mockMvc.perform(get("/ride/rider/match")
                         .param("riderID", "R1"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.matchedDrivers").isArray());
+                .andExpect(jsonPath("$.matchedDrivers").isArray())
+                .andExpect(jsonPath("$.matchedDrivers[0]").value("D1"))
+                .andExpect(jsonPath("$.matchedDrivers[1]").value("D3"));
 
         // Start ride
         mockMvc.perform(post("/ride/start")
