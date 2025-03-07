@@ -79,12 +79,8 @@ curl -X GET http://localhost:8080/riderapp/admin/drivers
 
 ---
 ## Testing
-#### **Run Unit Tests**
+#### **Run Tests**
 ```sh
 mvn test
-```
-#### **Run Integration Tests**
-```sh
-mvn verify
 ```
 
