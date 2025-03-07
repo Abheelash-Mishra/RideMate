@@ -149,9 +149,9 @@ public class RideServiceImpl implements RideService {
         finalBill += (timeTakenInMins * PER_MIN);
 
         finalBill *= SERVICE_TAX;
+        finalBill = Math.round(finalBill * 10.0) / 10.0;
 
-        currentRide.setBill((float) (Math.round(finalBill * 10.0) / 10.0));
-
+        currentRide.setBill((float) finalBill);
         return currentRide.getBill();
     }
 
