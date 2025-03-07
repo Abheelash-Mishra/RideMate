@@ -2,7 +2,6 @@ package org.example;
 
 import org.example.config.AppConfig;
 import org.example.dto.DriverDTO;
-import org.example.dto.RideStatusDTO;
 import org.example.exceptions.NoDriversException;
 import org.example.models.Payment;
 import org.example.models.PaymentStatus;
@@ -152,7 +151,7 @@ public class RiderApp {
                         System.out.println("LOW_BALANCE");
                     }
                     else {
-                        System.out.printf("PAID %s %.1f VIA %s\n", paymentDetails.getReceiver(), paymentDetails.getAmount(), paymentMethodType);
+                        System.out.printf("PAID %s %.1f VIA %s\n", paymentDetails.getReceiverID(), paymentDetails.getAmount(), paymentMethodType);
                     }
                     break;
 

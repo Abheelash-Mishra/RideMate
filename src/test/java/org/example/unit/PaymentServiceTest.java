@@ -58,8 +58,8 @@ class PaymentServiceTest {
 
         assertNotNull(result);
         assertEquals("P-RIDE-001", result.getPaymentID(), "Payment ID should be correctly generated");
-        assertEquals("R1", result.getSender(), "Rider ID should match");
-        assertEquals("D3", result.getReceiver(), "Driver ID should match");
+        assertEquals("R1", result.getSenderID(), "Rider ID should match");
+        assertEquals("D3", result.getReceiverID(), "Driver ID should match");
         assertEquals(201.3F, result.getAmount(), 0.01, "Payment amount should match the ride bill");
         assertEquals(PaymentMethodType.CARD, result.getPaymentMethodType(), "Payment should be done via card");
         assertEquals(PaymentStatus.COMPLETE, result.getPaymentStatus(), "Payment should be marked as COMPLETE");
@@ -76,8 +76,8 @@ class PaymentServiceTest {
 
         assertNotNull(result);
         assertEquals("P-RIDE-001", result.getPaymentID(), "Payment ID should be correctly generated");
-        assertEquals("R1", result.getSender(), "Rider ID should match");
-        assertEquals("D3", result.getReceiver(), "Driver ID should match");
+        assertEquals("R1", result.getSenderID(), "Rider ID should match");
+        assertEquals("D3", result.getReceiverID(), "Driver ID should match");
         assertEquals(201.3F, result.getAmount(), 0.01, "Payment amount should match the ride bill");
         assertEquals(PaymentMethodType.UPI, result.getPaymentMethodType(), "Payment should be done via UPI");
         assertEquals(PaymentStatus.COMPLETE, result.getPaymentStatus(), "Payment should be marked as COMPLETE");
@@ -94,8 +94,8 @@ class PaymentServiceTest {
 
         assertNotNull(result);
         assertEquals("P-RIDE-001", result.getPaymentID(), "Payment ID should be correctly generated");
-        assertEquals("R1", result.getSender(), "Rider ID should match");
-        assertEquals("D3", result.getReceiver(), "Driver ID should match");
+        assertEquals("R1", result.getSenderID(), "Rider ID should match");
+        assertEquals("D3", result.getReceiverID(), "Driver ID should match");
         assertEquals(201.3F, result.getAmount(), 0.01, "Payment amount should match the ride bill");
         assertEquals(PaymentMethodType.CASH, result.getPaymentMethodType(), "Payment should be done via cash");
         assertEquals(PaymentStatus.COMPLETE, result.getPaymentStatus(), "Payment should be marked as COMPLETE");

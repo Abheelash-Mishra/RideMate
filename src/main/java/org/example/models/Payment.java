@@ -6,16 +6,16 @@ import org.example.services.payment.PaymentMethodType;
 @Data
 public class Payment {
     private String paymentID;
-    private String sender;
-    private String receiver;
+    private String senderID;
+    private String receiverID;
     private float amount;
     private PaymentMethodType paymentMethodType;
     private PaymentStatus paymentStatus;
 
-    public Payment(String paymentID, String sender, String receiver, float amount, PaymentMethodType paymentMethodType, PaymentStatus paymentStatus) {
+    public Payment(String paymentID, String senderID, String receiverID, float amount, PaymentMethodType paymentMethodType, PaymentStatus paymentStatus) {
         this.paymentID = paymentID;
-        this.sender = sender;
-        this.receiver = receiver;
+        this.senderID = senderID;
+        this.receiverID = receiverID;
         this.amount = amount;
         this.paymentMethodType = paymentMethodType;
         this.paymentStatus = paymentStatus;
