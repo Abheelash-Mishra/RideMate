@@ -11,6 +11,11 @@ RiderApp is a console-based and REST API-enabled ride-hailing application writte
 - **Unit & Integration Testing**: Tested using JUnit and MockMvc.
 
 ---
+
+## Models
+![model_diagram.png](model_diagram.png)
+
+---
 ## Installation & Setup
 ### **1. Clone the Repository**
 ```sh
