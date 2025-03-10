@@ -1,4 +1,4 @@
-package org.example.services.payment;
+package org.example.services;
 
 import org.example.models.Payment;
 

@@ -1,4 +1,4 @@
-package org.example.services.admin;
+package org.example.services;
 
 import org.example.dto.DriverDTO;
 import org.example.dto.DriverEarningsDTO;

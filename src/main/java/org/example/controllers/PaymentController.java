@@ -1,9 +1,9 @@
 package org.example.controllers;
 
 import org.example.models.Payment;
-import org.example.services.payment.PaymentMethodType;
-import org.example.services.payment.PaymentService;
-import org.example.services.payment.impl.WalletPayment;
+import org.example.models.PaymentMethodType;
+import org.example.services.impl.PaymentService;
+import org.example.services.impl.WalletPayment;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
