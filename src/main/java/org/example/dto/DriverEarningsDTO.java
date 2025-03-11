@@ -1,5 +1,13 @@
 package org.example.dto;
 
-public record DriverEarningsDTO(String driverID, float earnings) {
-}
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+public class DriverEarningsDTO {
+    private String driverID;
+    private float earnings;
+}

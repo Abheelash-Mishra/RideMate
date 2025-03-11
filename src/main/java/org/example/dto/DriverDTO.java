@@ -1,4 +1,15 @@
 package org.example.dto;
 
-public record DriverDTO(String driverID, int x, int y, double rating) {
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+public class DriverDTO {
+    private String driverID;
+    private int x;
+    private int y;
+    private double rating;
 }

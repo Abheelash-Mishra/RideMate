@@ -2,11 +2,13 @@ package org.example.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.example.models.PaymentMethodType;
 import org.example.models.PaymentStatus;
 
 @Data
 @AllArgsConstructor
+@NoArgsConstructor
 public class PaymentDetailsDTO {
     private String paymentID;
     private String senderID;
