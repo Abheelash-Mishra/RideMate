@@ -1,7 +1,7 @@
 package org.example.services;
 
-import org.example.models.Payment;
+import org.example.dto.PaymentDetailsDTO;
 
 public interface IPayment {
-    Payment sendMoney(String rideID);
+    PaymentDetailsDTO sendMoney(String rideID);
 }

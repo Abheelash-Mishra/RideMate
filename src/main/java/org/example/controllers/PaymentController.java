@@ -1,5 +1,6 @@
 package org.example.controllers;
 
+import org.example.dto.PaymentDetailsDTO;
 import org.example.models.Payment;
 import org.example.models.PaymentMethodType;
 import org.example.services.impl.PaymentService;
@@ -15,14 +16,14 @@ public class PaymentController {
     private PaymentService paymentService;
 
     @PostMapping("/pay")
-    public Payment pay(
+    public ResponseEntity<PaymentDetailsDTO> pay(
             @RequestParam("rideID") String rideID,
             @RequestParam("type") String paymentMethodType
     ) {
         PaymentMethodType type = PaymentMethodType.valueOf(paymentMethodType.toUpperCase());
         paymentService.setPaymentMethod(type);
 
-        return paymentService.processPayment(rideID);
+        return ResponseEntity.ok(paymentService.processPayment(rideID));
     }
 
     @PostMapping("/add-money")
