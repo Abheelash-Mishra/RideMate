@@ -1,37 +1,52 @@
 package org.example.integration;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.example.dto.DriverEarningsDTO;
+import org.example.dto.MatchedDriversDTO;
+import org.example.dto.PaymentDetailsDTO;
+import org.example.dto.RideStatusDTO;
+import org.example.models.PaymentMethodType;
+import org.example.models.PaymentStatus;
 import org.example.models.RideStatus;
-import org.example.repository.Database;
+import org.example.repository.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.junit.jupiter.web.SpringJUnitWebConfig;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.web.context.WebApplicationContext;
+
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@SpringJUnitWebConfig(locations = {
-        "file:src/main/webapp/WEB-INF/spring/applicationContext.xml",
-        "file:src/main/webapp/WEB-INF/spring/dispatcher-servlet.xml"
-})
+@SpringBootTest
+@AutoConfigureMockMvc
 public class RiderAppMVCTest {
 
     @Autowired
-    private WebApplicationContext webApplicationContext;
+    private MockMvc mockMvc;
 
     @Autowired
-    private Database db;
+    private RiderRepository riderRepository;
 
-    private MockMvc mockMvc;
+    @Autowired
+    private DriverRepository driverRepository;
+
+    @Autowired
+    private RideRepository rideRepository;
+
+    @Autowired
+    private PaymentRepository paymentRepository;
 
     @BeforeEach
     public void setup() {
-        db.reset();
-        this.mockMvc = MockMvcBuilders.webAppContextSetup(this.webApplicationContext).build();
+        rideRepository.deleteAll();
+        riderRepository.deleteAll();
+        driverRepository.deleteAll();
+        paymentRepository.deleteAll();
     }
 
     @Test
@@ -62,13 +77,19 @@ public class RiderAppMVCTest {
                         .param("y", "0"))
                 .andExpect(status().isCreated());
 
+
+        MatchedDriversDTO expectedMatchedDrivers = new MatchedDriversDTO(List.of("D1", "D3"));
+        String expectedMatchedDriversJson = new ObjectMapper().writeValueAsString(expectedMatchedDrivers);
+
         // Match rider
         mockMvc.perform(get("/ride/rider/match")
                         .param("riderID", "R1"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.matchedDrivers").isArray())
-                .andExpect(jsonPath("$.matchedDrivers[0]").value("D1"))
-                .andExpect(jsonPath("$.matchedDrivers[1]").value("D3"));
+                .andExpect(content().json(expectedMatchedDriversJson));
+
+
+        RideStatusDTO expectedRideStatus = new RideStatusDTO("RIDE-001", "R1", "D3", RideStatus.ONGOING);
+        String expectedRideStatusJson = new ObjectMapper().writeValueAsString(expectedRideStatus);
 
         // Start ride
         mockMvc.perform(post("/ride/start")
@@ -76,8 +97,11 @@ public class RiderAppMVCTest {
                         .param("N", "2")
                         .param("riderID", "R1"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.rideID").value("RIDE-001"))
-                .andExpect(jsonPath("$.status").value(RideStatus.ONGOING.toString()));
+                .andExpect(content().json(expectedRideStatusJson));
+
+
+        expectedRideStatus = new RideStatusDTO("RIDE-001", "R1", "D3", RideStatus.FINISHED);
+        expectedRideStatusJson = new ObjectMapper().writeValueAsString(expectedRideStatus);
 
         // Stop ride
         mockMvc.perform(post("/ride/stop")
@@ -86,8 +110,7 @@ public class RiderAppMVCTest {
                         .param("y", "5")
                         .param("timeInMins", "32"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.rideID").value("RIDE-001"))
-                .andExpect(jsonPath("$.status").value(RideStatus.FINISHED.toString()));
+                .andExpect(content().json(expectedRideStatusJson));
 
         // Get bill
         String response = mockMvc.perform(get("/ride/bill")
@@ -136,22 +159,28 @@ public class RiderAppMVCTest {
                         .param("y", "1"))
                 .andExpect(status().isCreated());
 
+
+        MatchedDriversDTO expectedMatchedDrivers = new MatchedDriversDTO(List.of("D2", "D3", "D1"));
+        String expectedMatchedDriversJson = new ObjectMapper().writeValueAsString(expectedMatchedDrivers);
+
         // Match riders
         mockMvc.perform(get("/ride/rider/match")
                         .param("riderID", "R1"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.matchedDrivers").isArray())
-                .andExpect(jsonPath("$.matchedDrivers[0]").value("D2"))
-                .andExpect(jsonPath("$.matchedDrivers[1]").value("D3"))
-                .andExpect(jsonPath("$.matchedDrivers[2]").value("D1"));
+                .andExpect(content().json(expectedMatchedDriversJson));
+
+
+        expectedMatchedDrivers = new MatchedDriversDTO(List.of("D1", "D2", "D3"));
+        expectedMatchedDriversJson = new ObjectMapper().writeValueAsString(expectedMatchedDrivers);
 
         mockMvc.perform(get("/ride/rider/match")
                         .param("riderID", "R2"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.matchedDrivers").isArray())
-                .andExpect(jsonPath("$.matchedDrivers[0]").value("D1"))
-                .andExpect(jsonPath("$.matchedDrivers[1]").value("D2"))
-                .andExpect(jsonPath("$.matchedDrivers[2]").value("D3"));
+                .andExpect(content().json(expectedMatchedDriversJson));
+
+
+        RideStatusDTO expectedRideStatus = new RideStatusDTO("RIDE-101", "R1", "D2", RideStatus.ONGOING);
+        String expectedRideStatusJson = new ObjectMapper().writeValueAsString(expectedRideStatus);
 
         // Start rides
         mockMvc.perform(post("/ride/start")
@@ -159,16 +188,22 @@ public class RiderAppMVCTest {
                         .param("N", "1")
                         .param("riderID", "R1"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.rideID").value("RIDE-101"))
-                .andExpect(jsonPath("$.status").value(RideStatus.ONGOING.toString()));
+                .andExpect(content().json(expectedRideStatusJson));
+
+
+        expectedRideStatus = new RideStatusDTO("RIDE-102", "R2", "D1", RideStatus.ONGOING);
+        expectedRideStatusJson = new ObjectMapper().writeValueAsString(expectedRideStatus);
 
         mockMvc.perform(post("/ride/start")
                         .param("rideID", "RIDE-102")
                         .param("N", "1")
                         .param("riderID", "R2"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.rideID").value("RIDE-102"))
-                .andExpect(jsonPath("$.status").value(RideStatus.ONGOING.toString()));
+                .andExpect(content().json(expectedRideStatusJson));
+
+
+        expectedRideStatus = new RideStatusDTO("RIDE-101", "R1", "D2", RideStatus.FINISHED);
+        expectedRideStatusJson = new ObjectMapper().writeValueAsString(expectedRideStatus);
 
         // Stop rides
         mockMvc.perform(post("/ride/stop")
@@ -177,8 +212,11 @@ public class RiderAppMVCTest {
                         .param("y", "2")
                         .param("timeInMins", "48"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.rideID").value("RIDE-101"))
-                .andExpect(jsonPath("$.status").value(RideStatus.FINISHED.toString()));
+                .andExpect(content().json(expectedRideStatusJson));
+
+
+        expectedRideStatus = new RideStatusDTO("RIDE-102", "R2", "D1", RideStatus.FINISHED);
+        expectedRideStatusJson = new ObjectMapper().writeValueAsString(expectedRideStatus);
 
         mockMvc.perform(post("/ride/stop")
                         .param("rideID", "RIDE-102")
@@ -186,8 +224,7 @@ public class RiderAppMVCTest {
                         .param("y", "9")
                         .param("timeInMins", "50"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.rideID").value("RIDE-102"))
-                .andExpect(jsonPath("$.status").value(RideStatus.FINISHED.toString()));
+                .andExpect(content().json(expectedRideStatusJson));
 
         // Get bills
         String response = mockMvc.perform(get("/ride/bill").param("rideID", "RIDE-101"))
@@ -248,13 +285,18 @@ public class RiderAppMVCTest {
         assertEquals(520.0f, Float.parseFloat(response), 0.1f);
 
 
+        MatchedDriversDTO expectedMatchedDrivers = new MatchedDriversDTO(List.of("D1", "D3"));
+        String expectedMatchedDriversJson = new ObjectMapper().writeValueAsString(expectedMatchedDrivers);
+
         // Match rider with drivers
         mockMvc.perform(get("/ride/rider/match")
                         .param("riderID", "R1"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.matchedDrivers").isArray())
-                .andExpect(jsonPath("$.matchedDrivers[0]").value("D1"))
-                .andExpect(jsonPath("$.matchedDrivers[1]").value("D3"));
+                .andExpect(content().json(expectedMatchedDriversJson));
+
+
+        RideStatusDTO expectedRideStatus = new RideStatusDTO("RIDE-001", "R1", "D3", RideStatus.ONGOING);
+        String expectedRideStatusJson = new ObjectMapper().writeValueAsString(expectedRideStatus);
 
         // Start ride
         mockMvc.perform(post("/ride/start")
@@ -262,8 +304,11 @@ public class RiderAppMVCTest {
                         .param("N", "2")
                         .param("riderID", "R1"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.rideID").value("RIDE-001"))
-                .andExpect(jsonPath("$.status").value(RideStatus.ONGOING.toString()));
+                .andExpect(content().json(expectedRideStatusJson));
+
+
+        expectedRideStatus = new RideStatusDTO("RIDE-001", "R1", "D3", RideStatus.FINISHED);
+        expectedRideStatusJson = new ObjectMapper().writeValueAsString(expectedRideStatus);
 
         // Stop ride
         mockMvc.perform(post("/ride/stop")
@@ -272,8 +317,7 @@ public class RiderAppMVCTest {
                         .param("y", "5")
                         .param("timeInMins", "32"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.rideID").value("RIDE-001"))
-                .andExpect(jsonPath("$.status").value(RideStatus.FINISHED.toString()));
+                .andExpect(content().json(expectedRideStatusJson));
 
         // Get bill
         response = mockMvc.perform(get("/ride/bill")
@@ -285,17 +329,32 @@ public class RiderAppMVCTest {
 
         assertEquals(186.7f, Float.parseFloat(response), 0.1f);
 
+
+        PaymentDetailsDTO expectedPaymentDetails = new PaymentDetailsDTO(
+                "P-RIDE-001",
+                "R1",
+                "D3",
+                186.7f,
+                PaymentMethodType.WALLET,
+                PaymentStatus.COMPLETE
+        );
+        String expectedPaymentDetailsJson = new ObjectMapper().writeValueAsString(expectedPaymentDetails);
+
         // Pay using wallet
         mockMvc.perform(post("/payment/pay")
                         .param("rideID", "RIDE-001")
                         .param("type", "WALLET"))
-                .andExpect(status().isOk());
+                .andExpect(status().isOk())
+                .andExpect(content().json(expectedPaymentDetailsJson));
+
+
+        DriverEarningsDTO expectedDriverEarnings = new DriverEarningsDTO("D3", 186.7f);
+        String expectedDriverEarningsJson = new ObjectMapper().writeValueAsString(expectedDriverEarnings);
 
         // Check driver's earnings
         mockMvc.perform(get("/admin/drivers/earnings")
                         .param("driverID", "D3"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.driverID").value("D3"))
-                .andExpect(jsonPath("$.earnings").value("186.7"));
+                .andExpect(content().json(expectedDriverEarningsJson));
     }
 }
