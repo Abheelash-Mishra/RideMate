@@ -1,56 +1,57 @@
 package org.example.unit;
 
-import org.example.config.TestConfig;
-import org.example.repository.Database;
+import org.example.dto.DriverRatingDTO;
 import org.example.models.Driver;
+import org.example.repository.DriverRepository;
 import org.junit.jupiter.api.Test;
 import org.example.exceptions.InvalidDriverIDException;
-import org.example.services.driver.DriverService;
+import org.example.services.DriverService;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.when;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
 
-
-@ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = TestConfig.class)
+@SpringBootTest
+@ExtendWith(MockitoExtension.class)
 class DriverServiceTest {
-    @Autowired
-    private Database mockDB;
+    @MockitoBean
+    private DriverRepository driverRepository;
 
     @Autowired
-    @InjectMocks
     private DriverService driverService;
 
     @Test
     void addDriver() {
-        HashMap<String, Driver> drivers = new HashMap<>();
-        when(mockDB.getDriverDetails()).thenReturn(drivers);
+        Driver driver = new Driver("D1", 5, 8);
+
+        when(driverRepository.save(any(Driver.class))).thenReturn(driver);
 
         driverService.addDriver("D1", 5, 8);
 
-        assertTrue(mockDB.getDriverDetails().containsKey("D1"), "D1 is not present");
+        verify(driverRepository, times(1)).save(any(Driver.class));
     }
+
 
     @Test
     void rateDriver() throws InvalidDriverIDException {
-        HashMap<String, Driver> drivers = new HashMap<>();
-        when(mockDB.getDriverDetails()).thenReturn(drivers);
-
         String driverID = "D1";
         Driver driver = new Driver(driverID, 5, 8);
-        drivers.put(driverID, driver);
 
-        Map<String, Object> response = driverService.rateDriver("D1", 4.9F);
+        when(driverRepository.findById(driverID)).thenReturn(Optional.of(driver));
+        when(driverRepository.save(any(Driver.class))).thenReturn(driver);
 
-        assertEquals("D1", response.get("driverID"), "Driver ID should match");
-        assertEquals(4.9F, (float) response.get("rating"), 0.01, "Driver rating should be updated correctly");
+        DriverRatingDTO expected = new DriverRatingDTO(driverID, 4.6f);
+
+        float newRating = 4.6f;
+        DriverRatingDTO actual = driverService.rateDriver(driverID, newRating);
+
+        assertEquals(expected, actual, "Driver's rating don't match");
     }
 }

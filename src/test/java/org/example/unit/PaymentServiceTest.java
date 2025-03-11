@@ -1,120 +1,146 @@
 package org.example.unit;
 
-import org.example.config.TestConfig;
 import org.example.models.*;
-import org.example.repository.Database;
-
-import org.example.services.payment.PaymentMethodType;
+import org.example.dto.PaymentDetailsDTO;
+import org.example.repository.DriverRepository;
+import org.example.repository.PaymentRepository;
+import org.example.repository.RideRepository;
+import org.example.repository.RiderRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.example.services.payment.PaymentService;
+import org.example.services.PaymentService;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
-import java.util.HashMap;
+import java.util.List;
+import java.util.Optional;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
-import static org.junit.jupiter.api.Assertions.*;
 
-
-@ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = TestConfig.class)
+@SpringBootTest
+@ExtendWith(MockitoExtension.class)
 class PaymentServiceTest {
-    @Autowired
-    private Database mockDB;
+    @MockitoBean
+    private RideRepository rideRepository;
+
+    @MockitoBean
+    private RiderRepository riderRepository;
+
+    @MockitoBean
+    private DriverRepository driverRepository;
+
+    @MockitoBean
+    private PaymentRepository paymentRepository;
 
     @Autowired
-    @InjectMocks
     private PaymentService paymentService;
+
+    private Ride testRide;
+    private Rider testRider;
+    private Driver testDriver;
 
     @BeforeEach
     void setUp() {
-        HashMap<String, Ride> rides = new HashMap<>();
-        HashMap<String, Driver> drivers = new HashMap<>();
-        HashMap<String, Rider> riders = new HashMap<>();
-        HashMap<String, Payment> payments = new HashMap<>();
+        String rideID = "RIDE-001";
 
-        when(mockDB.getRideDetails()).thenReturn(rides);
-        when(mockDB.getDriverDetails()).thenReturn(drivers);
-        when(mockDB.getRiderDetails()).thenReturn(riders);
-        when(mockDB.getPaymentDetails()).thenReturn(payments);
+        String riderID = "R1";
+        testRider = new Rider(riderID, 0, 0);
+        testRider.setMatchedDrivers(List.of("D1", "D3"));
 
-        drivers.put("D3", new Driver("D3", 2, 2));
+        String driverID = "D3";
+        testDriver = new Driver(driverID, 2, 2);
 
-        Ride ride = new Ride("RIDE-001", "R1", "D3");
-        ride.finishRide(5, 5, 20);
-        ride.setBill(201.3F);
-        rides.put("RIDE-001", ride);
+        testRide = new Ride(rideID, testRider, testDriver);
+        testRide.setDestinationCoordinates(new int[]{4, 5});
+        testRide.setTimeTakenInMins(32);
+        testRide.setStatus(RideStatus.FINISHED);
+        testRide.setBill(201.3F);
+
+        when(rideRepository.findById(rideID)).thenReturn(Optional.of(testRide));
+        when(riderRepository.findById(riderID)).thenReturn(Optional.of(testRider));
+        when(driverRepository.findById(driverID)).thenReturn(Optional.of(testDriver));
+
+        when(paymentRepository.save(any(Payment.class))).thenReturn(null);
+        when(driverRepository.save(any(Driver.class))).thenReturn(testDriver);
     }
 
     @Test
     void processCardPayment() {
         paymentService.setPaymentMethod(PaymentMethodType.CARD);
 
-        Payment result = paymentService.processPayment("RIDE-001");
+        PaymentDetailsDTO expected = new PaymentDetailsDTO(
+                "P-RIDE-001",
+                "R1",
+                "D3",
+                201.3F,
+                PaymentMethodType.CARD,
+                PaymentStatus.COMPLETE
+        );
 
-        assertNotNull(result);
-        assertEquals("P-RIDE-001", result.getPaymentID(), "Payment ID should be correctly generated");
-        assertEquals("R1", result.getSenderID(), "Rider ID should match");
-        assertEquals("D3", result.getReceiverID(), "Driver ID should match");
-        assertEquals(201.3F, result.getAmount(), 0.01, "Payment amount should match the ride bill");
-        assertEquals(PaymentMethodType.CARD, result.getPaymentMethodType(), "Payment should be done via card");
-        assertEquals(PaymentStatus.COMPLETE, result.getPaymentStatus(), "Payment should be marked as COMPLETE");
+        PaymentDetailsDTO response = paymentService.processPayment("RIDE-001");
 
-        assertEquals(201.3F, mockDB.getDriverDetails().get("D3").getEarnings(), 0.01, "Driver earnings should be updated correctly");
-        assertTrue(mockDB.getPaymentDetails().containsKey("P-RIDE-001"), "Payment should be stored in database");
+        assertEquals(expected, response, "Payment was not executed as expected");
     }
 
     @Test
     void processUPIPayment() {
         paymentService.setPaymentMethod(PaymentMethodType.UPI);
 
-        Payment result = paymentService.processPayment("RIDE-001");
+        PaymentDetailsDTO expected = new PaymentDetailsDTO(
+                "P-RIDE-001",
+                "R1",
+                "D3",
+                201.3F,
+                PaymentMethodType.UPI,
+                PaymentStatus.COMPLETE
+        );
 
-        assertNotNull(result);
-        assertEquals("P-RIDE-001", result.getPaymentID(), "Payment ID should be correctly generated");
-        assertEquals("R1", result.getSenderID(), "Rider ID should match");
-        assertEquals("D3", result.getReceiverID(), "Driver ID should match");
-        assertEquals(201.3F, result.getAmount(), 0.01, "Payment amount should match the ride bill");
-        assertEquals(PaymentMethodType.UPI, result.getPaymentMethodType(), "Payment should be done via UPI");
-        assertEquals(PaymentStatus.COMPLETE, result.getPaymentStatus(), "Payment should be marked as COMPLETE");
+        PaymentDetailsDTO response = paymentService.processPayment("RIDE-001");
 
-        assertEquals(201.3F, mockDB.getDriverDetails().get("D3").getEarnings(), 0.01, "Driver earnings should be updated correctly");
-        assertTrue(mockDB.getPaymentDetails().containsKey("P-RIDE-001"), "Payment should be stored in database");
+        assertEquals(expected, response, "Payment was not executed as expected");
     }
 
     @Test
     void processCashPayment() {
         paymentService.setPaymentMethod(PaymentMethodType.CASH);
 
-        Payment result = paymentService.processPayment("RIDE-001");
+        PaymentDetailsDTO expected = new PaymentDetailsDTO(
+                "P-RIDE-001",
+                "R1",
+                "D3",
+                201.3F,
+                PaymentMethodType.CASH,
+                PaymentStatus.COMPLETE
+        );
 
-        assertNotNull(result);
-        assertEquals("P-RIDE-001", result.getPaymentID(), "Payment ID should be correctly generated");
-        assertEquals("R1", result.getSenderID(), "Rider ID should match");
-        assertEquals("D3", result.getReceiverID(), "Driver ID should match");
-        assertEquals(201.3F, result.getAmount(), 0.01, "Payment amount should match the ride bill");
-        assertEquals(PaymentMethodType.CASH, result.getPaymentMethodType(), "Payment should be done via cash");
-        assertEquals(PaymentStatus.COMPLETE, result.getPaymentStatus(), "Payment should be marked as COMPLETE");
+        PaymentDetailsDTO response = paymentService.processPayment("RIDE-001");
 
-        assertEquals(201.3F, mockDB.getDriverDetails().get("D3").getEarnings(), 0.01, "Driver earnings should be updated correctly");
-        assertTrue(mockDB.getPaymentDetails().containsKey("P-RIDE-001"), "Payment should be stored in database");
+        assertEquals(expected, response, "Payment was not executed as expected");
     }
 
     @Test
     void processWalletPayment() {
         paymentService.setPaymentMethod(PaymentMethodType.WALLET);
 
-        Rider rider = new Rider("R1", 0, 0);
-        rider.setWalletAmount(rider.getWalletAmount() + 500);
-        mockDB.getRiderDetails().put("R1", rider);
+        testRider.setWalletAmount(500F);
 
-        paymentService.processPayment("RIDE-001");
+        PaymentDetailsDTO expected = new PaymentDetailsDTO(
+                "P-RIDE-001",
+                "R1",
+                "D3",
+                201.3F,
+                PaymentMethodType.WALLET,
+                PaymentStatus.COMPLETE
+        );
 
-        assertEquals(201.3, mockDB.getDriverDetails().get("D3").getEarnings(), 0.1, "Earnings not updated at DB");
-        assertEquals(298.7, rider.getWalletAmount(), 0.1, "Wallet amount has a mismatch");
+        PaymentDetailsDTO response = paymentService.processPayment("RIDE-001");
+
+        assertEquals(expected, response, "Payment was not executed as expected");
+        assertEquals(298.7F, testRider.getWalletAmount(), 0.1, "Wallet was not deducted");
     }
 }
