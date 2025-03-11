@@ -1,13 +1,12 @@
 package org.example.controllers;
 
-import org.example.services.driver.DriverService;
+import org.example.dto.DriverRatingDTO;
+import org.example.services.DriverService;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.Map;
 
 @RestController
 @RequestMapping("/driver")
@@ -26,7 +25,7 @@ public class DriverController {
     }
 
     @PostMapping("/rate")
-    public ResponseEntity<Map<String, Object>> rateDriver(
+    public ResponseEntity<DriverRatingDTO> rateDriver(
             @RequestParam("driverID") String driverID,
             @RequestParam("rating") float rating
     ) {
