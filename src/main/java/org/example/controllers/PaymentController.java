@@ -2,7 +2,7 @@ package org.example.controllers;
 
 import org.example.dto.PaymentDetailsDTO;
 import org.example.models.PaymentMethodType;
-import org.example.services.impl.PaymentService;
+import org.example.services.PaymentService;
 import org.example.services.impl.WalletPayment;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;

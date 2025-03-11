@@ -4,20 +4,22 @@ import lombok.Getter;
 import org.example.dto.PaymentDetailsDTO;
 import org.example.models.PaymentMethodType;
 import org.example.services.IPayment;
+import org.example.services.PaymentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
 import java.util.List;
 
-@Getter
 @Service
-public class PaymentService {
+public class PaymentServiceImpl implements PaymentService {
     private final HashMap<PaymentMethodType, IPayment> paymentMethods;
+
+    @Getter
     private IPayment paymentMethod;
 
     @Autowired
-    public PaymentService(List<IPayment> paymentImplementations) {
+    public PaymentServiceImpl(List<IPayment> paymentImplementations) {
         this.paymentMethods = new HashMap<>();
 
         for (IPayment payment : paymentImplementations) {
