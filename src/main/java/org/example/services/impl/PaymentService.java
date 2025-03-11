@@ -1,29 +1,52 @@
 package org.example.services.impl;
 
 import lombok.Getter;
+import org.example.dto.PaymentDetailsDTO;
 import org.example.models.Payment;
 import org.example.models.PaymentMethodType;
 import org.example.services.IPayment;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
+import java.util.List;
+
 @Getter
 @Service
 public class PaymentService {
+    private final HashMap<PaymentMethodType, IPayment> paymentMethods;
     private IPayment paymentMethod;
 
     @Autowired
-    public PaymentService() {
-        this.paymentMethod = new WalletPayment();
+    public PaymentService(List<IPayment> paymentImplementations) {
+        this.paymentMethods = new HashMap<>();
+
+        for (IPayment payment : paymentImplementations) {
+            PaymentMethodType type = getPaymentType(payment);
+            this.paymentMethods.put(type, payment);
+        }
+
+        // Default payment method
+        this.paymentMethod = this.paymentMethods.get(PaymentMethodType.WALLET);
     }
 
     public void setPaymentMethod(PaymentMethodType paymentMethodType) {
-        this.paymentMethod = paymentMethodType.getPaymentMethod();
+        this.paymentMethod = paymentMethods.get(paymentMethodType);
     }
 
-    public Payment processPayment(String rideID) {
+    public PaymentDetailsDTO processPayment(String rideID) {
         return paymentMethod.sendMoney(rideID);
     }
+
+    private PaymentMethodType getPaymentType(IPayment payment) {
+        if (payment instanceof WalletPayment) return PaymentMethodType.WALLET;
+        if (payment instanceof CashPayment) return PaymentMethodType.CASH;
+        if (payment instanceof CardPayment) return PaymentMethodType.CARD;
+        if (payment instanceof UpiPayment) return PaymentMethodType.UPI;
+
+        throw new IllegalArgumentException("Unknown Payment Type");
+    }
 }
+
 
 
