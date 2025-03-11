@@ -1,7 +1,6 @@
 package org.example.controllers;
 
 import org.example.dto.PaymentDetailsDTO;
-import org.example.models.Payment;
 import org.example.models.PaymentMethodType;
 import org.example.services.impl.PaymentService;
 import org.example.services.impl.WalletPayment;

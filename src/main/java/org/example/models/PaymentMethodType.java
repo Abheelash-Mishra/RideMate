@@ -1,6 +1,6 @@
 package org.example.models;
 
 public enum PaymentMethodType {
-    CASH, CARD, UPI, WALLET;
+    CASH, CARD, UPI, WALLET
 }
 

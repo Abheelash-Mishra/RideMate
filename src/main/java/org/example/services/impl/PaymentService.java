@@ -2,7 +2,6 @@ package org.example.services.impl;
 
 import lombok.Getter;
 import org.example.dto.PaymentDetailsDTO;
-import org.example.models.Payment;
 import org.example.models.PaymentMethodType;
 import org.example.services.IPayment;
 import org.springframework.beans.factory.annotation.Autowired;
