@@ -2,7 +2,7 @@ package org.example.controllers;
 
 import org.example.dto.DriverDTO;
 import org.example.dto.DriverEarningsDTO;
-import org.example.services.admin.AdminService;
+import org.example.services.AdminService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
