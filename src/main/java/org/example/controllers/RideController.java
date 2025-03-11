@@ -3,7 +3,7 @@ package org.example.controllers;
 
 import org.example.dto.MatchedDriversDTO;
 import org.example.dto.RideStatusDTO;
-import org.example.services.ride.RideService;
+import org.example.services.RideService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
