@@ -1,5 +1,6 @@
 package org.example.services.impl;
 
+import org.example.dto.PaymentDetailsDTO;
 import org.example.exceptions.InvalidRideException;
 import org.example.models.Payment;
 import org.example.models.PaymentStatus;
@@ -12,7 +13,9 @@ import org.example.repository.RideRepository;
 import org.example.services.IPayment;
 import org.example.models.PaymentMethodType;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
+@Component
 public class UpiPayment implements IPayment {
     @Autowired
     private RideRepository rideRepository;
@@ -24,7 +27,7 @@ public class UpiPayment implements IPayment {
     private PaymentRepository paymentRepository;
 
     @Override
-    public Payment sendMoney(String rideID) {
+    public PaymentDetailsDTO sendMoney(String rideID) {
         Ride currentRide = rideRepository.findById(rideID)
                 .orElseThrow(InvalidRideException::new);
 
@@ -46,6 +49,13 @@ public class UpiPayment implements IPayment {
         driver.setEarnings(driver.getEarnings() + currentRide.getBill());
         driverRepository.save(driver);
 
-        return paymentDetails;
+        return new PaymentDetailsDTO(
+                paymentDetails.getPaymentID(),
+                paymentDetails.getSenderID(),
+                paymentDetails.getReceiverID(),
+                paymentDetails.getAmount(),
+                paymentDetails.getPaymentMethodType(),
+                paymentDetails.getPaymentStatus()
+        );
     }
 }

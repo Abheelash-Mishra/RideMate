@@ -15,7 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
-public class CashPayment implements IPayment {
+public class CardPayment implements IPayment {
     @Autowired
     private RideRepository rideRepository;
 
@@ -39,7 +39,7 @@ public class CashPayment implements IPayment {
                 currentRide.getRider().getRiderID(),
                 driver.getDriverID(),
                 currentRide.getBill(),
-                PaymentMethodType.CASH,
+                PaymentMethodType.CARD,
                 PaymentStatus.COMPLETE
         );
 
