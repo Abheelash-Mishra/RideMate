@@ -1,12 +1,10 @@
 # RiderApp
 
-RiderApp is a console-based and REST API-enabled ride-hailing application written in Java using **Spring**. It supports both **CLI commands** and **REST API endpoints** for managing rides, drivers, and riders.
+RiderApp is a ride-hailing application written in Java using **Spring Boot**. It supports **REST API endpoints** for managing rides, drivers, and riders.
 
 ## Features
-- **CLI Mode**: Interact with the system through terminal commands.
 - **REST API Mode**: Use HTTP requests to manage rides and users.
-- **Spring MVC**: Configured with XML-based and annotation-based Spring setup.
-- **In-Memory Database**: Stores data using a `Database` interface implementation.
+- **H2 Database**: Stores data using an in-memory database.
 - **Flexible Payment System**: Supports multiple payment methods via interfaces.
 - **Unit & Integration Testing**: Tested using JUnit and MockMvc.
 
@@ -29,32 +27,15 @@ Ensure you have **Maven** installed. Then, run:
 mvn clean install
 ```
 
-### **3. Running in CLI Mode**
-Run `RiderApp` (main class) and use CLI commands like:
-
-```sh
-ADD_DRIVER D1 1 1
-ADD_DRIVER D2 4 5
-ADD_DRIVER D3 2 2
-ADD_RIDER R1 0 0
-MATCH R1
-START_RIDE RIDE-001 2 R1
-STOP_RIDE RIDE-001 4 5 32
-BILL RIDE-001
-```
-
-### **4. Running as a REST API**
-#### **Deploy the WAR File**
-Since RiderApp is packaged as a WAR, deploy it to **Apache Tomcat**:
-1. Copy `target/riderapp.war` to Tomcat's `webapps` directory:
+### **3. Running as a REST API**
+Since RiderApp is a Spring Boot application, it has an embedded Apache Tomcat server. Simply run the application by:
+1. Running this command:
    ```sh
-   cp target/riderapp-1.0.war /path/to/tomcat/webapps/
+   mvn spring-boot:run
    ```
-2. Start Tomcat:
-   ```sh
-   /path/to/tomcat/bin/startup.sh
-   ```
-3. Access the API at `http://localhost:8080/riderapp/`
+   
+2. Access the API at `http://localhost:8080/`
+
 
 #### **API Endpoints**
 | Method     | Endpoint                  | Description               |
@@ -74,7 +55,7 @@ Since RiderApp is packaged as a WAR, deploy it to **Apache Tomcat**:
 
 Test with **Postman** or **cURL**:
 ```sh
-curl -X GET http://localhost:8080/riderapp/admin/drivers
+curl -X GET http://localhost:8080/ride/bill?rideID=RIDE-001
 ```
 
 ---
