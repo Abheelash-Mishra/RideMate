@@ -61,8 +61,6 @@ public class WalletPayment implements IPayment {
                     PaymentMethodType.WALLET,
                     PaymentStatus.COMPLETE
             );
-            paymentRepository.save(paymentDetails);
-
             driver.setEarnings(driver.getEarnings() + currentRide.getBill());
         }
         else {
@@ -75,9 +73,9 @@ public class WalletPayment implements IPayment {
                     PaymentMethodType.WALLET,
                     PaymentStatus.FAILED
             );
-            paymentRepository.save(paymentDetails);
         }
 
+        paymentRepository.save(paymentDetails);
         riderRepository.save(rider);
         driverRepository.save(driver);
 
