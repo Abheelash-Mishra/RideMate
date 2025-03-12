@@ -1,9 +1,6 @@
 package org.example.models;
 
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
+import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -16,7 +13,10 @@ import java.util.List;
 public class Driver {
     @Id
     private String driverID;
-    private int[] coordinates;
+
+    @ElementCollection
+    private List<Integer> coordinates;
+
     private boolean available = true;
     private float earnings = 0;
     private float rating = 0;
@@ -28,6 +28,6 @@ public class Driver {
 
     public Driver(String driverID, int x_coordinate, int y_coordinate) {
         this.driverID = driverID;
-        this.coordinates = new int[]{x_coordinate, y_coordinate};
+        this.coordinates = new ArrayList<>(List.of(x_coordinate, y_coordinate));
     }
 }

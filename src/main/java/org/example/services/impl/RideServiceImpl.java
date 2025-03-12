@@ -46,8 +46,6 @@ public class RideServiceImpl implements RideService {
         Rider rider = riderRepository.findById(riderID)
                 .orElseThrow(InvalidRiderIDException::new);
 
-        int[] riderCoordinates = rider.getCoordinates();
-
         List<Driver> allDrivers = driverRepository.findAll();
 
         PriorityQueue<DriverDistancePair> nearestDrivers = new PriorityQueue<>((pair1, pair2) -> {
@@ -62,7 +60,7 @@ public class RideServiceImpl implements RideService {
 
         for (Driver driver : allDrivers) {
             if (driver.isAvailable()) {
-                double distance = DistanceUtility.calculate(riderCoordinates, driver.getCoordinates());
+                double distance = DistanceUtility.calculate(rider.getCoordinates(), driver.getCoordinates());
                 if (distance <= LIMIT) {
                     nearestDrivers.add(new DriverDistancePair(driver.getDriverID(), distance));
                 }
@@ -142,7 +140,7 @@ public class RideServiceImpl implements RideService {
         driver.setAvailable(true);
         driverRepository.save(driver);
 
-        currentRide.setDestinationCoordinates(new int[]{destX, destY});
+        currentRide.setDestinationCoordinates(new ArrayList<>(List.of(destX, destY)));
         currentRide.setTimeTakenInMins(timeTakenInMins);
         currentRide.setStatus(RideStatus.FINISHED);
         rideRepository.save(currentRide);
@@ -167,8 +165,8 @@ public class RideServiceImpl implements RideService {
 
         double finalBill = BASE_FARE;
 
-        int[] startCoordinates = currentRide.getRider().getCoordinates();
-        int[] destCoordinates = currentRide.getDestinationCoordinates();
+        List<Integer> startCoordinates = currentRide.getRider().getCoordinates();
+        List<Integer> destCoordinates = currentRide.getDestinationCoordinates();
         double distanceTravelled = DistanceUtility.calculate(startCoordinates, destCoordinates);
         finalBill += (distanceTravelled * PER_KM);
 

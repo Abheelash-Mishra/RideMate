@@ -131,7 +131,7 @@ class RideServiceTest {
         Driver driver = new Driver(driverID, 2, 2);
 
         Ride ride = new Ride(rideID, rider, driver);
-        ride.setDestinationCoordinates(new int[]{4, 5});
+        ride.setDestinationCoordinates(List.of(4, 5));
         ride.setTimeTakenInMins(32);
         ride.setStatus(RideStatus.FINISHED);
 
@@ -203,7 +203,7 @@ class RideServiceTest {
         Driver driver = new Driver(driverID, 2, 2);
 
         Ride ride = new Ride(rideID, rider, driver);
-        ride.setDestinationCoordinates(new int[]{4, 5});
+        ride.setDestinationCoordinates(List.of(4, 5));
         ride.setTimeTakenInMins(32);
 
         when(rideRepository.findById(rideID)).thenReturn(Optional.of(ride));

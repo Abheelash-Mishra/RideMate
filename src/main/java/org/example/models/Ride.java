@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @Entity
 @Data
 @NoArgsConstructor
@@ -19,7 +21,8 @@ public class Ride {
     @JoinColumn(name = "driver_id")
     private Driver driver;
 
-    private int[] destinationCoordinates;
+    @ElementCollection
+    private List<Integer> destinationCoordinates;
 
     @Enumerated(EnumType.STRING)
     private RideStatus status;

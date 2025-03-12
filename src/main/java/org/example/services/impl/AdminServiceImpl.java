@@ -34,8 +34,8 @@ public class AdminServiceImpl implements AdminService {
         return drivers.stream()
                 .map(driver -> new DriverDTO(
                         driver.getDriverID(),
-                        driver.getCoordinates()[0],
-                        driver.getCoordinates()[1],
+                        driver.getCoordinates().get(0),
+                        driver.getCoordinates().get(1),
                         driver.getRating()
                 ))
                 .collect(Collectors.toList());

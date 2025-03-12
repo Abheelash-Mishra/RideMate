@@ -56,7 +56,7 @@ class PaymentServiceTest {
         testDriver = new Driver(driverID, 2, 2);
 
         testRide = new Ride(rideID, testRider, testDriver);
-        testRide.setDestinationCoordinates(new int[]{4, 5});
+        testRide.setDestinationCoordinates(List.of(4, 5));
         testRide.setTimeTakenInMins(32);
         testRide.setStatus(RideStatus.FINISHED);
         testRide.setBill(201.3F);
