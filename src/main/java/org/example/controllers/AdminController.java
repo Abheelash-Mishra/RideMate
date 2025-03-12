@@ -20,12 +20,12 @@ public class AdminController {
         return adminService.removeDriver(driverID);
     }
 
-    @GetMapping(value = "/drivers/list", produces = "application/json")
+    @GetMapping("/drivers/list")
     public ResponseEntity<List<DriverDTO>> listNDriverDetails(@RequestParam("N") int N) {
         return ResponseEntity.ok(adminService.listNDriverDetails(N));
     }
 
-    @GetMapping(value = "/drivers/earnings", produces = "application/json")
+    @GetMapping("/drivers/earnings")
     public ResponseEntity<DriverEarningsDTO> getDriverEarnings(@RequestParam("driverID") String driverID) {
         return ResponseEntity.ok(adminService.getDriverEarnings(driverID));
     }
