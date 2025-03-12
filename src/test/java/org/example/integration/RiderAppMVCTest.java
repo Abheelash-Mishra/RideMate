@@ -67,6 +67,7 @@ public class RiderAppMVCTest {
                         .param("y", "2"))
                 .andExpect(status().isCreated());
 
+
         // Add rider
         mockMvc.perform(post("/ride/rider/add")
                         .param("riderID", "R1")
@@ -75,20 +76,20 @@ public class RiderAppMVCTest {
                 .andExpect(status().isCreated());
 
 
+        // Match rider
         MatchedDriversDTO expectedMatchedDrivers = new MatchedDriversDTO(List.of("D1", "D3"));
         String expectedMatchedDriversJson = new ObjectMapper().writeValueAsString(expectedMatchedDrivers);
 
-        // Match rider
         mockMvc.perform(get("/ride/rider/match")
                         .param("riderID", "R1"))
                 .andExpect(status().isOk())
                 .andExpect(content().json(expectedMatchedDriversJson));
 
 
+        // Start ride
         RideStatusDTO expectedRideStatus = new RideStatusDTO("RIDE-001", "R1", "D3", RideStatus.ONGOING);
         String expectedRideStatusJson = new ObjectMapper().writeValueAsString(expectedRideStatus);
 
-        // Start ride
         mockMvc.perform(post("/ride/start")
                         .param("rideID", "RIDE-001")
                         .param("N", "2")
@@ -97,10 +98,10 @@ public class RiderAppMVCTest {
                 .andExpect(content().json(expectedRideStatusJson));
 
 
+        // Stop ride
         expectedRideStatus = new RideStatusDTO("RIDE-001", "R1", "D3", RideStatus.FINISHED);
         expectedRideStatusJson = new ObjectMapper().writeValueAsString(expectedRideStatus);
 
-        // Stop ride
         mockMvc.perform(post("/ride/stop")
                         .param("rideID", "RIDE-001")
                         .param("x", "4")
@@ -143,6 +144,7 @@ public class RiderAppMVCTest {
                         .param("y", "2"))
                 .andExpect(status().isCreated());
 
+
         // Add riders
         mockMvc.perform(post("/ride/rider/add")
                         .param("riderID", "R1")
@@ -157,10 +159,10 @@ public class RiderAppMVCTest {
                 .andExpect(status().isCreated());
 
 
+        // Match riders
         MatchedDriversDTO expectedMatchedDrivers = new MatchedDriversDTO(List.of("D2", "D3", "D1"));
         String expectedMatchedDriversJson = new ObjectMapper().writeValueAsString(expectedMatchedDrivers);
 
-        // Match riders
         mockMvc.perform(get("/ride/rider/match")
                         .param("riderID", "R1"))
                 .andExpect(status().isOk())
@@ -176,10 +178,10 @@ public class RiderAppMVCTest {
                 .andExpect(content().json(expectedMatchedDriversJson));
 
 
+        // Start rides
         RideStatusDTO expectedRideStatus = new RideStatusDTO("RIDE-101", "R1", "D2", RideStatus.ONGOING);
         String expectedRideStatusJson = new ObjectMapper().writeValueAsString(expectedRideStatus);
 
-        // Start rides
         mockMvc.perform(post("/ride/start")
                         .param("rideID", "RIDE-101")
                         .param("N", "1")
@@ -199,10 +201,10 @@ public class RiderAppMVCTest {
                 .andExpect(content().json(expectedRideStatusJson));
 
 
+        // Stop rides
         expectedRideStatus = new RideStatusDTO("RIDE-101", "R1", "D2", RideStatus.FINISHED);
         expectedRideStatusJson = new ObjectMapper().writeValueAsString(expectedRideStatus);
 
-        // Stop rides
         mockMvc.perform(post("/ride/stop")
                         .param("rideID", "RIDE-101")
                         .param("x", "10")
@@ -222,6 +224,7 @@ public class RiderAppMVCTest {
                         .param("timeInMins", "50"))
                 .andExpect(status().isOk())
                 .andExpect(content().json(expectedRideStatusJson));
+
 
         // Get bills
         String response = mockMvc.perform(get("/ride/bill").param("rideID", "RIDE-101"))
@@ -263,12 +266,14 @@ public class RiderAppMVCTest {
                         .param("y", "2"))
                 .andExpect(status().isCreated());
 
+
         // Add rider
         mockMvc.perform(post("/ride/rider/add")
                         .param("riderID", "R1")
                         .param("x", "0")
                         .param("y", "0"))
                 .andExpect(status().isCreated());
+
 
         // Add money to rider's wallet
         String response = mockMvc.perform(post("/payment/add-money")
@@ -282,20 +287,20 @@ public class RiderAppMVCTest {
         assertEquals(520.0f, Float.parseFloat(response), 0.1f);
 
 
+        // Match rider with drivers
         MatchedDriversDTO expectedMatchedDrivers = new MatchedDriversDTO(List.of("D1", "D3"));
         String expectedMatchedDriversJson = new ObjectMapper().writeValueAsString(expectedMatchedDrivers);
 
-        // Match rider with drivers
         mockMvc.perform(get("/ride/rider/match")
                         .param("riderID", "R1"))
                 .andExpect(status().isOk())
                 .andExpect(content().json(expectedMatchedDriversJson));
 
 
+        // Start ride
         RideStatusDTO expectedRideStatus = new RideStatusDTO("RIDE-001", "R1", "D3", RideStatus.ONGOING);
         String expectedRideStatusJson = new ObjectMapper().writeValueAsString(expectedRideStatus);
 
-        // Start ride
         mockMvc.perform(post("/ride/start")
                         .param("rideID", "RIDE-001")
                         .param("N", "2")
@@ -304,10 +309,10 @@ public class RiderAppMVCTest {
                 .andExpect(content().json(expectedRideStatusJson));
 
 
+        // Stop ride
         expectedRideStatus = new RideStatusDTO("RIDE-001", "R1", "D3", RideStatus.FINISHED);
         expectedRideStatusJson = new ObjectMapper().writeValueAsString(expectedRideStatus);
 
-        // Stop ride
         mockMvc.perform(post("/ride/stop")
                         .param("rideID", "RIDE-001")
                         .param("x", "4")
@@ -315,6 +320,7 @@ public class RiderAppMVCTest {
                         .param("timeInMins", "32"))
                 .andExpect(status().isOk())
                 .andExpect(content().json(expectedRideStatusJson));
+
 
         // Get bill
         response = mockMvc.perform(get("/ride/bill")
@@ -327,6 +333,7 @@ public class RiderAppMVCTest {
         assertEquals(186.7f, Float.parseFloat(response), 0.1f);
 
 
+        // Pay using wallet
         PaymentDetailsDTO expectedPaymentDetails = new PaymentDetailsDTO(
                 "P-RIDE-001",
                 "R1",
@@ -337,7 +344,6 @@ public class RiderAppMVCTest {
         );
         String expectedPaymentDetailsJson = new ObjectMapper().writeValueAsString(expectedPaymentDetails);
 
-        // Pay using wallet
         mockMvc.perform(post("/payment/pay")
                         .param("rideID", "RIDE-001")
                         .param("type", "WALLET"))
@@ -345,10 +351,10 @@ public class RiderAppMVCTest {
                 .andExpect(content().json(expectedPaymentDetailsJson));
 
 
+        // Check driver's earnings
         DriverEarningsDTO expectedDriverEarnings = new DriverEarningsDTO("D3", 186.7f);
         String expectedDriverEarningsJson = new ObjectMapper().writeValueAsString(expectedDriverEarnings);
 
-        // Check driver's earnings
         mockMvc.perform(get("/admin/drivers/earnings")
                         .param("driverID", "D3"))
                 .andExpect(status().isOk())
@@ -377,12 +383,14 @@ public class RiderAppMVCTest {
                         .param("y", "2"))
                 .andExpect(status().isCreated());
 
+
         // Add rider
         mockMvc.perform(post("/ride/rider/add")
                         .param("riderID", "R1")
                         .param("x", "0")
                         .param("y", "0"))
                 .andExpect(status().isCreated());
+
 
         // Add money to rider's wallet
         String response = mockMvc.perform(post("/payment/add-money")
@@ -396,20 +404,20 @@ public class RiderAppMVCTest {
         assertEquals(100.0f, Float.parseFloat(response), 0.1f);
 
 
+        // Match rider with drivers
         MatchedDriversDTO expectedMatchedDrivers = new MatchedDriversDTO(List.of("D1", "D3"));
         String expectedMatchedDriversJson = new ObjectMapper().writeValueAsString(expectedMatchedDrivers);
 
-        // Match rider with drivers
         mockMvc.perform(get("/ride/rider/match")
                         .param("riderID", "R1"))
                 .andExpect(status().isOk())
                 .andExpect(content().json(expectedMatchedDriversJson));
 
 
+        // Start ride
         RideStatusDTO expectedRideStatus = new RideStatusDTO("RIDE-001", "R1", "D3", RideStatus.ONGOING);
         String expectedRideStatusJson = new ObjectMapper().writeValueAsString(expectedRideStatus);
 
-        // Start ride
         mockMvc.perform(post("/ride/start")
                         .param("rideID", "RIDE-001")
                         .param("N", "2")
@@ -418,10 +426,10 @@ public class RiderAppMVCTest {
                 .andExpect(content().json(expectedRideStatusJson));
 
 
+        // Stop ride
         expectedRideStatus = new RideStatusDTO("RIDE-001", "R1", "D3", RideStatus.FINISHED);
         expectedRideStatusJson = new ObjectMapper().writeValueAsString(expectedRideStatus);
 
-        // Stop ride
         mockMvc.perform(post("/ride/stop")
                         .param("rideID", "RIDE-001")
                         .param("x", "4")
@@ -429,6 +437,7 @@ public class RiderAppMVCTest {
                         .param("timeInMins", "32"))
                 .andExpect(status().isOk())
                 .andExpect(content().json(expectedRideStatusJson));
+
 
         // Get bill
         response = mockMvc.perform(get("/ride/bill")
@@ -441,6 +450,7 @@ public class RiderAppMVCTest {
         assertEquals(186.7f, Float.parseFloat(response), 0.1f);
 
 
+        // Pay using wallet
         PaymentDetailsDTO expectedPaymentDetails = new PaymentDetailsDTO(
                 "P-RIDE-001",
                 "R1",
@@ -451,7 +461,6 @@ public class RiderAppMVCTest {
         );
         String expectedPaymentDetailsJson = new ObjectMapper().writeValueAsString(expectedPaymentDetails);
 
-        // Pay using wallet
         mockMvc.perform(post("/payment/pay")
                         .param("rideID", "RIDE-001")
                         .param("type", "WALLET"))
