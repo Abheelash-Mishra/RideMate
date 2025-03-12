@@ -1,6 +1,5 @@
 package org.example.integration;
 
-import org.example.RiderApp;
 import org.example.RiderAppCLI;
 import org.example.repository.DriverRepository;
 import org.example.repository.PaymentRepository;
