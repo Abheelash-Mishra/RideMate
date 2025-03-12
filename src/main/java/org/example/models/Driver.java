@@ -14,7 +14,7 @@ public class Driver {
     @Id
     private String driverID;
 
-    @ElementCollection
+    @ElementCollection(fetch = FetchType.EAGER)
     private List<Integer> coordinates;
 
     private boolean available = true;

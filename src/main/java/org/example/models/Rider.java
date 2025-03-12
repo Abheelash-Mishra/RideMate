@@ -14,7 +14,7 @@ public class Rider {
     @Id
     private String riderID;
 
-    @ElementCollection
+    @ElementCollection(fetch = FetchType.EAGER)
     private List<Integer> coordinates;
 
     private float walletAmount = 0;
