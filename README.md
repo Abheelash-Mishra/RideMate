@@ -23,18 +23,12 @@ cd riderapp
 ```
 
 ### **2. Install Dependencies**
-Ensure you have **Maven** installed. Then, run:
+Ensure you have **Maven** installed. Then, run this to generate the package:
 ```sh
 mvn clean install
 ```
 
-### **3. Package it**
-Next, generate the package of the application.
-```sh
-mvn package
-```
-
-### **4. Running in CLI Mode**
+### **3. Running in CLI Mode**
 To run it in CLI mode, enter the following command into your terminal.
 ```sh
 java -jar target/riderapp-1.0.jar cli
