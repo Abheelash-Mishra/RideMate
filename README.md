@@ -1,8 +1,9 @@
 # RiderApp
 
-RiderApp is a ride-hailing application written in Java using **Spring Boot**. It supports **REST API endpoints** for managing rides, drivers, and riders.
+RiderApp is a console-based and RESTAPI-enabled ride-hailing application written in Java using **Spring Boot**. It supports both **CLI commands** and **REST API endpoints** for managing rides, drivers, and riders.
 
 ## Features
+- **CLI Mode**: Interact with the system through terminal commands.
 - **REST API Mode**: Use HTTP requests to manage rides and users.
 - **H2 Database**: Stores data using an in-memory database.
 - **Flexible Payment System**: Supports multiple payment methods via interfaces.
@@ -27,11 +28,35 @@ Ensure you have **Maven** installed. Then, run:
 mvn clean install
 ```
 
-### **3. Running as a REST API**
+### **3. Package it**
+Next, generate the package of the application.
+```sh
+mvn package
+```
+
+### **4. Running in CLI Mode**
+To run it in CLI mode, enter the following command into your terminal.
+```sh
+java -jar target/riderapp-1.0.jar cli
+```
+
+Now, you can run the CLI application. Below are some examples for the commands.
+```sh
+ADD_DRIVER D1 1 1
+ADD_DRIVER D2 4 5
+ADD_DRIVER D3 2 2
+ADD_RIDER R1 0 0
+MATCH R1
+START_RIDE RIDE-001 2 R1
+STOP_RIDE RIDE-001 4 5 32
+BILL RIDE-001
+```
+
+### **4. Running as a REST API**
 Since RiderApp is a Spring Boot application, it has an embedded Apache Tomcat server. Simply run the application by:
 1. Running this command:
    ```sh
-   mvn spring-boot:run
+   java -jar target/riderapp-1.0.jar
    ```
    
 2. Access the API at `http://localhost:8080/`
