@@ -23,7 +23,7 @@ public class DriverServiceImpl implements DriverService {
     @Override
     public DriverRatingDTO rateDriver(String driverID, float rating) {
         Driver driver = driverRepository.findById(driverID)
-                .orElseThrow(InvalidDriverIDException::new);
+                .orElseThrow(() -> new InvalidDriverIDException(driverID));
 
         driver.setRidesDone(driver.getRidesDone() + 1);
         driver.setRatingSum(driver.getRatingSum() + rating);

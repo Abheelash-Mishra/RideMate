@@ -45,7 +45,10 @@ public class AdminServiceImpl implements AdminService {
     @Override
     public DriverEarningsDTO getDriverEarnings(String driverID) {
         Driver driver = driverRepository.findById(driverID)
-                .orElseThrow(InvalidDriverIDException::new);
+                .orElseThrow(() -> {
+                    log.warn("Driver {} does not exist!", driverID);
+                    return new InvalidDriverIDException(driverID);
+                });
 
         return new DriverEarningsDTO(driverID, driver.getEarnings());
     }

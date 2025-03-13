@@ -106,7 +106,7 @@ public class RideServiceImpl implements RideService {
 
         String driverID = matchedDrivers.get(N - 1);
         Driver driver = driverRepository.findById(driverID)
-                .orElseThrow(InvalidDriverIDException::new);
+                .orElseThrow(() -> new InvalidDriverIDException(driverID));
 
         if (!driver.isAvailable() || rideRepository.existsById(rideID)) {
             throw new InvalidRideException();
@@ -135,8 +135,10 @@ public class RideServiceImpl implements RideService {
         }
 
         // Fetch driver and update availability
-        Driver driver = driverRepository.findById(currentRide.getDriver().getDriverID())
-                .orElseThrow(InvalidDriverIDException::new);
+        String driverID = currentRide.getDriver().getDriverID();
+        Driver driver = driverRepository.findById(driverID)
+                .orElseThrow(() -> new InvalidDriverIDException(driverID));
+
         driver.setAvailable(true);
         driverRepository.save(driver);
 

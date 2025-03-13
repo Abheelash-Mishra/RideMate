@@ -37,8 +37,9 @@ public class WalletPayment implements IPayment {
         Rider rider = riderRepository.findById(currentRide.getRider().getRiderID())
                 .orElseThrow(InvalidRiderIDException::new);
 
-        Driver driver = driverRepository.findById(currentRide.getDriver().getDriverID())
-                .orElseThrow(InvalidDriverIDException::new);
+        String driverID = currentRide.getDriver().getDriverID();
+        Driver driver = driverRepository.findById(driverID)
+                .orElseThrow(() -> new InvalidDriverIDException(driverID));
 
         boolean success;
         if (rider.getWalletAmount() <= currentRide.getBill()) {
