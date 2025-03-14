@@ -1,6 +1,5 @@
 package org.example.services.impl;
 
-import lombok.Getter;
 import org.example.dto.PaymentDetailsDTO;
 import org.example.models.PaymentMethodType;
 import org.example.services.IPayment;
@@ -15,7 +14,6 @@ import java.util.List;
 public class PaymentServiceImpl implements PaymentService {
     private final HashMap<PaymentMethodType, IPayment> paymentMethods;
 
-    @Getter
     private IPayment paymentMethod;
 
     @Autowired
@@ -31,12 +29,20 @@ public class PaymentServiceImpl implements PaymentService {
         this.paymentMethod = this.paymentMethods.get(PaymentMethodType.WALLET);
     }
 
-    public void setPaymentMethod(PaymentMethodType paymentMethodType) {
-        this.paymentMethod = paymentMethods.get(paymentMethodType);
+    @Override
+    public PaymentDetailsDTO processPayment(long rideID, PaymentMethodType paymentMethodType) {
+        this.paymentMethod = this.paymentMethods.get(paymentMethodType);
+
+        return paymentMethod.sendMoney(rideID);
     }
 
-    public PaymentDetailsDTO processPayment(long rideID) {
-        return paymentMethod.sendMoney(rideID);
+    @Override
+    public float addMoney(long riderID, float amount) {
+        this.paymentMethod = this.paymentMethods.get(PaymentMethodType.WALLET);
+
+        WalletPayment walletPayment = (WalletPayment) this.paymentMethod;
+
+        return walletPayment.addMoney(riderID, amount);
     }
 
     private PaymentMethodType getPaymentType(IPayment payment) {

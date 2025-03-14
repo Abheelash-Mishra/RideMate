@@ -4,7 +4,6 @@ import org.example.dto.PaymentDetailsDTO;
 import org.example.models.PaymentMethodType;
 
 public interface PaymentService {
-    void setPaymentMethod(PaymentMethodType paymentMethodType);
-    PaymentDetailsDTO processPayment(long rideID);
-    IPayment getPaymentMethod();
+    PaymentDetailsDTO processPayment(long rideID, PaymentMethodType paymentMethodType);
+    float addMoney(long riderID, float amount);
 }
