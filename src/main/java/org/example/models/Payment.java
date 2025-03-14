@@ -9,14 +9,15 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class Payment {
     @Id
-    private String paymentID;
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private long paymentID;
 
     @OneToOne
     @JoinColumn(name = "ride_id")
     private Ride ride;
 
-    private String senderID;
-    private String receiverID;
+    private long senderID;
+    private long receiverID;
     private float amount;
 
     @Enumerated(EnumType.STRING)
@@ -25,8 +26,7 @@ public class Payment {
     @Enumerated(EnumType.STRING)
     private PaymentStatus paymentStatus;
 
-    public Payment(String paymentID, Ride ride, String senderID, String receiverID, float amount, PaymentMethodType paymentMethodType, PaymentStatus paymentStatus) {
-        this.paymentID = paymentID;
+    public Payment(Ride ride, long senderID, long receiverID, float amount, PaymentMethodType paymentMethodType, PaymentStatus paymentStatus) {
         this.ride = ride;
         this.senderID = senderID;
         this.receiverID = receiverID;

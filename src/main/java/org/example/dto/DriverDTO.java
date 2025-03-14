@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class DriverDTO {
-    private String driverID;
+    private long driverID;
     private int x;
     private int y;
     private double rating;

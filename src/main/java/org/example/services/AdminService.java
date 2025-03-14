@@ -6,7 +6,7 @@ import org.example.dto.DriverEarningsDTO;
 import java.util.List;
 
 public interface AdminService {
-    boolean removeDriver(String driverID);
+    boolean removeDriver(long driverID);
     List<DriverDTO> listNDriverDetails(int N);
-    DriverEarningsDTO getDriverEarnings(String driverID);
+    DriverEarningsDTO getDriverEarnings(long driverID);
 }

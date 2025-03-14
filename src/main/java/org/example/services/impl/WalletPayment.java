@@ -15,6 +15,8 @@ import org.example.models.PaymentMethodType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.NoSuchElementException;
+
 @Component
 public class WalletPayment implements IPayment {
     @Autowired
@@ -30,16 +32,17 @@ public class WalletPayment implements IPayment {
     private PaymentRepository paymentRepository;
 
     @Override
-    public PaymentDetailsDTO sendMoney(String rideID) {
+    public PaymentDetailsDTO sendMoney(long rideID) {
         Ride currentRide = rideRepository.findById(rideID)
                 .orElseThrow(InvalidRideException::new);
 
-        Rider rider = riderRepository.findById(currentRide.getRider().getRiderID())
+        long riderID = currentRide.getRider().getRiderID();
+        Rider rider = riderRepository.findById(riderID)
                 .orElseThrow(InvalidRiderIDException::new);
 
-        String driverID = currentRide.getDriver().getDriverID();
+        long driverID = currentRide.getDriver().getDriverID();
         Driver driver = driverRepository.findById(driverID)
-                .orElseThrow(() -> new InvalidDriverIDException(driverID));
+                .orElseThrow(() -> new InvalidDriverIDException(driverID, new NoSuchElementException("Driver not present in database")));
 
         boolean success;
         if (rider.getWalletAmount() <= currentRide.getBill()) {
@@ -51,10 +54,8 @@ public class WalletPayment implements IPayment {
         }
 
         Payment paymentDetails;
-        String paymentID = "P-" + rideID;
         if (success) {
             paymentDetails = new Payment(
-                    paymentID,
                     currentRide,
                     currentRide.getRider().getRiderID(),
                     driver.getDriverID(),
@@ -66,7 +67,6 @@ public class WalletPayment implements IPayment {
         }
         else {
             paymentDetails = new Payment(
-                    paymentID,
                     currentRide,
                     currentRide.getRider().getRiderID(),
                     driver.getDriverID(),
@@ -90,7 +90,7 @@ public class WalletPayment implements IPayment {
         );
     }
 
-    public float addMoney(String riderID, float amount) {
+    public float addMoney(long riderID, float amount) {
         Rider rider = riderRepository.findById(riderID)
                 .orElseThrow(InvalidRiderIDException::new);
 

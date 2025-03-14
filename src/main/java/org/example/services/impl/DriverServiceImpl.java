@@ -14,14 +14,18 @@ public class DriverServiceImpl implements DriverService {
     private DriverRepository driverRepository;
 
     @Override
-    public void addDriver(String driverID, int x_coordinate, int y_coordinate) {
+    public void addDriver(long driverID, int x_coordinate, int y_coordinate) {
+        log.info("Adding driver with ID - {}", driverID);
+
         Driver driver = new Driver(driverID, x_coordinate, y_coordinate);
 
         driverRepository.save(driver);
     }
 
     @Override
-    public DriverRatingDTO rateDriver(String driverID, float rating) {
+    public DriverRatingDTO rateDriver(long driverID, float rating) {
+        log.info("Fetching details of driver with ID - {}...", driverID);
+
         Driver driver = driverRepository.findById(driverID)
                 .orElseThrow(() -> new InvalidDriverIDException(driverID));
 

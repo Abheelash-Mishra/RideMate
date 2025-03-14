@@ -35,7 +35,7 @@ public class PaymentServiceImpl implements PaymentService {
         this.paymentMethod = paymentMethods.get(paymentMethodType);
     }
 
-    public PaymentDetailsDTO processPayment(String rideID) {
+    public PaymentDetailsDTO processPayment(long rideID) {
         return paymentMethod.sendMoney(rideID);
     }
 

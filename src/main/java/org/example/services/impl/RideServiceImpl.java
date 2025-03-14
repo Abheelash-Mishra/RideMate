@@ -33,14 +33,14 @@ public class RideServiceImpl implements RideService {
     private DriverRepository driverRepository;
 
     @Override
-    public void addRider(String riderID, int x_coordinate, int y_coordinate) {
+    public void addRider(long riderID, int x_coordinate, int y_coordinate) {
         Rider rider = new Rider(riderID, x_coordinate, y_coordinate);
 
         riderRepository.save(rider);
     }
 
     @Override
-    public MatchedDriversDTO matchRider(String riderID) {
+    public MatchedDriversDTO matchRider(long riderID) {
         final double LIMIT = 5.0;
 
         Rider rider = riderRepository.findById(riderID)
@@ -55,7 +55,13 @@ public class RideServiceImpl implements RideService {
                 return 1;
             }
 
-            return pair1.ID.compareTo(pair2.ID);
+            if (pair1.ID < pair2.ID) {
+                return -1;
+            } else if (pair1.ID > pair2.ID) {
+                return 1;
+            }
+
+            return 0;
         });
 
         for (Driver driver : allDrivers) {
@@ -71,12 +77,12 @@ public class RideServiceImpl implements RideService {
     }
 
 
-    private MatchedDriversDTO driversMatched(String riderID, PriorityQueue<DriverDistancePair> nearestDrivers) {
+    private MatchedDriversDTO driversMatched(long riderID, PriorityQueue<DriverDistancePair> nearestDrivers) {
         if (nearestDrivers.isEmpty()) {
             return new MatchedDriversDTO(Collections.emptyList());
         }
 
-        List<String> matchedDrivers = new ArrayList<>();
+        List<Long> matchedDrivers = new ArrayList<>();
         int size = Math.min(nearestDrivers.size(), 5);
 
         for (int i = 0; i < size; i++) {
@@ -94,19 +100,19 @@ public class RideServiceImpl implements RideService {
 
 
     @Override
-    public RideStatusDTO startRide(String rideID, int N, String riderID) {
+    public RideStatusDTO startRide(long rideID, int N, long riderID) {
         Rider rider = riderRepository.findById(riderID)
                 .orElseThrow(InvalidRiderIDException::new);
 
-        List<String> matchedDrivers = rider.getMatchedDrivers();
+        List<Long> matchedDrivers = rider.getMatchedDrivers();
 
         if (matchedDrivers.size() < N) {
             throw new InvalidRideException();
         }
 
-        String driverID = matchedDrivers.get(N - 1);
+        long driverID = matchedDrivers.get(N - 1);
         Driver driver = driverRepository.findById(driverID)
-                .orElseThrow(() -> new InvalidDriverIDException(driverID));
+                .orElseThrow(() -> new InvalidDriverIDException(driverID, new NoSuchElementException("Driver not present in database")));
 
         if (!driver.isAvailable() || rideRepository.existsById(rideID)) {
             throw new InvalidRideException();
@@ -126,7 +132,7 @@ public class RideServiceImpl implements RideService {
 
 
     @Override
-    public RideStatusDTO stopRide(String rideID, int destX, int destY, int timeTakenInMins) {
+    public RideStatusDTO stopRide(long rideID, int destX, int destY, int timeTakenInMins) {
         Ride currentRide = rideRepository.findById(rideID)
                 .orElseThrow(InvalidRideException::new);
 
@@ -135,9 +141,9 @@ public class RideServiceImpl implements RideService {
         }
 
         // Fetch driver and update availability
-        String driverID = currentRide.getDriver().getDriverID();
+        long driverID = currentRide.getDriver().getDriverID();
         Driver driver = driverRepository.findById(driverID)
-                .orElseThrow(() -> new InvalidDriverIDException(driverID));
+                .orElseThrow(() -> new InvalidDriverIDException(driverID, new NoSuchElementException("Driver not present in database")));
 
         driver.setAvailable(true);
         driverRepository.save(driver);
@@ -152,7 +158,7 @@ public class RideServiceImpl implements RideService {
 
 
     @Override
-    public double billRide(String rideID) {
+    public double billRide(long rideID) {
         Ride currentRide = rideRepository.findById(rideID)
                 .orElseThrow(InvalidRideException::new);
 
@@ -184,6 +190,6 @@ public class RideServiceImpl implements RideService {
         return currentRide.getBill();
     }
 
-    public record DriverDistancePair(String ID, double distance) {
+    public record DriverDistancePair(long ID, double distance) {
     }
 }

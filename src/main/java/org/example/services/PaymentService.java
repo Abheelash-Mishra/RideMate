@@ -5,6 +5,6 @@ import org.example.models.PaymentMethodType;
 
 public interface PaymentService {
     void setPaymentMethod(PaymentMethodType paymentMethodType);
-    PaymentDetailsDTO processPayment(String rideID);
+    PaymentDetailsDTO processPayment(long rideID);
     IPayment getPaymentMethod();
 }

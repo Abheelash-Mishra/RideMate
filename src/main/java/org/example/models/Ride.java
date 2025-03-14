@@ -11,7 +11,7 @@ import java.util.List;
 @NoArgsConstructor
 public class Ride {
     @Id
-    private String rideID;
+    private long rideID;
 
     @ManyToOne
     @JoinColumn(name = "rider_id")
@@ -33,7 +33,7 @@ public class Ride {
     @OneToOne(mappedBy = "ride", cascade = CascadeType.ALL, orphanRemoval = true)
     private Payment payment;
 
-    public Ride(String rideID, Rider rider, Driver driver) {
+    public Ride(long rideID, Rider rider, Driver driver) {
         this.rideID = rideID;
         this.rider = rider;
         this.driver = driver;

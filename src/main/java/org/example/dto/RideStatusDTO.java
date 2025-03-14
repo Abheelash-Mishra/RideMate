@@ -10,8 +10,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class RideStatusDTO {
-    private String rideID;
-    private String riderID;
-    private String driverID;
+    private long rideID;
+    private long riderID;
+    private long driverID;
     private RideStatus status;
 }

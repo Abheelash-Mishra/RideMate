@@ -10,9 +10,9 @@ import org.example.models.PaymentStatus;
 @AllArgsConstructor
 @NoArgsConstructor
 public class PaymentDetailsDTO {
-    private String paymentID;
-    private String senderID;
-    private String receiverID;
+    private long paymentID;
+    private long senderID;
+    private long receiverID;
     private float amount;
     private PaymentMethodType paymentMethodType;
     private PaymentStatus paymentStatus;

@@ -18,7 +18,7 @@ public class AdminServiceImpl implements AdminService {
     private DriverRepository driverRepository;
 
     @Override
-    public boolean removeDriver(String driverID) {
+    public boolean removeDriver(long driverID) {
         if (!driverRepository.existsById(driverID)) {
             throw new InvalidDriverIDException();
         }
@@ -43,7 +43,8 @@ public class AdminServiceImpl implements AdminService {
 
 
     @Override
-    public DriverEarningsDTO getDriverEarnings(String driverID) {
+    public DriverEarningsDTO getDriverEarnings(long driverID) {
+        log.info("Fetching details of driver {}...", driverID);
         Driver driver = driverRepository.findById(driverID)
                 .orElseThrow(() -> {
                     log.warn("Driver {} does not exist!", driverID);

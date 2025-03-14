@@ -16,7 +16,7 @@ public class PaymentController {
 
     @PostMapping("/pay")
     public ResponseEntity<PaymentDetailsDTO> pay(
-            @RequestParam("rideID") String rideID,
+            @RequestParam("rideID") long rideID,
             @RequestParam("type") String paymentMethodType
     ) {
         PaymentMethodType type = PaymentMethodType.valueOf(paymentMethodType.toUpperCase());
@@ -26,7 +26,7 @@ public class PaymentController {
     }
 
     @PostMapping("/add-money")
-    public ResponseEntity<Float> addMoney(@RequestParam("riderID") String riderID, @RequestParam("amount") float amount) {
+    public ResponseEntity<Float> addMoney(@RequestParam("riderID") long riderID, @RequestParam("amount") float amount) {
         paymentService.setPaymentMethod(PaymentMethodType.WALLET);
         WalletPayment wallet = (WalletPayment) paymentService.getPaymentMethod();
 

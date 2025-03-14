@@ -16,7 +16,7 @@ public class DriverController {
 
     @PostMapping("/add")
     public ResponseEntity<String> addDriver(
-            @RequestParam("driverID") String driverID,
+            @RequestParam("driverID") long driverID,
             @RequestParam("x") int x,
             @RequestParam("y") int y
     ) {
@@ -26,7 +26,7 @@ public class DriverController {
 
     @PostMapping("/rate")
     public ResponseEntity<DriverRatingDTO> rateDriver(
-            @RequestParam("driverID") String driverID,
+            @RequestParam("driverID") long driverID,
             @RequestParam("rating") float rating
     ) {
         return ResponseEntity.ok(driverService.rateDriver(driverID, rating));

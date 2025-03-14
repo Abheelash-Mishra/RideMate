@@ -12,7 +12,7 @@ import java.util.List;
 @NoArgsConstructor
 public class Driver {
     @Id
-    private String driverID;
+    private long driverID;
 
     @ElementCollection(fetch = FetchType.EAGER)
     private List<Integer> coordinates;
@@ -26,7 +26,7 @@ public class Driver {
     @OneToMany(mappedBy = "driver", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Ride> rides = new ArrayList<>();
 
-    public Driver(String driverID, int x_coordinate, int y_coordinate) {
+    public Driver(long driverID, int x_coordinate, int y_coordinate) {
         this.driverID = driverID;
         this.coordinates = new ArrayList<>(List.of(x_coordinate, y_coordinate));
     }

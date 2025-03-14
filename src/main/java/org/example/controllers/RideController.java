@@ -18,7 +18,7 @@ public class RideController {
 
     @PostMapping("/rider/add")
     public ResponseEntity<String> addRider(
-            @RequestParam("riderID") String riderID,
+            @RequestParam("riderID") long riderID,
             @RequestParam("x") int x,
             @RequestParam("y") int y
     ) {
@@ -27,22 +27,22 @@ public class RideController {
     }
 
     @GetMapping("/rider/match")
-    public ResponseEntity<MatchedDriversDTO> matchRider(@RequestParam("riderID") String riderID) {
+    public ResponseEntity<MatchedDriversDTO> matchRider(@RequestParam("riderID") long riderID) {
         return ResponseEntity.ok(rideService.matchRider(riderID));
     }
 
     @PostMapping("/start")
     public ResponseEntity<RideStatusDTO> startRide(
-            @RequestParam("rideID") String rideID,
+            @RequestParam("rideID") long rideID,
             @RequestParam("N") int N,
-            @RequestParam("riderID") String riderID
+            @RequestParam("riderID") long riderID
     ) {
         return ResponseEntity.ok(rideService.startRide(rideID, N, riderID));
     }
 
     @PostMapping("/stop")
     public ResponseEntity<RideStatusDTO> stopRide(
-            @RequestParam("rideID") String rideID,
+            @RequestParam("rideID") long rideID,
             @RequestParam("x") int x,
             @RequestParam("y") int y,
             @RequestParam("timeInMins") int timeInMins
@@ -51,7 +51,7 @@ public class RideController {
     }
 
     @GetMapping("/bill")
-    public Double billRide(@RequestParam("rideID") String rideID) {
+    public Double billRide(@RequestParam("rideID") long rideID) {
         return rideService.billRide(rideID);
     }
 }

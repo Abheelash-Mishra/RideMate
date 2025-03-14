@@ -16,8 +16,10 @@ public class AdminController {
     private AdminService adminService;
 
     @DeleteMapping("/drivers/remove")
-    public boolean removeDriver(@RequestParam("driverID") String driverID) {
-        return adminService.removeDriver(driverID);
+    public ResponseEntity<Boolean> removeDriver(@RequestParam("driverID") long driverID) {
+        log.info("Accessing endpoint: /admin/drivers/remove");
+
+        return ResponseEntity.ok(adminService.removeDriver(driverID));
     }
 
     @GetMapping("/drivers/list")
@@ -26,7 +28,9 @@ public class AdminController {
     }
 
     @GetMapping("/drivers/earnings")
-    public ResponseEntity<DriverEarningsDTO> getDriverEarnings(@RequestParam("driverID") String driverID) {
+    public ResponseEntity<DriverEarningsDTO> getDriverEarnings(@RequestParam("driverID") long driverID) {
+        log.info("Accessing endpoint: /admin/drivers/earnings");
+
         return ResponseEntity.ok(adminService.getDriverEarnings(driverID));
     }
 }

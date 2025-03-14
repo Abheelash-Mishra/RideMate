@@ -9,7 +9,7 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface DriverRepository extends JpaRepository<Driver, String> {
+public interface DriverRepository extends JpaRepository<Driver, Long> {
 
     @Query(value = "SELECT * FROM driver LIMIT :limit", nativeQuery = true)
     List<Driver> findTopNDrivers(@Param("limit") int limit);

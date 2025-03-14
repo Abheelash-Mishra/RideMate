@@ -9,7 +9,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class MatchedDriversDTO {
-    private List<String> matchedDrivers;
+    private List<Long> matchedDrivers;
 }
 
 

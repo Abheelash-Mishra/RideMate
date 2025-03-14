@@ -26,15 +26,13 @@ public class CashPayment implements IPayment {
     private PaymentRepository paymentRepository;
 
     @Override
-    public PaymentDetailsDTO sendMoney(String rideID) {
+    public PaymentDetailsDTO sendMoney(long rideID) {
         Ride currentRide = rideRepository.findById(rideID)
                 .orElseThrow(InvalidRideException::new);
 
         Driver driver = currentRide.getDriver();
 
-        String paymentID = "P-" + rideID;
         Payment paymentDetails = new Payment(
-                paymentID,
                 currentRide,
                 currentRide.getRider().getRiderID(),
                 driver.getDriverID(),

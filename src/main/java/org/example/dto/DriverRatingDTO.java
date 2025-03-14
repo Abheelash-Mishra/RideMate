@@ -8,6 +8,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class DriverRatingDTO {
-    private String driverID;
+    private long driverID;
     private float rating;
 }
