@@ -11,7 +11,7 @@ import org.example.repository.DriverRepository;
 import org.example.repository.PaymentRepository;
 import org.example.repository.RideRepository;
 import org.example.repository.RiderRepository;
-import org.example.services.IPayment;
+import org.example.services.PaymentType;
 import org.example.models.PaymentMethodType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -20,7 +20,7 @@ import java.util.NoSuchElementException;
 
 @Slf4j
 @Component
-public class WalletPayment implements IPayment {
+public class WalletPayment implements PaymentType {
     @Autowired
     private RideRepository rideRepository;
 

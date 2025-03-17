@@ -2,7 +2,7 @@ package org.example.services.impl;
 
 import org.example.dto.PaymentDetailsDTO;
 import org.example.models.PaymentMethodType;
-import org.example.services.IPayment;
+import org.example.services.PaymentType;
 import org.example.services.PaymentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -12,15 +12,15 @@ import java.util.List;
 
 @Service
 public class PaymentServiceImpl implements PaymentService {
-    private final HashMap<PaymentMethodType, IPayment> paymentMethods;
+    private final HashMap<PaymentMethodType, PaymentType> paymentMethods;
 
-    private IPayment paymentMethod;
+    private PaymentType paymentMethod;
 
     @Autowired
-    public PaymentServiceImpl(List<IPayment> paymentImplementations) {
+    public PaymentServiceImpl(List<PaymentType> paymentImplementations) {
         this.paymentMethods = new HashMap<>();
 
-        for (IPayment payment : paymentImplementations) {
+        for (PaymentType payment : paymentImplementations) {
             PaymentMethodType type = getPaymentType(payment);
             this.paymentMethods.put(type, payment);
         }
@@ -45,7 +45,7 @@ public class PaymentServiceImpl implements PaymentService {
         return walletPayment.addMoney(riderID, amount);
     }
 
-    private PaymentMethodType getPaymentType(IPayment payment) {
+    private PaymentMethodType getPaymentType(PaymentType payment) {
         if (payment instanceof WalletPayment) return PaymentMethodType.WALLET;
         if (payment instanceof CashPayment) return PaymentMethodType.CASH;
         if (payment instanceof CardPayment) return PaymentMethodType.CARD;

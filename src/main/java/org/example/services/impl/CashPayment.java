@@ -10,14 +10,14 @@ import org.example.models.Ride;
 import org.example.repository.DriverRepository;
 import org.example.repository.PaymentRepository;
 import org.example.repository.RideRepository;
-import org.example.services.IPayment;
+import org.example.services.PaymentType;
 import org.example.models.PaymentMethodType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Slf4j
 @Component
-public class CashPayment implements IPayment {
+public class CashPayment implements PaymentType {
     @Autowired
     private RideRepository rideRepository;
 
