@@ -1,5 +1,6 @@
 package org.example.services.impl;
 
+import lombok.extern.slf4j.Slf4j;
 import org.example.dto.DriverRatingDTO;
 import org.example.exceptions.InvalidDriverIDException;
 import org.example.models.Driver;
@@ -8,6 +9,9 @@ import org.example.services.DriverService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.NoSuchElementException;
+
+@Slf4j
 @Service
 public class DriverServiceImpl implements DriverService {
     @Autowired
@@ -15,25 +19,26 @@ public class DriverServiceImpl implements DriverService {
 
     @Override
     public void addDriver(long driverID, int x_coordinate, int y_coordinate) {
-        log.info("Adding driver with ID - {}", driverID);
-
         Driver driver = new Driver(driverID, x_coordinate, y_coordinate);
-
         driverRepository.save(driver);
+
+        log.info("Added driver '{}' to database", driverID);
     }
 
     @Override
     public DriverRatingDTO rateDriver(long driverID, float rating) {
-        log.info("Fetching details of driver with ID - {}...", driverID);
+        log.info("Fetching details of driver '{}'...", driverID);
 
         Driver driver = driverRepository.findById(driverID)
-                .orElseThrow(() -> new InvalidDriverIDException(driverID));
+                .orElseThrow(() -> new InvalidDriverIDException(driverID, new NoSuchElementException("Driver not present in database")));
 
         driver.setRidesDone(driver.getRidesDone() + 1);
         driver.setRatingSum(driver.getRatingSum() + rating);
         driver.setRating(driver.getRatingSum() / driver.getRidesDone());
 
         driverRepository.save(driver);
+
+        log.info("Updated the ratings of driver '{}'", driverID);
 
         return new DriverRatingDTO(driverID, driver.getRating());
     }
