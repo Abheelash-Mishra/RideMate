@@ -37,11 +37,11 @@ public class WalletPayment implements PaymentType {
     public PaymentDetailsDTO sendMoney(long rideID) {
         try {
             Ride currentRide = rideRepository.findById(rideID)
-                    .orElseThrow(InvalidRideException::new);
+                    .orElseThrow(() -> new InvalidRideException(rideID, new NoSuchElementException("Ride not present in database")));
 
             long riderID = currentRide.getRider().getRiderID();
             Rider rider = riderRepository.findById(riderID)
-                    .orElseThrow(InvalidRiderIDException::new);
+                    .orElseThrow(() -> new InvalidRiderIDException(riderID, new NoSuchElementException("Rider not present in database")));
 
             long driverID = currentRide.getDriver().getDriverID();
             Driver driver = driverRepository.findById(driverID)
@@ -105,7 +105,7 @@ public class WalletPayment implements PaymentType {
     public float addMoney(long riderID, float amount) {
         try {
             Rider rider = riderRepository.findById(riderID)
-                    .orElseThrow(InvalidRiderIDException::new);
+                    .orElseThrow(() -> new InvalidRiderIDException(riderID, new NoSuchElementException("Rider not present in database")));
 
             rider.setWalletAmount(rider.getWalletAmount() + amount);
             riderRepository.save(rider);

@@ -188,7 +188,7 @@ class RideServiceTest {
     void stopInvalidRide_ThrowsException() {
         Exception exception = Assertions.assertThrows(InvalidRideException.class, () -> rideService.stopRide(1, 4, 5, 32));
 
-        assertEquals("INVALID_RIDE", exception.getMessage(), "There is no ride that can be stopped");
+        assertEquals("INVALID_RIDE 1", exception.getMessage(), "There is no ride that can be stopped");
     }
 
     @Test
@@ -211,6 +211,6 @@ class RideServiceTest {
 
         Exception exception = Assertions.assertThrows(InvalidRideException.class, () -> rideService.billRide(1));
 
-        assertEquals("INVALID_RIDE", exception.getMessage(), "Unfinished ride should not be billed");
+        assertEquals("INVALID_RIDE 1", exception.getMessage(), "Unfinished ride should not be billed");
     }
 }

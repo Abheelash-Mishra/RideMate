@@ -1,7 +1,7 @@
 package org.example.exceptions;
 
 public class InvalidRideException extends RuntimeException {
-    public InvalidRideException() {
-        super("INVALID_RIDE");
+    public InvalidRideException(long rideID, Throwable cause) {
+        super("INVALID_RIDE " + rideID, cause);
     }
 }
