@@ -230,7 +230,7 @@ public class RideServiceImpl implements RideService {
 
             currentRide.setBill((float) finalBill);
             rideRepository.save(currentRide);
-            log.info("Bill generated for ride '{}': Rs. {}", rideID, currentRide.getBill());
+            log.info("Bill generated for ride '{}' - Rs. {}", rideID, currentRide.getBill());
 
             return currentRide.getBill();
         } catch (Exception e) {
