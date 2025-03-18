@@ -22,20 +22,20 @@ public class AdminServiceImpl implements AdminService {
 
     @Override
     public boolean removeDriver(long driverID) {
-        try {
-            if (!driverRepository.existsById(driverID)) {
-                log.warn("Driver '{}' does not exist", driverID);
-                throw new InvalidDriverIDException(driverID, new NoSuchElementException("Driver not present in database"));
-            }
+        if (!driverRepository.existsById(driverID)) {
+            throw new InvalidDriverIDException(driverID, new NoSuchElementException("Driver not present in database"));
+        }
 
+        try {
             log.info("Removing driver '{}' from the database", driverID);
             driverRepository.deleteById(driverID);
             return true;
-        } catch (Exception e) {
+        } catch (RuntimeException e) {
             log.error("Unexpected error while attempting to remove driver '{}' | Error: {}", driverID, e.getMessage(), e);
             throw new RuntimeException("Failed to remove driver " + driverID, e);
         }
     }
+
 
     @Override
     public List<DriverDTO> listNDriverDetails(int N) {

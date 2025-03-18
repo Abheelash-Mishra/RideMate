@@ -131,24 +131,24 @@ public class RideServiceImpl implements RideService {
 
     @Override
     public RideStatusDTO startRide(long rideID, int N, long riderID) {
+        Rider rider = riderRepository.findById(riderID)
+                .orElseThrow(InvalidRiderIDException::new);
+
+        List<Long> matchedDrivers = rider.getMatchedDrivers();
+
+        if (matchedDrivers.size() < N) {
+            throw new InvalidRideException();
+        }
+
+        long driverID = matchedDrivers.get(N - 1);
+        Driver driver = driverRepository.findById(driverID)
+                .orElseThrow(() -> new InvalidDriverIDException(driverID, new NoSuchElementException("Driver not present in database")));
+
+        if (!driver.isAvailable() || rideRepository.existsById(rideID)) {
+            throw new InvalidRideException();
+        }
+
         try {
-            Rider rider = riderRepository.findById(riderID)
-                    .orElseThrow(InvalidRiderIDException::new);
-
-            List<Long> matchedDrivers = rider.getMatchedDrivers();
-
-            if (matchedDrivers.size() < N) {
-                throw new InvalidRideException();
-            }
-
-            long driverID = matchedDrivers.get(N - 1);
-            Driver driver = driverRepository.findById(driverID)
-                    .orElseThrow(() -> new InvalidDriverIDException(driverID, new NoSuchElementException("Driver not present in database")));
-
-            if (!driver.isAvailable() || rideRepository.existsById(rideID)) {
-                throw new InvalidRideException();
-            }
-
             driver.setAvailable(false);
             driverRepository.save(driver);
 
@@ -170,14 +170,14 @@ public class RideServiceImpl implements RideService {
 
     @Override
     public RideStatusDTO stopRide(long rideID, int destX, int destY, int timeTakenInMins) {
+        Ride currentRide = rideRepository.findById(rideID)
+                .orElseThrow(InvalidRideException::new);
+
+        if (currentRide.getStatus() == RideStatus.FINISHED) {
+            throw new InvalidRideException();
+        }
+
         try {
-            Ride currentRide = rideRepository.findById(rideID)
-                    .orElseThrow(InvalidRideException::new);
-
-            if (currentRide.getStatus() == RideStatus.FINISHED) {
-                throw new InvalidRideException();
-            }
-
             long driverID = currentRide.getDriver().getDriverID();
             Driver driver = driverRepository.findById(driverID)
                     .orElseThrow(() -> new InvalidDriverIDException(driverID, new NoSuchElementException("Driver not present in database")));
@@ -202,14 +202,14 @@ public class RideServiceImpl implements RideService {
 
     @Override
     public double billRide(long rideID) {
+        Ride currentRide = rideRepository.findById(rideID)
+                .orElseThrow(InvalidRideException::new);
+
+        if (currentRide.getStatus() != RideStatus.FINISHED) {
+            throw new InvalidRideException();
+        }
+
         try {
-            Ride currentRide = rideRepository.findById(rideID)
-                    .orElseThrow(InvalidRideException::new);
-
-            if (currentRide.getStatus() != RideStatus.FINISHED) {
-                throw new InvalidRideException();
-            }
-
             final double BASE_FARE = 50.0;
             final double PER_KM = 6.5;
             final double PER_MIN = 2.0;

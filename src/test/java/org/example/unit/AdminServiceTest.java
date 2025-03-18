@@ -31,7 +31,7 @@ class AdminServiceTest {
 
     @Test
     void removeDriver() {
-        String driverID = "D2";
+        long driverID = 2;
 
         when(driverRepository.existsById(driverID)).thenReturn(true);
         doNothing().when(driverRepository).deleteById(driverID);
@@ -45,9 +45,9 @@ class AdminServiceTest {
     void listNDriverDetails() {
         int N = 4;
         List<Driver> drivers = List.of(
-                new Driver("D1", 5, 5),
-                new Driver("D2", 2, 7),
-                new Driver("D3", 9, 3)
+                new Driver(1, 5, 5),
+                new Driver(2, 2, 7),
+                new Driver(3, 9, 3)
         );
 
         when(driverRepository.findTopNDrivers(N)).thenReturn(drivers);
@@ -55,9 +55,9 @@ class AdminServiceTest {
         List<DriverDTO> output = adminService.listNDriverDetails(N);
 
         List<DriverDTO> expected = List.of(
-                new DriverDTO("D1", 5, 5, 0f),
-                new DriverDTO("D2", 2, 7, 0f),
-                new DriverDTO("D3", 9, 3, 0f)
+                new DriverDTO(1, 5, 5, 0f),
+                new DriverDTO(2, 2, 7, 0f),
+                new DriverDTO(3, 9, 3, 0f)
         );
 
         assertEquals(expected, output, "Mismatch in driver details returned");
@@ -65,7 +65,7 @@ class AdminServiceTest {
 
     @Test
     void getDriverEarnings() {
-        String driverID = "D1";
+        long driverID = 1;
         Driver driver = new Driver(driverID, 5, 5);
         driver.setEarnings(150.0f);
 
@@ -80,12 +80,12 @@ class AdminServiceTest {
 
     @Test
     void removeNonExistentDriver_ThrowsException() {
-        String driverID = "D2";
+        long driverID = 2;
 
         when(driverRepository.existsById(driverID)).thenReturn(false);
 
         Exception exception = assertThrows(InvalidDriverIDException.class, () -> adminService.removeDriver(driverID));
 
-        assertEquals("INVALID_DRIVER_ID", exception.getMessage(), "Invalid driver ID exception should be thrown");
+        assertEquals("INVALID_DRIVER_ID 2", exception.getMessage(), "Invalid driver ID exception should be thrown");
     }
 }

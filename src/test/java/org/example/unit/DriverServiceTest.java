@@ -29,11 +29,11 @@ class DriverServiceTest {
 
     @Test
     void addDriver() {
-        Driver driver = new Driver("D1", 5, 8);
+        Driver driver = new Driver(1, 5, 8);
 
         when(driverRepository.save(any(Driver.class))).thenReturn(driver);
 
-        driverService.addDriver("D1", 5, 8);
+        driverService.addDriver(1, 5, 8);
 
         verify(driverRepository, times(1)).save(any(Driver.class));
     }
@@ -41,7 +41,7 @@ class DriverServiceTest {
 
     @Test
     void rateDriver() throws InvalidDriverIDException {
-        String driverID = "D1";
+        long driverID = 1;
         Driver driver = new Driver(driverID, 5, 8);
 
         when(driverRepository.findById(driverID)).thenReturn(Optional.of(driver));

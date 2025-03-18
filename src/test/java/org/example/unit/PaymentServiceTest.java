@@ -40,22 +40,20 @@ class PaymentServiceTest {
     @Autowired
     private PaymentService paymentService;
 
-    private Ride testRide;
     private Rider testRider;
-    private Driver testDriver;
 
     @BeforeEach
     void setUp() {
-        String rideID = "RIDE-001";
+        long rideID = 1;
 
-        String riderID = "R1";
+        long riderID = 1;
         testRider = new Rider(riderID, 0, 0);
-        testRider.setMatchedDrivers(List.of("D1", "D3"));
+        testRider.setMatchedDrivers(List.of(1L, 3L));
 
-        String driverID = "D3";
-        testDriver = new Driver(driverID, 2, 2);
+        long driverID = 3;
+        Driver testDriver = new Driver(driverID, 2, 2);
 
-        testRide = new Ride(rideID, testRider, testDriver);
+        Ride testRide = new Ride(rideID, testRider, testDriver);
         testRide.setDestinationCoordinates(List.of(4, 5));
         testRide.setTimeTakenInMins(32);
         testRide.setStatus(RideStatus.FINISHED);
@@ -71,74 +69,66 @@ class PaymentServiceTest {
 
     @Test
     void processCardPayment() {
-        paymentService.setPaymentMethod(PaymentMethodType.CARD);
-
         PaymentDetailsDTO expected = new PaymentDetailsDTO(
-                "P-RIDE-001",
-                "R1",
-                "D3",
+                0,
+                1,
+                3,
                 201.3F,
                 PaymentMethodType.CARD,
                 PaymentStatus.COMPLETE
         );
 
-        PaymentDetailsDTO response = paymentService.processPayment("RIDE-001");
+        PaymentDetailsDTO response = paymentService.processPayment(1, PaymentMethodType.CARD);
 
         assertEquals(expected, response, "Payment was not executed as expected");
     }
 
     @Test
     void processUPIPayment() {
-        paymentService.setPaymentMethod(PaymentMethodType.UPI);
-
         PaymentDetailsDTO expected = new PaymentDetailsDTO(
-                "P-RIDE-001",
-                "R1",
-                "D3",
+                0,
+                1,
+                3,
                 201.3F,
                 PaymentMethodType.UPI,
                 PaymentStatus.COMPLETE
         );
 
-        PaymentDetailsDTO response = paymentService.processPayment("RIDE-001");
+        PaymentDetailsDTO response = paymentService.processPayment(1, PaymentMethodType.UPI);
 
         assertEquals(expected, response, "Payment was not executed as expected");
     }
 
     @Test
     void processCashPayment() {
-        paymentService.setPaymentMethod(PaymentMethodType.CASH);
-
         PaymentDetailsDTO expected = new PaymentDetailsDTO(
-                "P-RIDE-001",
-                "R1",
-                "D3",
+                0,
+                1,
+                3,
                 201.3F,
                 PaymentMethodType.CASH,
                 PaymentStatus.COMPLETE
         );
 
-        PaymentDetailsDTO response = paymentService.processPayment("RIDE-001");
+        PaymentDetailsDTO response = paymentService.processPayment(1, PaymentMethodType.CASH);
 
         assertEquals(expected, response, "Payment was not executed as expected");
     }
 
     @Test
     void processWalletPayment() {
-        paymentService.setPaymentMethod(PaymentMethodType.WALLET);
-
         testRider.setWalletAmount(500F);
 
         PaymentDetailsDTO expected = new PaymentDetailsDTO(
-                "P-RIDE-001",
-                "R1",
-                "D3",
+                0,
+                1,
+                3,
                 201.3F,
                 PaymentMethodType.WALLET,
                 PaymentStatus.COMPLETE
         );
 
-        PaymentDetailsDTO response = paymentService.processPayment("RIDE-001");
+        PaymentDetailsDTO response = paymentService.processPayment(1, PaymentMethodType.WALLET);
 
         assertEquals(expected, response, "Payment was not executed as expected");
         assertEquals(298.7F, testRider.getWalletAmount(), 0.1, "Wallet was not deducted");
