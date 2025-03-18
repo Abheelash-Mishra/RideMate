@@ -186,7 +186,9 @@ public class RiderAppCLI {
                     break;
             }
         } catch (InvalidRideException | InvalidDriverIDException | NoDriversException e) {
-            System.out.println(e.getMessage());
+            log.warn("An error occurred | Exception: {}", e.getMessage(), e);
+        } catch (RuntimeException e) {
+            log.error("Something went wrong unexpectedly | Exception: {}", e.getMessage(), e);
         }
     }
 }
