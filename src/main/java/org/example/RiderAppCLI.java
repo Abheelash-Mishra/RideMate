@@ -44,29 +44,29 @@ public class RiderAppCLI {
     }
 
     public void start() {
-        System.out.println("CLI Mode Activated. Press `Enter` without any command typed in to quit.");
+        log.info("CLI Mode Activated. Type `QUIT` to exit.");
 
         while (scanner.hasNextLine()) {
-            String command = scanner.nextLine().trim();
-            if (command.isEmpty()) break;
-
-            processCommands(command);
+            String input = scanner.nextLine().trim();
+            processCommands(input);
         }
 
         scanner.close();
     }
 
-    public void processCommands(String command) {
-        String[] parts = command.split(" ");
-
-        int x_coordinate, y_coordinate, N;
-        long riderID, rideID, driverID;
-
-        StringBuilder output;
-
+    public void processCommands(String input) {
+        Command command = null;
         try {
-            switch (parts[0]) {
-                case "ADD_DRIVER":
+            String[] parts = input.split(" ");
+
+            command = Command.valueOf(parts[0].toUpperCase());
+
+            int x_coordinate, y_coordinate, N;
+            long riderID, rideID, driverID;
+            StringBuilder output;
+
+            switch (command) {
+                case ADD_DRIVER:
                     driverID = Long.parseLong(parts[1]);
                     x_coordinate = Integer.parseInt(parts[2]);
                     y_coordinate = Integer.parseInt(parts[3]);
@@ -74,7 +74,7 @@ public class RiderAppCLI {
                     driverService.addDriver(driverID, x_coordinate, y_coordinate);
                     break;
 
-                case "ADD_RIDER":
+                case ADD_RIDER:
                     riderID = Long.parseLong(parts[1]);
                     x_coordinate = Integer.parseInt(parts[2]);
                     y_coordinate = Integer.parseInt(parts[3]);
@@ -82,7 +82,7 @@ public class RiderAppCLI {
                     rideService.addRider(riderID, x_coordinate, y_coordinate);
                     break;
 
-                case "MATCH":
+                case MATCH:
                     riderID = Long.parseLong(parts[1]);
 
                     List<Long> matchedDrivers = rideService.matchRider(riderID).getMatchedDrivers();
@@ -98,7 +98,7 @@ public class RiderAppCLI {
                     log.info(String.valueOf(output));
                     break;
 
-                case "START_RIDE":
+                case START_RIDE:
                     rideID = Long.parseLong(parts[1]);
                     N = Integer.parseInt(parts[2]);
                     riderID = Long.parseLong(parts[3]);
@@ -107,7 +107,7 @@ public class RiderAppCLI {
                     log.info("RIDE_STARTED {}", rideID);
                     break;
 
-                case "STOP_RIDE":
+                case STOP_RIDE:
                     rideID = Long.parseLong(parts[1]);
                     int dest_x_coordinate = Integer.parseInt(parts[2]);
                     int dest_y_coordinate = Integer.parseInt(parts[3]);
@@ -117,7 +117,7 @@ public class RiderAppCLI {
                     log.info("RIDE_STOPPED {}", rideID);
                     break;
 
-                case "RATE_DRIVER":
+                case RATE_DRIVER:
                     driverID = Long.parseLong(parts[1]);
                     float rating = Float.parseFloat(parts[2]);
 
@@ -125,7 +125,7 @@ public class RiderAppCLI {
                     log.info("CURRENT_RATING {} {}", driverID, newRating);
                     break;
 
-                case "BILL":
+                case BILL:
                     rideID = Long.parseLong(parts[1]);
 
                     rideService.billRide(rideID);
@@ -135,7 +135,7 @@ public class RiderAppCLI {
                     log.info("BILL {} {} {}", rideID, currentRide.getDriver().getDriverID(), currentRide.getBill());
                     break;
 
-                case "PAY":
+                case PAY:
                     rideID = Long.parseLong(parts[1]);
                     String type = parts[2];
 
@@ -144,13 +144,12 @@ public class RiderAppCLI {
                     PaymentDetailsDTO paymentDetails = paymentService.processPayment(rideID, paymentMethodType);
                     if (paymentDetails.getPaymentStatus() == PaymentStatus.FAILED) {
                         log.info("LOW_BALANCE");
-                    }
-                    else {
+                    } else {
                         log.info("PAID {} {} VIA {}", paymentDetails.getReceiverID(), paymentDetails.getAmount(), paymentMethodType);
                     }
                     break;
 
-                case "ADD_MONEY":
+                case ADD_MONEY:
                     riderID = Long.parseLong(parts[1]);
                     float amount = Float.parseFloat(parts[2]);
 
@@ -158,7 +157,7 @@ public class RiderAppCLI {
                     log.info("CURRENT_BALANCE {} {}", riderID, balance);
                     break;
 
-                case "ADMIN_REMOVE_DRIVER":
+                case ADMIN_REMOVE_DRIVER:
                     driverID = Long.parseLong(parts[1]);
 
                     if (adminService.removeDriver(driverID)) {
@@ -166,7 +165,7 @@ public class RiderAppCLI {
                     }
                     break;
 
-                case "ADMIN_LIST_DRIVERS":
+                case ADMIN_LIST_DRIVERS:
                     N = Integer.parseInt(parts[1]);
 
                     List<DriverDTO> driverDetails = adminService.listNDriverDetails(N);
@@ -175,21 +174,37 @@ public class RiderAppCLI {
                     }
                     break;
 
-                case "ADMIN_VIEW_DRIVER_EARNINGS":
+                case ADMIN_VIEW_DRIVER_EARNINGS:
                     driverID = Long.parseLong(parts[1]);
 
                     float earnings = adminService.getDriverEarnings(driverID).getEarnings();
                     log.info("DRIVER_EARNINGS {} {}", driverID, earnings);
                     break;
 
-                default:
+                case QUIT:
                     break;
             }
         } catch (InvalidRideException | InvalidDriverIDException | NoDriversException e) {
             log.warn("An error occurred | Exception: {}", e.getMessage(), e);
         } catch (RuntimeException e) {
-            log.error("Something went wrong unexpectedly | Exception: {}", e.getMessage(), e);
+            log.warn("Something went wrong unexpectedly || Exception: {}", e.getMessage());
         }
+    }
+
+    private enum Command {
+        ADD_DRIVER,
+        ADD_RIDER,
+        MATCH,
+        START_RIDE,
+        STOP_RIDE,
+        RATE_DRIVER,
+        BILL,
+        PAY,
+        ADD_MONEY,
+        ADMIN_REMOVE_DRIVER,
+        ADMIN_LIST_DRIVERS,
+        ADMIN_VIEW_DRIVER_EARNINGS,
+        QUIT
     }
 }
 
