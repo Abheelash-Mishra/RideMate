@@ -8,6 +8,8 @@ import org.example.exceptions.InvalidDriverIDException;
 import org.example.repository.DriverRepository;
 import org.example.services.AdminService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -40,7 +42,8 @@ public class AdminServiceImpl implements AdminService {
     @Override
     public List<DriverDTO> listNDriverDetails(int N) {
         try {
-            List<Driver> drivers = driverRepository.findTopNDrivers(N);
+            Pageable topN = PageRequest.of(0, N);
+            List<Driver> drivers = driverRepository.findTopNDrivers(topN);
 
             log.info("Retrieved first N drivers successfully");
             return drivers.stream()

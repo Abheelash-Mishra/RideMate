@@ -11,6 +11,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 import java.util.List;
@@ -50,7 +52,8 @@ class AdminServiceTest {
                 new Driver(3, 9, 3)
         );
 
-        when(driverRepository.findTopNDrivers(N)).thenReturn(drivers);
+        Pageable topN = PageRequest.of(0, N);
+        when(driverRepository.findTopNDrivers(topN)).thenReturn(drivers);
 
         List<DriverDTO> output = adminService.listNDriverDetails(N);
 
