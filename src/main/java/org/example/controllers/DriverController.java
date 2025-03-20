@@ -29,6 +29,9 @@ public class DriverController {
 
             return ResponseEntity.status(HttpStatus.CREATED).body("Driver Added!");
         } catch (Exception e) {
+            log.error("Service failed to add driver '{}' to the database", driverID);
+            log.error("Exception: {}", e.getMessage(), e);
+
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Driver not added!");
         }
     }
