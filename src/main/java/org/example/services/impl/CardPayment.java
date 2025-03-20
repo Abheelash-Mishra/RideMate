@@ -33,7 +33,7 @@ public class CardPayment implements PaymentType {
     public PaymentDetailsDTO sendMoney(long rideID) {
         try {
             Ride currentRide = rideRepository.findById(rideID)
-                    .orElseThrow(() -> new InvalidRideException(rideID, new NoSuchElementException("Ride not present in database")));
+                    .orElseThrow(() -> new InvalidRideException("Invalid Ride ID - " + rideID, new NoSuchElementException("Ride not present in database")));
 
             Driver driver = currentRide.getDriver();
 

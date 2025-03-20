@@ -32,10 +32,10 @@ public class UpiPayment implements PaymentType {
 
     @Override
     public PaymentDetailsDTO sendMoney(long rideID) {
-        try {
-            Ride currentRide = rideRepository.findById(rideID)
-                    .orElseThrow(() -> new InvalidRideException(rideID, new NoSuchElementException("Ride not present in database")));
+        Ride currentRide = rideRepository.findById(rideID)
+                .orElseThrow(() -> new InvalidRideException("Invalid Ride ID - " + rideID, new NoSuchElementException("Ride not present in database")));
 
+        try {
             Driver driver = currentRide.getDriver();
 
             Payment paymentDetails = new Payment(

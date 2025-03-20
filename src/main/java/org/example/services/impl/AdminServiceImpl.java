@@ -25,7 +25,7 @@ public class AdminServiceImpl implements AdminService {
     @Override
     public boolean removeDriver(long driverID) {
         if (!driverRepository.existsById(driverID)) {
-            throw new InvalidDriverIDException(driverID, new NoSuchElementException("Driver not present in database"));
+            throw new InvalidDriverIDException("Invalid Driver ID - " + driverID, new NoSuchElementException("Driver not present in database"));
         }
 
         try {
@@ -64,7 +64,7 @@ public class AdminServiceImpl implements AdminService {
     @Override
     public DriverEarningsDTO getDriverEarnings(long driverID) {
         Driver driver = driverRepository.findById(driverID)
-                .orElseThrow(() -> new InvalidDriverIDException(driverID, new NoSuchElementException("Driver not present in database")));
+                .orElseThrow(() -> new InvalidDriverIDException("Invalid Driver ID - " + driverID, new NoSuchElementException("Driver not present in database")));
 
         log.info("Retrieved earnings of driver '{}' successfully", driverID);
         return new DriverEarningsDTO(driverID, driver.getEarnings());

@@ -108,7 +108,8 @@ class CLITest {
                 RIDE_STOPPED 101
                 RIDE_STOPPED 102
                 BILL 101 2 234.6
-                BILL 102 1 258.0""";
+                BILL 102 1 258.0
+                """;
 
         runTest(input, expectedOutput);
     }
@@ -132,7 +133,8 @@ class CLITest {
                 RIDE_STARTED 1
                 RIDE_STOPPED 1
                 BILL 1 3 186.7
-                CURRENT_RATING 3 4.5""";
+                CURRENT_RATING 3 4.5
+                """;
 
         runTest(input, expectedOutput);
     }
@@ -160,7 +162,8 @@ class CLITest {
                 RIDE_STOPPED 1
                 BILL 1 3 186.7
                 PAID 3 186.7 VIA WALLET
-                DRIVER_EARNINGS 3 186.7""";
+                DRIVER_EARNINGS 3 186.7
+                """;
 
         runTest(input, expectedOutput);
     }
@@ -186,7 +189,8 @@ class CLITest {
                 RIDE_STARTED 1
                 RIDE_STOPPED 1
                 BILL 1 3 186.7
-                LOW_BALANCE""";
+                LOW_BALANCE
+                """;
 
         runTest(input, expectedOutput);
     }
@@ -214,7 +218,8 @@ class CLITest {
                 RIDE_STOPPED 1
                 BILL 1 3 186.7
                 PAID 3 186.7 VIA CASH
-                DRIVER_EARNINGS 3 186.7""";
+                DRIVER_EARNINGS 3 186.7
+                """;
 
         runTest(input, expectedOutput);
     }
@@ -242,7 +247,8 @@ class CLITest {
                 RIDE_STOPPED 1
                 BILL 1 3 186.7
                 PAID 3 186.7 VIA CARD
-                DRIVER_EARNINGS 3 186.7""";
+                DRIVER_EARNINGS 3 186.7
+                """;
 
         runTest(input, expectedOutput);
     }
@@ -270,7 +276,8 @@ class CLITest {
                 RIDE_STOPPED 1
                 BILL 1 3 186.7
                 PAID 3 186.7 VIA UPI
-                DRIVER_EARNINGS 3 186.7""";
+                DRIVER_EARNINGS 3 186.7
+                """;
 
         runTest(input, expectedOutput);
     }
@@ -286,7 +293,8 @@ class CLITest {
 
         String expectedOutput = """
                 NO_DRIVERS_AVAILABLE
-                NO_DRIVERS_AVAILABLE""";
+                NO_DRIVERS_AVAILABLE
+                """;
 
         runTest(input, expectedOutput);
     }
@@ -311,9 +319,10 @@ class CLITest {
                 DRIVERS_MATCHED 2 3 1
                 DRIVERS_MATCHED 1 2 3
                 RIDE_STARTED 101
-                INVALID_RIDE
+                Invalid Ride ID - 101
                 RIDE_STOPPED 101
-                BILL 101 2 234.6""";
+                BILL 101 2 234.6
+                """;
 
         runTest(input, expectedOutput);
     }
@@ -338,9 +347,10 @@ class CLITest {
                 DRIVERS_MATCHED 2 3 1
                 DRIVERS_MATCHED 1 2 3
                 RIDE_STARTED 101
-                INVALID_RIDE
+                Invalid Ride - 102
                 RIDE_STOPPED 101
-                BILL 101 2 234.6""";
+                BILL 101 2 234.6
+                """;
 
         runTest(input, expectedOutput);
     }
@@ -365,9 +375,10 @@ class CLITest {
                 DRIVERS_MATCHED 2 3 1
                 DRIVERS_MATCHED 1 2 3
                 RIDE_STARTED 101
-                INVALID_RIDE
+                Invalid Ride - 102
                 RIDE_STOPPED 101
-                BILL 101 2 234.6""";
+                BILL 101 2 234.6
+                """;
 
         runTest(input, expectedOutput);
     }
@@ -390,7 +401,7 @@ class CLITest {
                 DRIVERS_MATCHED 1 3
                 RIDE_STARTED 1
                 RIDE_STOPPED 1
-                INVALID_RIDE
+                Invalid Ride Status - 1
                 BILL 1 3 186.7""";
 
         runTest(input, expectedOutput);
@@ -414,7 +425,7 @@ class CLITest {
                 DRIVERS_MATCHED 1 3
                 RIDE_STARTED 1
                 RIDE_STOPPED 1
-                INVALID_RIDE
+                Invalid Ride ID - 999
                 BILL 1 3 186.7""";
 
         runTest(input, expectedOutput);
@@ -468,7 +479,7 @@ class CLITest {
                 RIDE_STARTED 1
                 RIDE_STOPPED 1
                 BILL 1 3 186.7
-                INVALID_DRIVER_ID
+                Invalid Driver ID - 99
                 """;
 
         runTest(input, expectedOutput);

@@ -42,8 +42,7 @@ public class RideServiceImpl implements RideService {
             if (riderRepository.existsById(riderID)) {
                 log.warn("Rider with ID '{}' already exists in the database", riderID);
 
-                throw new RecordAlreadyExistsException("Duplicate rider ID - " + riderID,
-                        new DataIntegrityViolationException("Rider already exists"));
+                throw new RecordAlreadyExistsException("Duplicate Rider ID - " + riderID);
             }
 
             Rider rider = new Rider(riderID, x_coordinate, y_coordinate);
@@ -189,6 +188,7 @@ public class RideServiceImpl implements RideService {
             driver.setAvailable(true);
             driverRepository.save(driver);
 
+            // Code breaks because the ride does not save if we don't use new ArrayList<>
             currentRide.setDestinationCoordinates(new ArrayList<>(List.of(destX, destY)));
             currentRide.setTimeTakenInMins(timeTakenInMins);
             currentRide.setStatus(RideStatus.FINISHED);
