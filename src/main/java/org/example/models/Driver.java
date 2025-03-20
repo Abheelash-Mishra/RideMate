@@ -29,6 +29,6 @@ public class Driver {
 
     public Driver(long driverID, int x_coordinate, int y_coordinate) {
         this.driverID = driverID;
-        this.coordinates = new ArrayList<>(List.of(x_coordinate, y_coordinate));
+        this.coordinates = List.of(x_coordinate, y_coordinate);
     }
 }

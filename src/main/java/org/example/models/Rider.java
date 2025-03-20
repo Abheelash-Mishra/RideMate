@@ -25,6 +25,6 @@ public class Rider {
 
     public Rider(long riderID, int x_coordinate, int y_coordinate) {
         this.riderID = riderID;
-        this.coordinates = new ArrayList<>(List.of(x_coordinate, y_coordinate));
+        this.coordinates = List.of(x_coordinate, y_coordinate);
     }
 }
