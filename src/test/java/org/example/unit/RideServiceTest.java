@@ -181,14 +181,14 @@ class RideServiceTest {
 
         Exception exception = Assertions.assertThrows(InvalidDriverIDException.class, () -> rideService.startRide(rideID, 2, riderID));
 
-        assertEquals("INVALID_DRIVER_ID 3", exception.getMessage(), "Ride should not be started with this driver");
+        assertEquals("Invalid Driver ID - 3", exception.getMessage(), "Ride should not be started with this driver");
     }
 
     @Test
     void stopInvalidRide_ThrowsException() {
         Exception exception = Assertions.assertThrows(InvalidRideException.class, () -> rideService.stopRide(1, 4, 5, 32));
 
-        assertEquals("INVALID_RIDE 1", exception.getMessage(), "There is no ride that can be stopped");
+        assertEquals("Invalid Ride ID - 1", exception.getMessage(), "There is no ride that can be stopped");
     }
 
     @Test
@@ -211,6 +211,6 @@ class RideServiceTest {
 
         Exception exception = Assertions.assertThrows(InvalidRideException.class, () -> rideService.billRide(1));
 
-        assertEquals("INVALID_RIDE 1", exception.getMessage(), "Unfinished ride should not be billed");
+        assertEquals("Invalid Ride ID - 1", exception.getMessage(), "Unfinished ride should not be billed");
     }
 }

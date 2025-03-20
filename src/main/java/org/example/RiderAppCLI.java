@@ -148,7 +148,7 @@ public class RiderAppCLI {
 
                     rideService.billRide(rideID);
                     Ride currentRide = rideRepository.findById(rideID)
-                            .orElseThrow(() -> new InvalidRideException(rideID, new NoSuchElementException("Ride not present in database")));
+                            .orElseThrow(() -> new InvalidRideException("Invalid Ride ID - " + rideID, new NoSuchElementException("Ride not present in database")));
 
                     log.info("BILL {} {} {}", rideID, currentRide.getDriver().getDriverID(), currentRide.getBill());
                     break;

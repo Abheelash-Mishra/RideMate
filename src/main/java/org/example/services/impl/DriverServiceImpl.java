@@ -30,7 +30,7 @@ public class DriverServiceImpl implements DriverService {
         log.info("Fetching details of driver '{}'...", driverID);
 
         Driver driver = driverRepository.findById(driverID)
-                .orElseThrow(() -> new InvalidDriverIDException(driverID, new NoSuchElementException("Driver not present in database")));
+                .orElseThrow(() -> new InvalidDriverIDException("Invalid driver ID - " +  driverID, new NoSuchElementException("Driver not present in database")));
 
         driver.setRidesDone(driver.getRidesDone() + 1);
         driver.setRatingSum(driver.getRatingSum() + rating);
