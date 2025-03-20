@@ -32,8 +32,10 @@ public class AdminServiceImpl implements AdminService {
             log.info("Removing driver '{}' from the database", driverID);
             driverRepository.deleteById(driverID);
             return true;
-        } catch (RuntimeException e) {
-            log.error("Unexpected error while attempting to remove driver '{}' | Error: {}", driverID, e.getMessage(), e);
+        } catch (Exception e) {
+            log.error("Unexpected error while attempting to remove driver '{}'", driverID);
+            log.error("Exception: {}", e.getMessage(), e);
+
             throw new RuntimeException("Failed to remove driver " + driverID, e);
         }
     }
@@ -55,7 +57,9 @@ public class AdminServiceImpl implements AdminService {
                     ))
                     .collect(Collectors.toList());
         } catch (Exception e) {
-            log.error("Unexpected error while fetching first {} drivers in database | Error: {}", N, e.getMessage(), e);
+            log.error("Unexpected error while fetching first {} drivers in database", N);
+            log.error("Exception: {}", e.getMessage(), e);
+
             throw new RuntimeException("Failed to fetch driver details", e);
         }
     }

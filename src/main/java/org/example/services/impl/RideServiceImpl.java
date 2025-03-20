@@ -51,7 +51,9 @@ public class RideServiceImpl implements RideService {
         } catch (RecordAlreadyExistsException e) {
             throw e;
         } catch (Exception e) {
-            log.error("Unexpected error while adding new rider | riderID={} | Error: {}", riderID, e.getMessage(), e);
+            log.error("Unexpected error while adding new rider '{}'", riderID);
+            log.error("Exception: {}", e.getMessage(), e);
+
             throw new RuntimeException("Failed to add rider with ID " + riderID, e);
         }
     }
@@ -95,7 +97,9 @@ public class RideServiceImpl implements RideService {
 
             return driversMatched(rider, nearestDrivers);
         } catch (Exception e) {
-            log.error("Unexpected error while matching drivers | riderID={} | Error: {}", riderID, e.getMessage(), e);
+            log.error("Unexpected error while matching drivers with rider '{}'", riderID);
+            log.error("Exception: {}", e.getMessage(), e);
+
             throw new RuntimeException("Failed to match a driver for rider  " + riderID, e);
         }
     }
@@ -164,7 +168,9 @@ public class RideServiceImpl implements RideService {
 
             return new RideStatusDTO(rideID, riderID, driverID, RideStatus.ONGOING);
         } catch (Exception e) {
-            log.error("Unexpected error while starting a ride | Error: {}", e.getMessage(), e);
+            log.error("Unexpected error while starting a ride {}", rideID);
+            log.error("Exception: {}", e.getMessage(), e);
+
             throw new RuntimeException("Failed to start a ride for rider " + riderID, e);
         }
     }
@@ -197,7 +203,9 @@ public class RideServiceImpl implements RideService {
 
             return new RideStatusDTO(rideID, currentRide.getRider().getRiderID(), currentRide.getDriver().getDriverID(), RideStatus.FINISHED);
         } catch (Exception e) {
-            log.error("Unexpected error while stopping ride '{}' | Error: {}", rideID, e.getMessage(), e);
+            log.error("Unexpected error while stopping ride '{}'", rideID);
+            log.error("Exception: {}", e.getMessage(), e);
+
             throw new RuntimeException("Failed to stop ride " + rideID, e);
         }
     }
@@ -237,7 +245,9 @@ public class RideServiceImpl implements RideService {
 
             return currentRide.getBill();
         } catch (Exception e) {
-            log.error("Unexpected error while generating bill for ride '{}' | Error: {}", rideID, e.getMessage(), e);
+            log.error("Unexpected error while generating bill for ride '{}'", rideID);
+            log.error("Exception: {}", e.getMessage(), e);
+
             throw new RuntimeException("Failed to generate bill for ride " + rideID, e);
         }
     }

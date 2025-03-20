@@ -63,7 +63,9 @@ public class UpiPayment implements PaymentType {
                     paymentDetails.getPaymentStatus()
             );
         } catch (Exception e) {
-            log.error("Unexpected error while attempting UPI payment for ride '{}' | Error: {}", rideID, e.getMessage(), e);
+            log.error("Unexpected error while attempting UPI payment for ride '{}'", rideID);
+            log.error("Exception: {}", e.getMessage(), e);
+
             throw new RuntimeException("Payment failed for ride " + rideID, e);
         }
     }

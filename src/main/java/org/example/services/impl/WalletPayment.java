@@ -98,7 +98,9 @@ public class WalletPayment implements PaymentType {
                     paymentDetails.getPaymentStatus()
             );
         } catch (Exception e) {
-            log.error("Unexpected error while attempting wallet payment for ride '{}' | Error: {}", rideID, e.getMessage(), e);
+            log.error("Unexpected error while attempting wallet payment for ride '{}'", rideID);
+            log.error("Exception: {}", e.getMessage(), e);
+
             throw new RuntimeException("Payment failed for ride " + rideID, e);
         }
     }
@@ -115,7 +117,9 @@ public class WalletPayment implements PaymentType {
 
             return rider.getWalletAmount();
         } catch (InvalidRiderIDException e) {
-            log.error("Unexpected error while adding funds to wallet of rider '{}' | Error: {}", riderID, e.getMessage(), e);
+            log.error("Unexpected error while adding funds to wallet of rider '{}'", riderID);
+            log.error("Exception: {}", e.getMessage(), e);
+
             throw new RuntimeException("Wallet recharge failed for rider " + riderID, e);
         }
     }

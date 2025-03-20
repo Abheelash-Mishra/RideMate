@@ -62,7 +62,9 @@ public class CardPayment implements PaymentType {
                     paymentDetails.getPaymentStatus()
             );
         } catch (Exception e) {
-            log.error("Unexpected error while attempting card payment for ride '{}' | Error: {}", rideID, e.getMessage(), e);
+            log.error("Unexpected error while attempting card payment for ride '{}'", rideID);
+            log.error("Exception: {}", e.getMessage(), e);
+
             throw new RuntimeException("Payment failed for ride " + rideID, e);
         }
     }
