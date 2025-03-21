@@ -4,7 +4,6 @@ import org.example.dto.PaymentDetailsDTO;
 import org.example.models.PaymentMethodType;
 import org.example.services.PaymentType;
 import org.example.services.PaymentService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
@@ -16,7 +15,6 @@ public class PaymentServiceImpl implements PaymentService {
 
     private PaymentType paymentMethod;
 
-    @Autowired
     public PaymentServiceImpl(List<PaymentType> paymentImplementations) {
         this.paymentMethods = new HashMap<>();
 
