@@ -36,7 +36,7 @@ public class AdminController {
             log.error("Could not list drivers unexpectedly");
             log.error("Exception: {}", e.getMessage(), e);
 
-            throw new RuntimeException("Drivers could not be listed", e);
+            throw new RuntimeException("Drivers could not be listed due to a server error, please try again later", e);
         }
     }
 

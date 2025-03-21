@@ -5,7 +5,6 @@ import org.example.dto.PaymentDetailsDTO;
 import org.example.models.PaymentMethodType;
 import org.example.services.PaymentService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -28,9 +27,10 @@ public class PaymentController {
 
             return ResponseEntity.ok(paymentService.processPayment(rideID, type));
         } catch (Exception e) {
-            log.error("Could not complete payment unexpectedly | Exception: {}", e.getMessage(), e);
+            log.error("Could not complete payment unexpectedly for ride '{}' via {}", rideID, paymentMethodType);
+            log.error("Exception: {}", e.getMessage(), e);
 
-            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+            throw new RuntimeException("Payment failed unexpectedly, please try again later", e);
         }
     }
 
@@ -43,9 +43,10 @@ public class PaymentController {
 
             return ResponseEntity.ok(balance);
         } catch (Exception e) {
-            log.error("Could not add money to the rider's wallet unexpectedly | Exception: {}", e.getMessage(), e);
+            log.error("Could not add funds to the rider {}'s wallet unexpectedly", riderID);
+            log.error("Exception: {}", e.getMessage(), e);
 
-            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+            throw new RuntimeException("Wallet recharge failed unexpectedly, please try again later", e);
         }
     }
 }
