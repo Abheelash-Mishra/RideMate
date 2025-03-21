@@ -9,7 +9,6 @@ import org.example.services.DriverService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.NoSuchElementException;
 
 @Slf4j
 @Service
@@ -30,7 +29,7 @@ public class DriverServiceImpl implements DriverService {
         log.info("Fetching details of driver '{}'...", driverID);
 
         Driver driver = driverRepository.findById(driverID)
-                .orElseThrow(() -> new InvalidDriverIDException("Invalid driver ID - " +  driverID, new NoSuchElementException("Driver not present in database")));
+                .orElseThrow(() -> new InvalidDriverIDException("Invalid driver ID - " +  driverID + ", no such driver exists"));
 
         driver.setRidesDone(driver.getRidesDone() + 1);
         driver.setRatingSum(driver.getRatingSum() + rating);

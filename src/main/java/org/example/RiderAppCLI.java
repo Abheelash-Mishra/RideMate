@@ -17,7 +17,6 @@ import org.springframework.stereotype.Component;
 
 import java.util.HashMap;
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.Scanner;
 
 @Slf4j
@@ -148,7 +147,7 @@ public class RiderAppCLI {
 
                     rideService.billRide(rideID);
                     Ride currentRide = rideRepository.findById(rideID)
-                            .orElseThrow(() -> new InvalidRideException("Invalid Ride ID - " + rideID, new NoSuchElementException("Ride not present in database")));
+                            .orElseThrow(() -> new InvalidRideException("Invalid Ride ID - " + rideID + ", no such ride exists"));
 
                     log.info("BILL {} {} {}", rideID, currentRide.getDriver().getDriverID(), currentRide.getBill());
                     break;

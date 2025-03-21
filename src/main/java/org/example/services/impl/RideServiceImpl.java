@@ -64,7 +64,7 @@ public class RideServiceImpl implements RideService {
         final double LIMIT = 5.0;
 
         Rider rider = riderRepository.findById(riderID)
-                .orElseThrow(() -> new InvalidRiderIDException("Invalid Rider ID - " + riderID, new NoSuchElementException("Rider not present in database")));
+                .orElseThrow(() -> new InvalidRiderIDException("Invalid Rider ID - " + riderID + ", no such rider exists"));
 
         List<Driver> allDrivers = driverRepository.findAll();
 
@@ -138,7 +138,7 @@ public class RideServiceImpl implements RideService {
         }
 
         Rider rider = riderRepository.findById(riderID)
-                .orElseThrow(() -> new InvalidRiderIDException("Invalid Rider ID - " + riderID, new NoSuchElementException("Rider not present in database")));
+                .orElseThrow(() -> new InvalidRiderIDException("Invalid Rider ID - " + riderID + ", no such rider exists"));
 
         List<Long> matchedDrivers = rider.getMatchedDrivers();
 
@@ -148,10 +148,10 @@ public class RideServiceImpl implements RideService {
 
         long driverID = matchedDrivers.get(N - 1);
         Driver driver = driverRepository.findById(driverID)
-                .orElseThrow(() -> new InvalidDriverIDException("Invalid Driver ID - " + driverID, new NoSuchElementException("Driver not present in database")));
+                .orElseThrow(() -> new InvalidDriverIDException("Invalid Driver ID - " + driverID + ", no such driver exists"));
 
         if (!driver.isAvailable()) {
-            throw new InvalidRideException("Invalid Ride - " + rideID, new UnsupportedOperationException("Driver is already preoccupied with another ride"));
+            throw new InvalidRideException("Invalid Ride - " + rideID + ", driver is already preoccupied with another ride");
         }
 
         try {
@@ -179,15 +179,15 @@ public class RideServiceImpl implements RideService {
     @Override
     public RideStatusDTO stopRide(long rideID, int destX, int destY, int timeTakenInMins) {
         Ride currentRide = rideRepository.findById(rideID)
-                .orElseThrow(() -> new InvalidRideException("Invalid Ride ID - " + rideID, new NoSuchElementException("Ride does not exist in database")));
+                .orElseThrow(() -> new InvalidRideException("Invalid Ride ID - " + rideID + ", no such ride exists"));
 
         if (currentRide.getStatus() == RideStatus.FINISHED) {
-            throw new InvalidRideException("Invalid Ride Status - " + rideID, new IllegalStateException("Ride already finished"));
+            throw new InvalidRideException("Invalid Ride Status - " + rideID + ", ride already finished");
         }
 
         long driverID = currentRide.getDriver().getDriverID();
         Driver driver = driverRepository.findById(driverID)
-                .orElseThrow(() -> new InvalidDriverIDException("Invalid Driver ID - " + driverID, new NoSuchElementException("Driver not present in database")));
+                .orElseThrow(() -> new InvalidDriverIDException("Invalid Driver ID - " + driverID + ", no such driver exists"));
 
         try {
             driver.setAvailable(true);

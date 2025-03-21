@@ -16,7 +16,6 @@ import org.example.models.PaymentMethodType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.util.NoSuchElementException;
 
 @Slf4j
 @Component
@@ -36,15 +35,15 @@ public class WalletPayment implements PaymentType {
     @Override
     public PaymentDetailsDTO sendMoney(long rideID) {
         Ride currentRide = rideRepository.findById(rideID)
-                .orElseThrow(() -> new InvalidRideException("Invalid Ride ID - " + rideID, new NoSuchElementException("Ride not present in database")));
+                .orElseThrow(() -> new InvalidRideException("Invalid Ride ID - " + rideID + ", no such ride exists"));
 
         long riderID = currentRide.getRider().getRiderID();
         Rider rider = riderRepository.findById(riderID)
-                .orElseThrow(() -> new InvalidRiderIDException("Invalid Rider ID - " + riderID, new NoSuchElementException("Rider not present in database")));
+                .orElseThrow(() -> new InvalidRiderIDException("Invalid Rider ID - " + riderID + ", no such rider exists"));
 
         long driverID = currentRide.getDriver().getDriverID();
         Driver driver = driverRepository.findById(driverID)
-                .orElseThrow(() -> new InvalidDriverIDException("Invalid Driver ID - " + driverID, new NoSuchElementException("Driver not present in database")));
+                .orElseThrow(() -> new InvalidDriverIDException("Invalid Driver ID - " + driverID + ", no such driver exists"));
 
 
         try {
@@ -108,7 +107,7 @@ public class WalletPayment implements PaymentType {
     public float addMoney(long riderID, float amount) {
         try {
             Rider rider = riderRepository.findById(riderID)
-                    .orElseThrow(() -> new InvalidRiderIDException("Invalid Rider ID - " + riderID, new NoSuchElementException("Rider not present in database")));
+                    .orElseThrow(() -> new InvalidRiderIDException("Invalid Rider ID - " + riderID + ", no such ride exists"));
 
             rider.setWalletAmount(rider.getWalletAmount() + amount);
             riderRepository.save(rider);

@@ -15,7 +15,6 @@ import org.example.models.PaymentMethodType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.util.NoSuchElementException;
 
 @Slf4j
 @Component
@@ -33,7 +32,7 @@ public class CardPayment implements PaymentType {
     public PaymentDetailsDTO sendMoney(long rideID) {
         try {
             Ride currentRide = rideRepository.findById(rideID)
-                    .orElseThrow(() -> new InvalidRideException("Invalid Ride ID - " + rideID, new NoSuchElementException("Ride not present in database")));
+                    .orElseThrow(() -> new InvalidRideException("Invalid Ride ID - " + rideID + ", no such ride exists"));
 
             Driver driver = currentRide.getDriver();
 

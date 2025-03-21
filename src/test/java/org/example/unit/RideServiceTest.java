@@ -181,14 +181,14 @@ class RideServiceTest {
 
         Exception exception = Assertions.assertThrows(InvalidDriverIDException.class, () -> rideService.startRide(rideID, 2, riderID));
 
-        assertEquals("Invalid Driver ID - 3", exception.getMessage(), "Ride should not be started with this driver");
+        assertEquals("Invalid Driver ID - 3, no such driver exists", exception.getMessage(), "Ride should not be started with this driver");
     }
 
     @Test
     void stopInvalidRide_ThrowsException() {
         Exception exception = Assertions.assertThrows(InvalidRideException.class, () -> rideService.stopRide(1, 4, 5, 32));
 
-        assertEquals("Invalid Ride ID - 1", exception.getMessage(), "There is no ride that can be stopped");
+        assertEquals("Invalid Ride ID - 1, no such ride exists", exception.getMessage(), "There is no ride that can be stopped");
     }
 
     @Test
