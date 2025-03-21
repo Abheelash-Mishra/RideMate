@@ -13,7 +13,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -25,7 +24,7 @@ public class AdminServiceImpl implements AdminService {
     @Override
     public boolean removeDriver(long driverID) {
         if (!driverRepository.existsById(driverID)) {
-            throw new InvalidDriverIDException("Invalid Driver ID - " + driverID, new NoSuchElementException("Driver not present in database"));
+            throw new InvalidDriverIDException("Invalid Driver ID - " + driverID + ", no such driver exists");
         }
 
         try {
@@ -68,7 +67,7 @@ public class AdminServiceImpl implements AdminService {
     @Override
     public DriverEarningsDTO getDriverEarnings(long driverID) {
         Driver driver = driverRepository.findById(driverID)
-                .orElseThrow(() -> new InvalidDriverIDException("Invalid Driver ID - " + driverID, new NoSuchElementException("Driver not present in database")));
+                .orElseThrow(() -> new InvalidDriverIDException("Invalid Driver ID - " + driverID + ", no such driver exists"));
 
         log.info("Retrieved earnings of driver '{}' successfully", driverID);
         return new DriverEarningsDTO(driverID, driver.getEarnings());

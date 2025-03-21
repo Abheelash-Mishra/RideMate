@@ -89,6 +89,6 @@ class AdminServiceTest {
 
         Exception exception = assertThrows(InvalidDriverIDException.class, () -> adminService.removeDriver(driverID));
 
-        assertEquals("Invalid Driver ID - 2", exception.getMessage(), "Invalid driver ID exception should be thrown");
+        assertEquals("Invalid Driver ID - 2, no such driver exists", exception.getMessage(), "Invalid driver ID exception should be thrown");
     }
 }
