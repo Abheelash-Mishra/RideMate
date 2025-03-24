@@ -10,7 +10,6 @@ import java.util.List;
 @Entity
 @Data
 @NoArgsConstructor
-@NamedQuery(name = "Driver.findTopNDrivers", query = "SELECT d FROM Driver d")
 public class Driver {
     @Id
     private long driverID;
