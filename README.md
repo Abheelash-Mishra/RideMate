@@ -11,8 +11,8 @@ RiderApp is a console-based and RESTAPI-enabled ride-hailing application written
 
 ---
 
-## Models
-![model_diagram.png](model_diagram.png)
+## ER Diagram
+![ER Diagram.jpg](ER%20Diagram.jpg)
 
 ---
 ## Installation & Setup
