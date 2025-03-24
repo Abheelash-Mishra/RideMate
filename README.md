@@ -18,7 +18,7 @@ RiderApp is a console-based and RESTAPI-enabled ride-hailing application written
 ## Installation & Setup
 ### **1. Clone the Repository**
 ```sh
-git clone https://github.com/Abheelash-Mishra/riderapp.git
+git clone https://github.com/Abheelash-Mishra/RideMate.git
 cd riderapp
 ```
 
@@ -52,7 +52,7 @@ Since RiderApp is a Spring Boot application, it has an embedded Apache Tomcat se
    ```sh
    java -jar target/riderapp-1.0.jar
    ```
-   
+         
 2. Access the API at `http://localhost:8080/`
 
 
