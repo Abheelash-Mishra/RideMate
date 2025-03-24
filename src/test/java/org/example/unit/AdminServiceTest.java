@@ -1,94 +1,91 @@
 package org.example.unit;
 
-
-import org.example.config.TestConfig;
 import org.example.dto.DriverDTO;
-import org.example.repository.Database;
+import org.example.dto.DriverEarningsDTO;
 import org.example.models.Driver;
+import org.example.repository.DriverRepository;
+import org.example.services.AdminService;
 import org.junit.jupiter.api.Test;
-import org.example.services.admin.AdminService;
 import org.example.exceptions.InvalidDriverIDException;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
-import java.util.HashMap;
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
-@ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = TestConfig.class)
+@SpringBootTest
+@ExtendWith(MockitoExtension.class)
 class AdminServiceTest {
-    @Autowired
-    private Database mockDB;
+
+    @MockitoBean
+    private DriverRepository driverRepository;
 
     @Autowired
-    @InjectMocks
     private AdminService adminService;
 
     @Test
     void removeDriver() {
-        String driverID = "D2";
-        HashMap<String, Driver> drivers = new HashMap<>();
+        long driverID = 2;
 
-        drivers.put("D1", new Driver("D1", 5, 5));
-        drivers.put("D2", new Driver("D2", 2, 7));
-        drivers.put("D3", new Driver("D3", 9, 3));
-
-        when(mockDB.getDriverDetails()).thenReturn(drivers);
+        when(driverRepository.existsById(driverID)).thenReturn(true);
+        doNothing().when(driverRepository).deleteById(driverID);
 
         adminService.removeDriver(driverID);
 
-        assertFalse(mockDB.getDriverDetails().containsKey(driverID));
+        verify(driverRepository, times(1)).deleteById(driverID);
     }
 
     @Test
     void listNDriverDetails() {
         int N = 4;
-        HashMap<String, Driver> drivers = new HashMap<>();
+        List<Driver> drivers = List.of(
+                new Driver(1, 5, 5),
+                new Driver(2, 2, 7),
+                new Driver(3, 9, 3)
+        );
 
-        drivers.put("D1", new Driver("D1", 5, 5));
-        drivers.put("D2", new Driver("D2", 2, 7));
-        drivers.put("D3", new Driver("D3", 9, 3));
-
-        when(mockDB.getDriverDetails()).thenReturn(drivers);
+        when(driverRepository.findFirstNDrivers(N)).thenReturn(drivers);
 
         List<DriverDTO> output = adminService.listNDriverDetails(N);
 
-        // Expected output list
         List<DriverDTO> expected = List.of(
-                new DriverDTO("D1", 5, 5, 0f),
-                new DriverDTO("D2", 2, 7, 0f),
-                new DriverDTO("D3", 9, 3, 0f)
+                new DriverDTO(1, 5, 5, 0f),
+                new DriverDTO(2, 2, 7, 0f),
+                new DriverDTO(3, 9, 3, 0f)
         );
 
-        assertEquals(expected.size(), output.size(), "List size should match");
-
-        for (int i = 0; i < expected.size(); i++) {
-            assertEquals(expected.get(i), output.get(i), "Driver details should match");
-        }
+        assertEquals(expected, output, "Mismatch in driver details returned");
     }
 
     @Test
+    void getDriverEarnings() {
+        long driverID = 1;
+        Driver driver = new Driver(driverID, 5, 5);
+        driver.setEarnings(150.0f);
+
+        when(driverRepository.findById(driverID)).thenReturn(Optional.of(driver));
+
+        DriverEarningsDTO result = adminService.getDriverEarnings(driverID);
+
+        assertEquals(driverID, result.getDriverID(), "Driver ID does not match");
+        assertEquals(150.0f, result.getEarnings(), "Driver's earnings do not match");
+    }
+
+
+    @Test
     void removeNonExistentDriver_ThrowsException() {
-        String driverID = "D2";
-        HashMap<String, Driver> drivers = new HashMap<>();
+        long driverID = 2;
 
-        drivers.put("D1", new Driver("D1", 5, 5));
-        drivers.put("D3", new Driver("D3", 9, 3));
+        when(driverRepository.existsById(driverID)).thenReturn(false);
 
-        when(mockDB.getDriverDetails()).thenReturn(drivers);
+        Exception exception = assertThrows(InvalidDriverIDException.class, () -> adminService.removeDriver(driverID));
 
-        Exception exception = assertThrows(InvalidDriverIDException.class, () -> {
-            adminService.removeDriver(driverID);
-        });
-
-
-        assertEquals("INVALID_DRIVER_ID", exception.getMessage(), "There is no driver that can be deleted");
+        assertEquals("Invalid Driver ID - 2, no such driver exists", exception.getMessage(), "Invalid driver ID exception should be thrown");
     }
 }

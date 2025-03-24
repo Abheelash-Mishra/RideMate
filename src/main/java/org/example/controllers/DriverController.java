@@ -1,14 +1,15 @@
 package org.example.controllers;
 
-import org.example.services.driver.DriverService;
+import lombok.extern.slf4j.Slf4j;
+import org.example.dto.DriverRatingDTO;
+import org.example.services.DriverService;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Map;
-
+@Slf4j
 @RestController
 @RequestMapping("/driver")
 public class DriverController {
@@ -17,19 +18,31 @@ public class DriverController {
 
     @PostMapping("/add")
     public ResponseEntity<String> addDriver(
-            @RequestParam("driverID") String driverID,
+            @RequestParam("driverID") long driverID,
             @RequestParam("x") int x,
             @RequestParam("y") int y
     ) {
-        driverService.addDriver(driverID, x, y);
-        return ResponseEntity.status(HttpStatus.CREATED).body("Driver Added!");
+        log.info("Accessing endpoint: /driver/add || PARAMS: driverID={}, x={}, y={}", driverID, x, y);
+
+        try {
+            driverService.addDriver(driverID, x, y);
+
+            return ResponseEntity.status(HttpStatus.CREATED).body("Driver Added!");
+        } catch (Exception e) {
+            log.error("Service failed to add driver '{}' to the database", driverID);
+            log.error("Exception: {}", e.getMessage(), e);
+
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Driver not added!");
+        }
     }
 
     @PostMapping("/rate")
-    public ResponseEntity<Map<String, Object>> rateDriver(
-            @RequestParam("driverID") String driverID,
+    public ResponseEntity<DriverRatingDTO> rateDriver(
+            @RequestParam("driverID") long driverID,
             @RequestParam("rating") float rating
     ) {
+        log.info("Accessing endpoint: /driver/rate || PARAMS: driverID={}, rating={}", driverID, rating);
+
         return ResponseEntity.ok(driverService.rateDriver(driverID, rating));
     }
 }

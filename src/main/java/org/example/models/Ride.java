@@ -1,28 +1,43 @@
 package org.example.models;
 
-import lombok.Getter;
-import lombok.Setter;
+import jakarta.persistence.*;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
-@Getter
+import java.util.List;
+
+@Entity
+@Data
+@NoArgsConstructor
 public class Ride {
-    private final String rideID;
-    private final String riderID;
-    private final String driverID;
-    private int[] destinationCoordinates;
-    private RideStatus status;
-    private int timeTakenInMins;
-    @Setter private float bill;
+    @Id
+    private long rideID;
 
-    public Ride(String rideID, String riderID, String driverID) {
+    @ManyToOne
+    @JoinColumn(name = "rider_id")
+    private Rider rider;
+
+    @ManyToOne
+    @JoinColumn(name = "driver_id")
+    private Driver driver;
+
+    @ElementCollection(fetch = FetchType.EAGER)
+    private List<Integer> destinationCoordinates;
+
+    @Enumerated(EnumType.STRING)
+    private RideStatus status;
+
+    private int timeTakenInMins;
+    private float bill;
+
+    @OneToOne(mappedBy = "ride", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Payment payment;
+
+    public Ride(long rideID, Rider rider, Driver driver) {
         this.rideID = rideID;
-        this.riderID = riderID;
-        this.driverID = driverID;
+        this.rider = rider;
+        this.driver = driver;
         this.status = RideStatus.STARTED;
     }
-
-    public void finishRide(int dest_x_coordinate, int dest_y_coordinate, int timeTakenInMins) {
-        this.destinationCoordinates = new int[]{dest_x_coordinate, dest_y_coordinate};
-        this.timeTakenInMins = timeTakenInMins;
-        this.status = RideStatus.FINISHED;
-    }
 }
+

@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class DriverEarningsDTO {
+public class DriverRatingDTO {
     private long driverID;
-    private float earnings;
+    private float rating;
 }

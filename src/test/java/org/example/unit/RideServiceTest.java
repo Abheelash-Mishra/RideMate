@@ -1,176 +1,216 @@
 package org.example.unit;
 
-import org.example.config.TestConfig;
 import org.example.dto.MatchedDriversDTO;
 import org.example.dto.RideStatusDTO;
+import org.example.exceptions.InvalidDriverIDException;
+import org.example.exceptions.InvalidRideException;
 import org.example.models.RideStatus;
-import org.example.repository.Database;
 import org.example.models.Driver;
 import org.example.models.Ride;
 import org.example.models.Rider;
 
-import org.junit.jupiter.api.BeforeEach;
+import org.example.repository.DriverRepository;
+import org.example.repository.RideRepository;
+import org.example.repository.RiderRepository;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.example.services.ride.RideService;
-import org.example.exceptions.InvalidRideException;
+import org.example.services.RideService;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-
-@ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = TestConfig.class)
+@SpringBootTest
+@ExtendWith(MockitoExtension.class)
 class RideServiceTest {
-    @Autowired
-    private Database mockDB;
+    @MockitoBean
+    private RiderRepository riderRepository;
+
+    @MockitoBean
+    private DriverRepository driverRepository;
+
+    @MockitoBean
+    private RideRepository rideRepository;
 
     @Autowired
-    @InjectMocks
     private RideService rideService;
-
-    @BeforeEach
-    void setUp() {
-        HashMap<String, Rider> riderDetails = new HashMap<>();
-        HashMap<String, Driver> driverDetails = new HashMap<>();
-        HashMap<String, Ride> rideDetails = new HashMap<>();
-        HashMap<String, List<String>> riderDriverMapping = new HashMap<>();
-
-        when(mockDB.getRiderDetails()).thenReturn(riderDetails);
-        when(mockDB.getDriverDetails()).thenReturn(driverDetails);
-        when(mockDB.getRideDetails()).thenReturn(rideDetails);
-        when(mockDB.getRiderDriverMapping()).thenReturn(riderDriverMapping);
-
-        driverDetails.put("D1", new Driver("D1", 1, 1));
-        driverDetails.put("D2", new Driver("D2", 4, 5));
-        driverDetails.put("D3", new Driver("D3", 2, 2));
-    }
 
     @Test
     void addRider() {
-        String riderID = "R1";
-        rideService.addRider(riderID, 0, 0);
+        Rider rider = new Rider(1, 0, 0);
 
-        assertTrue(mockDB.getRiderDetails().containsKey(riderID), "DB does not have rider ID");
+        when(riderRepository.save(any(Rider.class))).thenReturn(rider);
+
+        rideService.addRider(1, 0, 0);
+
+        verify(riderRepository).save(any(Rider.class));
     }
 
     @Test
     void matchRider() {
-        String riderID = "R1";
-        mockDB.getRiderDetails().put(riderID, new Rider("R1", 0, 0));
+        long riderID = 1;
+        Rider rider = new Rider(riderID, 0, 0);
 
-        MatchedDriversDTO response = rideService.matchRider("R1");
+        List<Driver> drivers = List.of(
+                new Driver(1, 1, 1),
+                new Driver(3, 2, 2)
+        );
 
-        List<String> output = response.matchedDrivers();
-        List<String> expected = List.of("D1", "D3");
+        when(riderRepository.findById(riderID)).thenReturn(Optional.of(rider));
+        when(driverRepository.findAll()).thenReturn(drivers);
 
-        assertEquals(expected, output, "Drivers are not matched correctly");
+        MatchedDriversDTO response = rideService.matchRider(riderID);
+
+        List<Long> expected = List.of(1L, 3L);
+        assertEquals(expected, response.getMatchedDrivers(), "Drivers are not matched correctly");
     }
 
     @Test
     void startRide() {
-        String riderID = "R1";
-        int N = 2;
-        ArrayList<String> matchedDrivers = new ArrayList<>();
-        matchedDrivers.add("D1");
-        matchedDrivers.add("D3");
+        long rideID = 1;
 
-        mockDB.getRiderDriverMapping().put(riderID, matchedDrivers);
+        long riderID = 1;
+        Rider rider = new Rider(riderID, 0, 0);
+        rider.setMatchedDrivers(List.of(1L, 3L));
 
-        RideStatusDTO output = rideService.startRide("RIDE-001", N, riderID);
+        long driverID = 3;
+        Driver driver = new Driver(driverID, 2, 2);
 
-        assertEquals("RIDE-001", output.rideID(), "Ride ID is not matching");
-        assertEquals("R1", output.riderID(), "Rider ID is not matching");
-        assertEquals("D3", output.driverID(), "Driver ID is not matching");
-        assertEquals(RideStatus.ONGOING, output.status(), "Ride status should be on ONGOING");
+        Ride ride = new Ride(rideID, rider, driver);
+
+        when(riderRepository.findById(riderID)).thenReturn(Optional.of(rider));
+        when(driverRepository.findById(driverID)).thenReturn(Optional.of(driver));
+        when(rideRepository.save(any(Ride.class))).thenReturn(ride);
+
+        RideStatusDTO expected = new RideStatusDTO(1, 1, 3, RideStatus.ONGOING);
+        RideStatusDTO actual = rideService.startRide(rideID, 2, riderID);
+
+        assertEquals(expected, actual, "Ride was not started correctly");
     }
 
     @Test
     void stopRide() {
-        Ride ride = new Ride("RIDE-001", "R1", "D3");
-        mockDB.getRideDetails().put("RIDE-001", ride);
-        mockDB.getDriverDetails().get("D3").setAvailable(false);
+        long rideID = 1;
 
-        RideStatusDTO output = rideService.stopRide("RIDE-001", 4, 5, 32);
+        long riderID = 1;
+        Rider rider = new Rider(riderID, 0, 0);
+        rider.setMatchedDrivers(List.of(1L, 3L));
 
-        assertEquals("RIDE-001", output.rideID(), "Ride ID is not matching");
-        assertEquals("R1", output.riderID(), "Rider ID is not matching");
-        assertEquals("D3", output.driverID(), "Driver ID is not matching");
-        assertEquals(RideStatus.FINISHED, output.status(), "Ride status should be on FINISHED");
+        long driverID = 3;
+        Driver driver = new Driver(driverID, 2, 2);
+
+        Ride ride = new Ride(rideID, rider, driver);
+        ride.setStatus(RideStatus.ONGOING);
+
+        when(rideRepository.findById(rideID)).thenReturn(Optional.of(ride));
+        when(driverRepository.findById(driverID)).thenReturn(Optional.of(driver));
+
+        RideStatusDTO expected = new RideStatusDTO(1, 1, 3, RideStatus.FINISHED);
+        RideStatusDTO actual = rideService.stopRide(rideID, 4, 5, 32);
+
+        assertEquals(expected, actual, "Ride status should be FINISHED");
     }
 
     @Test
     void billRide() {
-        String riderID = "R1";
-        mockDB.getRiderDetails().put(riderID, new Rider("R1", 0, 0));
+        long rideID = 1;
 
-        Ride ride = new Ride("RIDE-001", "R1", "D3");
-        ride.finishRide(4, 5, 32);
-        mockDB.getRideDetails().put("RIDE-001", ride);
+        long riderID = 1;
+        Rider rider = new Rider(riderID, 0, 0);
+        rider.setMatchedDrivers(List.of(1L, 3L));
 
-        double bill = rideService.billRide("RIDE-001");
+        long driverID = 3;
+        Driver driver = new Driver(driverID, 2, 2);
+
+        Ride ride = new Ride(rideID, rider, driver);
+        ride.setDestinationCoordinates(List.of(4, 5));
+        ride.setTimeTakenInMins(32);
+        ride.setStatus(RideStatus.FINISHED);
+
+        when(rideRepository.findById(rideID)).thenReturn(Optional.of(ride));
+        when(rideRepository.save(any(Ride.class))).thenReturn(ride);
+
+        double bill = rideService.billRide(rideID);
 
         assertEquals(186.7, bill, 0.1);
     }
 
     @Test
-    void matchRiderWhenNoDriversAvailable_ThrowsException() {
-        String riderID = "R1";
-        mockDB.getRiderDetails().put(riderID, new Rider("R1", 10, 10));
+    void matchRiderWhenNoDriversAvailable() {
+        long riderID = 1;
+        Rider rider = new Rider(riderID, 0, 0);
 
-        MatchedDriversDTO response = rideService.matchRider("R1");
+        List<Driver> drivers = List.of(
+                new Driver(1, 7, 1),
+                new Driver(3, 7, 2)
+        );
 
-        assertEquals(Collections.emptyList(), response.matchedDrivers());
+        when(riderRepository.findById(riderID)).thenReturn(Optional.of(rider));
+        when(driverRepository.findAll()).thenReturn(drivers);
+
+        MatchedDriversDTO response = rideService.matchRider(riderID);
+
+        List<Long> expected = Collections.emptyList();
+        assertEquals(expected, response.getMatchedDrivers(), "The list should be empty as there are no available drivers");
     }
 
     @Test
     void startRideWithNonExistentDriver_ThrowsException() {
-        String riderID = "R1";
-        int N = 5;
-        ArrayList<String> matchedDrivers = new ArrayList<>();
-        matchedDrivers.add("D1");
-        matchedDrivers.add("D3");
+        long rideID = 1;
 
-        mockDB.getRiderDriverMapping().put(riderID, matchedDrivers);
+        long riderID = 1;
+        Rider rider = new Rider(riderID, 0, 0);
+        rider.setMatchedDrivers(List.of(1L, 3L));
 
-        Exception exception = assertThrows(InvalidRideException.class, () -> {
-            rideService.startRide("RIDE-001", N, riderID);
-        });
+        long driverID = 2;
+        Driver driver = new Driver(driverID, 2, 2);
 
+        Ride ride = new Ride(rideID, rider, driver);
 
-        assertEquals("INVALID_RIDE", exception.getMessage(), "Ride was not supposed to start");
+        when(riderRepository.findById(riderID)).thenReturn(Optional.of(rider));
+        when(driverRepository.findById(driverID)).thenReturn(Optional.of(driver));
+        when(rideRepository.save(any(Ride.class))).thenReturn(ride);
+
+        Exception exception = Assertions.assertThrows(InvalidDriverIDException.class, () -> rideService.startRide(rideID, 2, riderID));
+
+        assertEquals("Invalid Driver ID - 3, no such driver exists", exception.getMessage(), "Ride should not be started with this driver");
     }
 
     @Test
     void stopInvalidRide_ThrowsException() {
-        Exception exception = assertThrows(InvalidRideException.class, () -> {
-            rideService.stopRide("RIDE-001", 4, 5, 32);
-        });
+        Exception exception = Assertions.assertThrows(InvalidRideException.class, () -> rideService.stopRide(1, 4, 5, 32));
 
-        assertEquals("INVALID_RIDE", exception.getMessage(), "There is no ride that can be stopped");
+        assertEquals("Invalid Ride ID - 1, no such ride exists", exception.getMessage(), "There is no ride that can be stopped");
     }
 
     @Test
     void billUnfinishedRide_ThrowsException() {
-        String riderID = "R1";
-        mockDB.getRiderDetails().put(riderID, new Rider("R1", 0, 0));
+        long rideID = 1;
 
-        Ride ride = new Ride("RIDE-001", "R1", "D3");
-        mockDB.getRideDetails().put("RIDE-001", ride);
+        long riderID = 1;
+        Rider rider = new Rider(riderID, 0, 0);
+        rider.setMatchedDrivers(List.of(1L, 3L));
 
-        Exception exception = assertThrows(InvalidRideException.class, () -> {
-            rideService.billRide("RIDE-001");
-        });
+        long driverID = 3;
+        Driver driver = new Driver(driverID, 2, 2);
 
-        assertEquals("INVALID_RIDE", exception.getMessage(), "Unfinished ride should not be billed");
+        Ride ride = new Ride(rideID, rider, driver);
+        ride.setDestinationCoordinates(List.of(4, 5));
+        ride.setTimeTakenInMins(32);
+
+        when(rideRepository.findById(rideID)).thenReturn(Optional.of(ride));
+        when(rideRepository.save(any(Ride.class))).thenReturn(ride);
+
+        Exception exception = Assertions.assertThrows(InvalidRideException.class, () -> rideService.billRide(1));
+
+        assertEquals("Invalid Ride ID - 1", exception.getMessage(), "Unfinished ride should not be billed");
     }
 }

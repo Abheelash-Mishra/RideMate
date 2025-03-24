@@ -1,14 +1,16 @@
 package org.example.controllers;
 
+import lombok.extern.slf4j.Slf4j;
 import org.example.dto.DriverDTO;
 import org.example.dto.DriverEarningsDTO;
-import org.example.services.admin.AdminService;
+import org.example.services.AdminService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@Slf4j
 @RestController
 @RequestMapping("/admin")
 public class AdminController {
@@ -16,17 +18,32 @@ public class AdminController {
     private AdminService adminService;
 
     @DeleteMapping("/drivers/remove")
-    public boolean removeDriver(@RequestParam("driverID") String driverID) {
-        return adminService.removeDriver(driverID);
+    public ResponseEntity<Boolean> removeDriver(@RequestParam("driverID") long driverID) {
+        log.info("Accessing endpoint: /admin/drivers/remove || PARAMS: driverID={}", driverID);
+
+        return ResponseEntity.ok(adminService.removeDriver(driverID));
     }
 
-    @GetMapping(value = "/drivers/list", produces = "application/json")
+    @GetMapping("/drivers/list")
     public ResponseEntity<List<DriverDTO>> listNDriverDetails(@RequestParam("N") int N) {
-        return ResponseEntity.ok(adminService.listNDriverDetails(N));
+        log.info("Accessing endpoint: /admin/drivers/list || PARAMS: N={}", N);
+
+        try {
+            List<DriverDTO> response = adminService.listNDriverDetails(N);
+
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            log.error("Could not list drivers unexpectedly");
+            log.error("Exception: {}", e.getMessage(), e);
+
+            throw new RuntimeException("Drivers could not be listed due to a server error, please try again later", e);
+        }
     }
 
-    @GetMapping(value = "/drivers/earnings", produces = "application/json")
-    public ResponseEntity<DriverEarningsDTO> getDriverEarnings(@RequestParam("driverID") String driverID) {
+    @GetMapping("/drivers/earnings")
+    public ResponseEntity<DriverEarningsDTO> getDriverEarnings(@RequestParam("driverID") long driverID) {
+        log.info("Accessing endpoint: /admin/drivers/earnings | driverID={}", driverID);
+
         return ResponseEntity.ok(adminService.getDriverEarnings(driverID));
     }
 }
