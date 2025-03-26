@@ -36,14 +36,14 @@ java -jar target/riderapp-1.0.jar cli
 
 Now, you can run the CLI application. Below are some examples for the commands.
 ```sh
-ADD_DRIVER D1 1 1
-ADD_DRIVER D2 4 5
-ADD_DRIVER D3 2 2
-ADD_RIDER R1 0 0
-MATCH R1
-START_RIDE RIDE-001 2 R1
-STOP_RIDE RIDE-001 4 5 32
-BILL RIDE-001
+ADD_DRIVER 1 1 1
+ADD_DRIVER 2 4 5
+ADD_DRIVER 3 2 2
+ADD_RIDER 1 0 0
+MATCH 1
+START_RIDE 1 2 1
+STOP_RIDE 1 4 5 32
+BILL 1
 ```
 
 ### **4. Running as a REST API**
