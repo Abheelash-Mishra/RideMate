@@ -1,9 +1,13 @@
 package org.example.services.impl;
 
 import org.example.dto.PaymentDetailsDTO;
+import org.example.exceptions.InvalidRiderIDException;
 import org.example.models.PaymentMethodType;
+import org.example.models.Rider;
+import org.example.repository.RiderRepository;
 import org.example.services.PaymentType;
 import org.example.services.PaymentService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
@@ -14,6 +18,9 @@ public class PaymentServiceImpl implements PaymentService {
     private final HashMap<PaymentMethodType, PaymentType> paymentMethods;
 
     private PaymentType paymentMethod;
+
+    @Autowired
+    private RiderRepository riderRepository;
 
     public PaymentServiceImpl(List<PaymentType> paymentImplementations) {
         this.paymentMethods = new HashMap<>();
@@ -41,6 +48,14 @@ public class PaymentServiceImpl implements PaymentService {
         WalletPayment walletPayment = (WalletPayment) this.paymentMethod;
 
         return walletPayment.addMoney(riderID, amount);
+    }
+
+    @Override
+    public float getBalance(long riderID) {
+        Rider rider = riderRepository.findById(riderID)
+                .orElseThrow(() -> new InvalidRiderIDException("Invalid Rider ID - " + riderID + " || No such rider exists"));
+
+        return rider.getWalletAmount();
     }
 
     private PaymentMethodType getPaymentType(PaymentType payment) {

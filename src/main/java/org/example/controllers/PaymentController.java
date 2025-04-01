@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @Slf4j
+@CrossOrigin
 @RestController
 @RequestMapping("/payment")
 public class PaymentController {
@@ -48,5 +49,13 @@ public class PaymentController {
 
             throw new RuntimeException("Wallet recharge failed unexpectedly, please try again later", e);
         }
+    }
+
+    @GetMapping("/wallet")
+    public ResponseEntity<Float> fetchBalance(@RequestParam("riderID") long riderID) {
+        log.info("Accessing endpoint: /payment/wallet | riderID={}", riderID);
+        float balance = paymentService.getBalance(riderID);
+
+        return ResponseEntity.ok(balance);
     }
 }

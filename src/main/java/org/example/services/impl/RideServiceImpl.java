@@ -64,7 +64,7 @@ public class RideServiceImpl implements RideService {
         final double LIMIT = 5.0;
 
         Rider rider = riderRepository.findById(riderID)
-                .orElseThrow(() -> new InvalidRiderIDException("Invalid Rider ID - " + riderID + ", no such rider exists"));
+                .orElseThrow(() -> new InvalidRiderIDException("Invalid Rider ID - " + riderID + " || No Such Rider Exists"));
 
         List<Driver> allDrivers = driverRepository.findAll();
 
