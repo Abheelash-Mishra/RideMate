@@ -22,12 +22,14 @@ public class RideController {
     @PostMapping("/rider/add")
     public ResponseEntity<String> addRider(
             @RequestParam("riderID") long riderID,
+            @RequestParam("email") String email,
+            @RequestParam("phoneNumber") String phoneNumber,
             @RequestParam("x") int x,
             @RequestParam("y") int y
     ) {
         log.info("Accessing endpoint: /ride/rider/add || PARAMS: riderID={}, x={}, y={}", riderID, x, y);
 
-        rideService.addRider(riderID, x, y);
+        rideService.addRider(riderID, email, phoneNumber, x, y);
         return ResponseEntity.status(HttpStatus.CREATED).body("Rider Added!");
     }
 
@@ -52,13 +54,14 @@ public class RideController {
     @PostMapping("/stop")
     public ResponseEntity<RideStatusDTO> stopRide(
             @RequestParam("rideID") long rideID,
+            @RequestParam("destination") String destination,
             @RequestParam("x") int x,
             @RequestParam("y") int y,
             @RequestParam("timeInMins") int timeInMins
     ) {
         log.info("Accessing endpoint: /ride/stop || PARAMS: rideID={}, x={}, y={}, timeInMins={}", rideID, x, y, timeInMins);
 
-        return ResponseEntity.ok(rideService.stopRide(rideID, x, y, timeInMins));
+        return ResponseEntity.ok(rideService.stopRide(rideID, destination, x, y, timeInMins));
     }
 
     @GetMapping("/bill")

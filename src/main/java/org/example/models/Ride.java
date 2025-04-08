@@ -21,6 +21,8 @@ public class Ride {
     @JoinColumn(name = "driver_id")
     private Driver driver;
 
+    private String destination;
+
     @ElementCollection(fetch = FetchType.EAGER)
     private List<Integer> destinationCoordinates;
 

@@ -177,7 +177,7 @@ public class RideServiceImpl implements RideService {
 
 
     @Override
-    public RideStatusDTO stopRide(long rideID, int destX, int destY, int timeTakenInMins) {
+    public RideStatusDTO stopRide(long rideID, String destination, int destX, int destY, int timeTakenInMins) {
         Ride currentRide = rideRepository.findById(rideID)
                 .orElseThrow(() -> new InvalidRideException("Invalid Ride ID - " + rideID + ", no such ride exists"));
 
@@ -195,6 +195,7 @@ public class RideServiceImpl implements RideService {
 
             // Code breaks because the ride does not save if we don't use new ArrayList<>
             currentRide.setDestinationCoordinates(new ArrayList<>(List.of(destX, destY)));
+            currentRide.setDestination(destination);
             currentRide.setTimeTakenInMins(timeTakenInMins);
             currentRide.setStatus(RideStatus.FINISHED);
             rideRepository.save(currentRide);
