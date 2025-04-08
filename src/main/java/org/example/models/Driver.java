@@ -17,6 +17,8 @@ public class Driver {
     @ElementCollection(fetch = FetchType.EAGER)
     private List<Integer> coordinates;
 
+    private String email;
+    private String phoneNumber;
     private boolean available = true;
     private float earnings = 0;
     private float rating = 0;
@@ -26,8 +28,10 @@ public class Driver {
     @OneToMany(mappedBy = "driver", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Ride> rides = new ArrayList<>();
 
-    public Driver(long driverID, int x_coordinate, int y_coordinate) {
+    public Driver(long driverID, String email, String phoneNumber, int x_coordinate, int y_coordinate) {
         this.driverID = driverID;
+        this.email = email;
+        this.phoneNumber = phoneNumber;
         this.coordinates = List.of(x_coordinate, y_coordinate);
     }
 }

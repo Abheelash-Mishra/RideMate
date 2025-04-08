@@ -17,8 +17,8 @@ public class DriverServiceImpl implements DriverService {
     private DriverRepository driverRepository;
 
     @Override
-    public void addDriver(long driverID, int x_coordinate, int y_coordinate) {
-        Driver driver = new Driver(driverID, x_coordinate, y_coordinate);
+    public void addDriver(long driverID, String email, String phoneNumber, int x_coordinate, int y_coordinate) {
+        Driver driver = new Driver(driverID, email, phoneNumber, x_coordinate, y_coordinate);
         driverRepository.save(driver);
 
         log.info("Added driver '{}' to database", driverID);

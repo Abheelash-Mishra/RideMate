@@ -36,7 +36,7 @@ public class RideServiceImpl implements RideService {
     private DriverRepository driverRepository;
 
     @Override
-    public void addRider(long riderID, int x_coordinate, int y_coordinate) {
+    public void addRider(long riderID, String email, String phoneNumber, int x_coordinate, int y_coordinate) {
         try {
             if (riderRepository.existsById(riderID)) {
                 log.warn("Rider with ID '{}' already exists in the database", riderID);
@@ -44,7 +44,7 @@ public class RideServiceImpl implements RideService {
                 throw new RecordAlreadyExistsException("Duplicate Rider ID - " + riderID);
             }
 
-            Rider rider = new Rider(riderID, x_coordinate, y_coordinate);
+            Rider rider = new Rider(riderID, email, phoneNumber, x_coordinate, y_coordinate);
             riderRepository.save(rider);
 
             log.info("Added rider '{}' to database", riderID);

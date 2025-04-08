@@ -80,23 +80,28 @@ public class RiderAppCLI {
 
             int x_coordinate, y_coordinate, N;
             long riderID, rideID, driverID;
+            String email, phoneNumber;
             StringBuilder output;
 
             switch (command) {
                 case ADD_DRIVER:
                     driverID = Long.parseLong(parts[1]);
-                    x_coordinate = Integer.parseInt(parts[2]);
-                    y_coordinate = Integer.parseInt(parts[3]);
+                    email = parts[2];
+                    phoneNumber = parts[3];
+                    x_coordinate = Integer.parseInt(parts[4]);
+                    y_coordinate = Integer.parseInt(parts[5]);
 
-                    driverService.addDriver(driverID, x_coordinate, y_coordinate);
+                    driverService.addDriver(driverID, email, phoneNumber, x_coordinate, y_coordinate);
                     break;
 
                 case ADD_RIDER:
                     riderID = Long.parseLong(parts[1]);
-                    x_coordinate = Integer.parseInt(parts[2]);
-                    y_coordinate = Integer.parseInt(parts[3]);
+                    email = parts[2];
+                    phoneNumber = parts[3];
+                    x_coordinate = Integer.parseInt(parts[4]);
+                    y_coordinate = Integer.parseInt(parts[5]);
 
-                    rideService.addRider(riderID, x_coordinate, y_coordinate);
+                    rideService.addRider(riderID, email, phoneNumber, x_coordinate, y_coordinate);
                     break;
 
                 case MATCH:
@@ -126,11 +131,12 @@ public class RiderAppCLI {
 
                 case STOP_RIDE:
                     rideID = Long.parseLong(parts[1]);
-                    int dest_x_coordinate = Integer.parseInt(parts[2]);
-                    int dest_y_coordinate = Integer.parseInt(parts[3]);
-                    int timeTakenInMins = Integer.parseInt(parts[4]);
+                    String destination = parts[2];
+                    int dest_x_coordinate = Integer.parseInt(parts[3]);
+                    int dest_y_coordinate = Integer.parseInt(parts[4]);
+                    int timeTakenInMins = Integer.parseInt(parts[5]);
 
-                    rideService.stopRide(rideID, dest_x_coordinate, dest_y_coordinate, timeTakenInMins);
+                    rideService.stopRide(rideID, destination, dest_x_coordinate, dest_y_coordinate, timeTakenInMins);
                     log.info("RIDE_STOPPED {}", rideID);
                     break;
 

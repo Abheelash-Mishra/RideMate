@@ -20,13 +20,15 @@ public class DriverController {
     @PostMapping("/add")
     public ResponseEntity<String> addDriver(
             @RequestParam("driverID") long driverID,
+            @RequestParam("email") String email,
+            @RequestParam("phoneNumber") String phoneNumber,
             @RequestParam("x") int x,
             @RequestParam("y") int y
     ) {
         log.info("Accessing endpoint: /driver/add || PARAMS: driverID={}, x={}, y={}", driverID, x, y);
 
         try {
-            driverService.addDriver(driverID, x, y);
+            driverService.addDriver(driverID, email, phoneNumber, x, y);
 
             return ResponseEntity.status(HttpStatus.CREATED).body("Driver Added!");
         } catch (Exception e) {
