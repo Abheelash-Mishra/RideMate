@@ -4,7 +4,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.example.dto.MatchedDriversDTO;
 import org.example.dto.RideStatusDTO;
 import org.example.exceptions.InvalidRiderIDException;
-import org.example.exceptions.RecordAlreadyExistsException;
 import org.example.models.RideStatus;
 import org.example.models.Driver;
 import org.example.models.Ride;
@@ -36,25 +35,20 @@ public class RideServiceImpl implements RideService {
     private DriverRepository driverRepository;
 
     @Override
-    public void addRider(long riderID, String email, String phoneNumber, int x_coordinate, int y_coordinate) {
+    public long addRider(String email, String phoneNumber, int x_coordinate, int y_coordinate) {
         try {
-            if (riderRepository.existsById(riderID)) {
-                log.warn("Rider with ID '{}' already exists in the database", riderID);
-
-                throw new RecordAlreadyExistsException("Duplicate Rider ID - " + riderID);
-            }
-
-            Rider rider = new Rider(riderID, email, phoneNumber, x_coordinate, y_coordinate);
+            Rider rider = new Rider(email, phoneNumber, x_coordinate, y_coordinate);
             riderRepository.save(rider);
 
+            long riderID = rider.getRiderID();
             log.info("Added rider '{}' to database", riderID);
-        } catch (RecordAlreadyExistsException e) {
-            throw e;
+
+            return riderID;
         } catch (Exception e) {
-            log.error("Unexpected error while adding new rider '{}'", riderID);
+            log.error("Unexpected error while adding new rider");
             log.error("Exception: {}", e.getMessage(), e);
 
-            throw new RuntimeException("Failed to add rider with ID " + riderID, e);
+            throw new RuntimeException("Failed to add rider", e);
         }
     }
 
@@ -132,18 +126,14 @@ public class RideServiceImpl implements RideService {
 
 
     @Override
-    public RideStatusDTO startRide(long rideID, int N, long riderID) {
-        if (rideRepository.existsById(rideID)) {
-            throw new InvalidRideException("Invalid Ride ID - " + rideID, new IllegalStateException("Ride already exists"));
-        }
-
+    public RideStatusDTO startRide(int N, long riderID) {
         Rider rider = riderRepository.findById(riderID)
                 .orElseThrow(() -> new InvalidRiderIDException("Invalid Rider ID - " + riderID + ", no such rider exists"));
 
         List<Long> matchedDrivers = rider.getMatchedDrivers();
 
         if (matchedDrivers.size() < N) {
-            throw new InvalidRideException("Invalid Ride - " + rideID, new ArrayIndexOutOfBoundsException("User requested for a driver that does not exist in the array"));
+            throw new InvalidRideException("Invalid Ride", new ArrayIndexOutOfBoundsException("User requested for a driver that does not exist in the array"));
         }
 
         long driverID = matchedDrivers.get(N - 1);
@@ -151,7 +141,7 @@ public class RideServiceImpl implements RideService {
                 .orElseThrow(() -> new InvalidDriverIDException("Invalid Driver ID - " + driverID + ", no such driver exists"));
 
         if (!driver.isAvailable()) {
-            throw new InvalidRideException("Invalid Ride - " + rideID + ", driver is already preoccupied with another ride");
+            throw new InvalidRideException("Invalid Ride, driver is already preoccupied with another ride");
         }
 
         try {
@@ -161,14 +151,16 @@ public class RideServiceImpl implements RideService {
             rider.setMatchedDrivers(Collections.emptyList());
             riderRepository.save(rider);
 
-            Ride ride = new Ride(rideID, rider, driver);
+            Ride ride = new Ride(rider, driver);
             rideRepository.save(ride);
 
             log.info("Successfully started a ride for rider '{}' with driver '{}'", riderID, driverID);
 
+            long rideID = ride.getRideID();
+
             return new RideStatusDTO(rideID, riderID, driverID, RideStatus.ONGOING);
         } catch (Exception e) {
-            log.error("Unexpected error while starting a ride {}", rideID);
+            log.error("Unexpected error while starting a ride");
             log.error("Exception: {}", e.getMessage(), e);
 
             throw new RuntimeException("Failed to start a ride for rider " + riderID, e);

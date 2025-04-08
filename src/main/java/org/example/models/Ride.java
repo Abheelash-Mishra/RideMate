@@ -11,6 +11,7 @@ import java.util.List;
 @NoArgsConstructor
 public class Ride {
     @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private long rideID;
 
     @ManyToOne
@@ -35,8 +36,7 @@ public class Ride {
     @OneToOne(mappedBy = "ride", cascade = CascadeType.ALL, orphanRemoval = true)
     private Payment payment;
 
-    public Ride(long rideID, Rider rider, Driver driver) {
-        this.rideID = rideID;
+    public Ride(Rider rider, Driver driver) {
         this.rider = rider;
         this.driver = driver;
         this.status = RideStatus.STARTED;

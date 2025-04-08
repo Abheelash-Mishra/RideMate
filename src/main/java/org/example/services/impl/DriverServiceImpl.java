@@ -17,11 +17,21 @@ public class DriverServiceImpl implements DriverService {
     private DriverRepository driverRepository;
 
     @Override
-    public void addDriver(long driverID, String email, String phoneNumber, int x_coordinate, int y_coordinate) {
-        Driver driver = new Driver(driverID, email, phoneNumber, x_coordinate, y_coordinate);
-        driverRepository.save(driver);
+    public long addDriver(String email, String phoneNumber, int x_coordinate, int y_coordinate) {
+        try {
+            Driver driver = new Driver(email, phoneNumber, x_coordinate, y_coordinate);
+            driverRepository.save(driver);
 
-        log.info("Added driver '{}' to database", driverID);
+            long driverID = driver.getDriverID();
+            log.info("Added driver '{}' to database", driverID);
+
+            return driverID;
+        } catch (Exception e) {
+            log.error("Service failed to add driver to the database");
+            log.error("Exception: {}", e.getMessage(), e);
+
+            throw new RuntimeException("Failed to add driver", e);
+        }
     }
 
     @Override

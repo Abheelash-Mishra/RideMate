@@ -85,23 +85,21 @@ public class RiderAppCLI {
 
             switch (command) {
                 case ADD_DRIVER:
-                    driverID = Long.parseLong(parts[1]);
-                    email = parts[2];
-                    phoneNumber = parts[3];
-                    x_coordinate = Integer.parseInt(parts[4]);
-                    y_coordinate = Integer.parseInt(parts[5]);
+                    email = parts[1];
+                    phoneNumber = parts[2];
+                    x_coordinate = Integer.parseInt(parts[3]);
+                    y_coordinate = Integer.parseInt(parts[4]);
 
-                    driverService.addDriver(driverID, email, phoneNumber, x_coordinate, y_coordinate);
+                    driverService.addDriver(email, phoneNumber, x_coordinate, y_coordinate);
                     break;
 
                 case ADD_RIDER:
-                    riderID = Long.parseLong(parts[1]);
-                    email = parts[2];
-                    phoneNumber = parts[3];
-                    x_coordinate = Integer.parseInt(parts[4]);
-                    y_coordinate = Integer.parseInt(parts[5]);
+                    email = parts[1];
+                    phoneNumber = parts[2];
+                    x_coordinate = Integer.parseInt(parts[3]);
+                    y_coordinate = Integer.parseInt(parts[4]);
 
-                    rideService.addRider(riderID, email, phoneNumber, x_coordinate, y_coordinate);
+                    rideService.addRider(email, phoneNumber, x_coordinate, y_coordinate);
                     break;
 
                 case MATCH:
@@ -125,7 +123,7 @@ public class RiderAppCLI {
                     N = Integer.parseInt(parts[2]);
                     riderID = Long.parseLong(parts[3]);
 
-                    rideService.startRide(rideID, N, riderID);
+                    rideService.startRide(N, riderID);
                     log.info("RIDE_STARTED {}", rideID);
                     break;
 

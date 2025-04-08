@@ -12,6 +12,7 @@ import java.util.List;
 @NoArgsConstructor
 public class Driver {
     @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private long driverID;
 
     @ElementCollection(fetch = FetchType.EAGER)
@@ -28,8 +29,7 @@ public class Driver {
     @OneToMany(mappedBy = "driver", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Ride> rides = new ArrayList<>();
 
-    public Driver(long driverID, String email, String phoneNumber, int x_coordinate, int y_coordinate) {
-        this.driverID = driverID;
+    public Driver(String email, String phoneNumber, int x_coordinate, int y_coordinate) {
         this.email = email;
         this.phoneNumber = phoneNumber;
         this.coordinates = List.of(x_coordinate, y_coordinate);

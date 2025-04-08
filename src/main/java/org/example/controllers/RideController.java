@@ -1,6 +1,5 @@
 package org.example.controllers;
 
-
 import lombok.extern.slf4j.Slf4j;
 import org.example.dto.MatchedDriversDTO;
 import org.example.dto.RideStatusDTO;
@@ -20,17 +19,15 @@ public class RideController {
     private RideService rideService;
 
     @PostMapping("/rider/add")
-    public ResponseEntity<String> addRider(
-            @RequestParam("riderID") long riderID,
+    public ResponseEntity<Long> addRider(
             @RequestParam("email") String email,
             @RequestParam("phoneNumber") String phoneNumber,
             @RequestParam("x") int x,
             @RequestParam("y") int y
     ) {
-        log.info("Accessing endpoint: /ride/rider/add || PARAMS: riderID={}, x={}, y={}", riderID, x, y);
+        log.info("Accessing endpoint: /ride/rider/add");
 
-        rideService.addRider(riderID, email, phoneNumber, x, y);
-        return ResponseEntity.status(HttpStatus.CREATED).body("Rider Added!");
+        return ResponseEntity.status(HttpStatus.CREATED).body(rideService.addRider(email, phoneNumber, x, y));
     }
 
     @GetMapping("/rider/match")
@@ -42,13 +39,12 @@ public class RideController {
 
     @PostMapping("/start")
     public ResponseEntity<RideStatusDTO> startRide(
-            @RequestParam("rideID") long rideID,
             @RequestParam("N") int N,
             @RequestParam("riderID") long riderID
     ) {
-        log.info("Accessing endpoint: /ride/start || PARAMS: rideID={}, N={}, riderID={}", rideID, N, riderID);
+        log.info("Accessing endpoint: /ride/start || PARAMS: N={}, riderID={}", N, riderID);
 
-        return ResponseEntity.ok(rideService.startRide(rideID, N, riderID));
+        return ResponseEntity.ok(rideService.startRide(N, riderID));
     }
 
     @PostMapping("/stop")

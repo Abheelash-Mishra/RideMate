@@ -18,25 +18,15 @@ public class DriverController {
     private DriverService driverService;
 
     @PostMapping("/add")
-    public ResponseEntity<String> addDriver(
-            @RequestParam("driverID") long driverID,
+    public ResponseEntity<Long> addDriver(
             @RequestParam("email") String email,
             @RequestParam("phoneNumber") String phoneNumber,
             @RequestParam("x") int x,
             @RequestParam("y") int y
     ) {
-        log.info("Accessing endpoint: /driver/add || PARAMS: driverID={}, x={}, y={}", driverID, x, y);
+        log.info("Accessing endpoint: /driver/add");
 
-        try {
-            driverService.addDriver(driverID, email, phoneNumber, x, y);
-
-            return ResponseEntity.status(HttpStatus.CREATED).body("Driver Added!");
-        } catch (Exception e) {
-            log.error("Service failed to add driver '{}' to the database", driverID);
-            log.error("Exception: {}", e.getMessage(), e);
-
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Driver not added!");
-        }
+        return ResponseEntity.status(HttpStatus.CREATED).body(driverService.addDriver(email, phoneNumber, x, y));
     }
 
     @PostMapping("/rate")
