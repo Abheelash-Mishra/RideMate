@@ -2,6 +2,8 @@
 
 RideMate is a console-based and RESTAPI-enabled ride-hailing application written in Java using **Spring Boot**. It supports both **CLI commands** and **REST API endpoints** for managing rides, drivers, and riders.
 
+**Deployed Link:** https://ridemate-ikfj.onrender.com
+
 ## Features
 - **CLI Mode**: Interact with the system through terminal commands.
 - **REST API Mode**: Use HTTP requests to manage rides and users.
