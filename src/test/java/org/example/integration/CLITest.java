@@ -8,6 +8,7 @@ import org.example.repository.RiderRepository;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.annotation.DirtiesContext;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -18,6 +19,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.CoreMatchers.containsString;
 
 @SpringBootTest
+@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 class CLITest {
     private final InputStream originalSystemIn = System.in;
     private final PrintStream originalSystemOut = System.out;
@@ -62,13 +64,13 @@ class CLITest {
     @Test
     void ShortTestcase() {
         String input = """
-                ADD_DRIVER 1 1 1
-                ADD_DRIVER 2 4 5
-                ADD_DRIVER 3 2 2
-                ADD_RIDER 1 0 0
+                ADD_DRIVER d1@email.com 9876556789 1 1
+                ADD_DRIVER d1@email.com 9876556789 4 5
+                ADD_DRIVER d1@email.com 9876556789 2 2
+                ADD_RIDER r1@email.com 9876556789 0 0
                 MATCH 1
-                START_RIDE 1 2 1
-                STOP_RIDE 1 4 5 32
+                START_RIDE 2 1
+                STOP_RIDE 1 Beach 4 5 32
                 BILL 1
                 """;
 
@@ -85,30 +87,30 @@ class CLITest {
     @Test
     void LongerTestcase() {
         String input = """
-                ADD_DRIVER 1 0 1
-                ADD_DRIVER 2 2 3
-                ADD_RIDER 1 3 5
-                ADD_DRIVER 3 4 2
-                ADD_RIDER 2 1 1
+                ADD_DRIVER d1@email.com 9876556789 0 1
+                ADD_DRIVER d2@email.com 9876556789 2 3
+                ADD_RIDER r1@email.com 9876556789 3 5
+                ADD_DRIVER d4@email.com 9876556789 4 2
+                ADD_RIDER r2@email.com 9876556789 1 1
                 MATCH 1
                 MATCH 2
-                START_RIDE 101 1 1
-                START_RIDE 102 1 2
-                STOP_RIDE 101 10 2 48
-                STOP_RIDE 102 7 9 50
-                BILL 101
-                BILL 102
+                START_RIDE 1 1
+                START_RIDE 1 2
+                STOP_RIDE 1 Beach 10 2 48
+                STOP_RIDE 2 Mall 7 9 50
+                BILL 1
+                BILL 2
                 """;
 
         String expectedOutput = """
                 DRIVERS_MATCHED 2 3 1
                 DRIVERS_MATCHED 1 2 3
-                RIDE_STARTED 101
-                RIDE_STARTED 102
-                RIDE_STOPPED 101
-                RIDE_STOPPED 102
-                BILL 101 2 234.6
-                BILL 102 1 258.0
+                RIDE_STARTED 1
+                RIDE_STARTED 2
+                RIDE_STOPPED 1
+                RIDE_STOPPED 2
+                BILL 1 2 234.6
+                BILL 2 1 258.0
                 """;
 
         runTest(input, expectedOutput);
@@ -117,13 +119,13 @@ class CLITest {
     @Test
     void RateDriver() {
         String input = """
-                ADD_DRIVER 1 1 1
-                ADD_DRIVER 2 4 5
-                ADD_DRIVER 3 2 2
-                ADD_RIDER 1 0 0
+                ADD_DRIVER d1@email.com 9876556789 1 1
+                ADD_DRIVER d1@email.com 9876556789 4 5
+                ADD_DRIVER d1@email.com 9876556789 2 2
+                ADD_RIDER r1@email.com 9876556789 0 0
                 MATCH 1
-                START_RIDE 1 2 1
-                STOP_RIDE 1 4 5 32
+                START_RIDE 2 1
+                STOP_RIDE 1 Beach 4 5 32
                 BILL 1
                 RATE_DRIVER 3 4.5
                 """;
@@ -142,14 +144,14 @@ class CLITest {
     @Test
     void BillRiderUsingWallet() {
         String input = """
-                ADD_DRIVER 1 1 1
-                ADD_DRIVER 2 4 5
-                ADD_DRIVER 3 2 2
-                ADD_RIDER 1 0 0
+                ADD_DRIVER d1@email.com 9876556789 1 1
+                ADD_DRIVER d1@email.com 9876556789 4 5
+                ADD_DRIVER d1@email.com 9876556789 2 2
+                ADD_RIDER r1@email.com 9876556789 0 0
                 ADD_MONEY 1 520
                 MATCH 1
-                START_RIDE 1 2 1
-                STOP_RIDE 1 4 5 32
+                START_RIDE 2 1
+                STOP_RIDE 1 Beach 4 5 32
                 BILL 1
                 PAY 1 WALLET
                 ADMIN_VIEW_DRIVER_EARNINGS 3
@@ -171,14 +173,14 @@ class CLITest {
     @Test
     void BillRiderUsingWalletWithLowBalance() {
         String input = """
-                ADD_DRIVER 1 1 1
-                ADD_DRIVER 2 4 5
-                ADD_DRIVER 3 2 2
-                ADD_RIDER 1 0 0
+                ADD_DRIVER d1@email.com 9876556789 1 1
+                ADD_DRIVER d1@email.com 9876556789 4 5
+                ADD_DRIVER d1@email.com 9876556789 2 2
+                ADD_RIDER r1@email.com 9876556789 0 0
                 ADD_MONEY 1 100
                 MATCH 1
-                START_RIDE 1 2 1
-                STOP_RIDE 1 4 5 32
+                START_RIDE 2 1
+                STOP_RIDE 1 Beach 4 5 32
                 BILL 1
                 PAY 1 WALLET
                 """;
@@ -198,21 +200,19 @@ class CLITest {
     @Test
     void BillRiderUsingCash() {
         String input = """
-                ADD_DRIVER 1 1 1
-                ADD_DRIVER 2 4 5
-                ADD_DRIVER 3 2 2
-                ADD_RIDER 1 0 0
-                ADD_MONEY 1 520
+                ADD_DRIVER d1@email.com 9876556789 1 1
+                ADD_DRIVER d1@email.com 9876556789 4 5
+                ADD_DRIVER d1@email.com 9876556789 2 2
+                ADD_RIDER r1@email.com 9876556789 0 0
                 MATCH 1
-                START_RIDE 1 2 1
-                STOP_RIDE 1 4 5 32
+                START_RIDE 2 1
+                STOP_RIDE 1 Beach 4 5 32
                 BILL 1
                 PAY 1 CASH
                 ADMIN_VIEW_DRIVER_EARNINGS 3
                 """;
 
         String expectedOutput = """
-                CURRENT_BALANCE 1 520.0
                 DRIVERS_MATCHED 1 3
                 RIDE_STARTED 1
                 RIDE_STOPPED 1
@@ -227,21 +227,19 @@ class CLITest {
     @Test
     void BillRiderUsingCard() {
         String input = """
-                ADD_DRIVER 1 1 1
-                ADD_DRIVER 2 4 5
-                ADD_DRIVER 3 2 2
-                ADD_RIDER 1 0 0
-                ADD_MONEY 1 520
+                ADD_DRIVER d1@email.com 9876556789 1 1
+                ADD_DRIVER d1@email.com 9876556789 4 5
+                ADD_DRIVER d1@email.com 9876556789 2 2
+                ADD_RIDER r1@email.com 9876556789 0 0
                 MATCH 1
-                START_RIDE 1 2 1
-                STOP_RIDE 1 4 5 32
+                START_RIDE 2 1
+                STOP_RIDE 1 Beach 4 5 32
                 BILL 1
                 PAY 1 CARD
                 ADMIN_VIEW_DRIVER_EARNINGS 3
                 """;
 
         String expectedOutput = """
-                CURRENT_BALANCE 1 520.0
                 DRIVERS_MATCHED 1 3
                 RIDE_STARTED 1
                 RIDE_STOPPED 1
@@ -256,21 +254,19 @@ class CLITest {
     @Test
     void BillRiderUsingUPI() {
         String input = """
-                ADD_DRIVER 1 1 1
-                ADD_DRIVER 2 4 5
-                ADD_DRIVER 3 2 2
-                ADD_RIDER 1 0 0
-                ADD_MONEY 1 520
+                ADD_DRIVER d1@email.com 9876556789 1 1
+                ADD_DRIVER d1@email.com 9876556789 4 5
+                ADD_DRIVER d1@email.com 9876556789 2 2
+                ADD_RIDER r1@email.com 9876556789 0 0
                 MATCH 1
-                START_RIDE 1 2 1
-                STOP_RIDE 1 4 5 32
+                START_RIDE 2 1
+                STOP_RIDE 1 Beach 4 5 32
                 BILL 1
                 PAY 1 UPI
                 ADMIN_VIEW_DRIVER_EARNINGS 3
                 """;
 
         String expectedOutput = """
-                CURRENT_BALANCE 1 520.0
                 DRIVERS_MATCHED 1 3
                 RIDE_STARTED 1
                 RIDE_STOPPED 1
@@ -285,8 +281,8 @@ class CLITest {
     @Test
     void NoDriversAvailableAtAll_ThrowsException() {
         String input = """
-                ADD_RIDER 1 3 5
-                ADD_RIDER 2 1 1
+                ADD_RIDER r1@email.com 9876556789 0 0
+                ADD_RIDER r2@email.com 9876556789 0 0
                 MATCH 1
                 MATCH 2
                 """;
@@ -294,34 +290,6 @@ class CLITest {
         String expectedOutput = """
                 NO_DRIVERS_AVAILABLE
                 NO_DRIVERS_AVAILABLE
-                """;
-
-        runTest(input, expectedOutput);
-    }
-
-    @Test
-    void StartExistingRide_ThrowsException() {
-        String input = """
-                ADD_DRIVER 1 0 1
-                ADD_DRIVER 2 2 3
-                ADD_RIDER 1 3 5
-                ADD_DRIVER 3 4 2
-                ADD_RIDER 2 1 1
-                MATCH 1
-                MATCH 2
-                START_RIDE 101 1 1
-                START_RIDE 101 1 2
-                STOP_RIDE 101 10 2 48
-                BILL 101
-                """;
-
-        String expectedOutput = """
-                DRIVERS_MATCHED 2 3 1
-                DRIVERS_MATCHED 1 2 3
-                RIDE_STARTED 101
-                Invalid Ride ID - 101
-                RIDE_STOPPED 101
-                BILL 101 2 234.6
                 """;
 
         runTest(input, expectedOutput);
@@ -330,26 +298,26 @@ class CLITest {
     @Test
     void StartRideWithBusyDriver_ThrowsException() {
         String input = """
-                ADD_DRIVER 1 0 1
-                ADD_DRIVER 2 2 3
-                ADD_RIDER 1 3 5
-                ADD_DRIVER 3 4 2
-                ADD_RIDER 2 1 1
+                ADD_DRIVER d1@email.com 9876556789 0 1
+                ADD_DRIVER d2@email.com 9876556789 2 3
+                ADD_RIDER r1@email.com 9876556789 3 5
+                ADD_DRIVER d4@email.com 9876556789 4 2
+                ADD_RIDER r2@email.com 9876556789 1 1
                 MATCH 1
                 MATCH 2
-                START_RIDE 101 1 1
-                START_RIDE 102 2 2
-                STOP_RIDE 101 10 2 48
-                BILL 101
+                START_RIDE 1 1
+                START_RIDE 2 2
+                STOP_RIDE 1 Beach 10 2 48
+                BILL 1
                 """;
 
         String expectedOutput = """
                 DRIVERS_MATCHED 2 3 1
                 DRIVERS_MATCHED 1 2 3
-                RIDE_STARTED 101
-                Invalid Ride - 102
-                RIDE_STOPPED 101
-                BILL 101 2 234.6
+                RIDE_STARTED 1
+                Invalid Ride, driver is already preoccupied with another ride
+                RIDE_STOPPED 1
+                BILL 1 2 234.6
                 """;
 
         runTest(input, expectedOutput);
@@ -358,26 +326,26 @@ class CLITest {
     @Test
     void StartRideWithNonExistentDriver_ThrowsException() {
         String input = """
-                ADD_DRIVER 1 0 1
-                ADD_DRIVER 2 2 3
-                ADD_RIDER 1 3 5
-                ADD_DRIVER 3 4 2
-                ADD_RIDER 2 1 1
+                ADD_DRIVER d1@email.com 9876556789 0 1
+                ADD_DRIVER d2@email.com 9876556789 2 3
+                ADD_RIDER r1@email.com 9876556789 3 5
+                ADD_DRIVER d4@email.com 9876556789 4 2
+                ADD_RIDER r2@email.com 9876556789 1 1
                 MATCH 1
                 MATCH 2
-                START_RIDE 101 1 1
-                START_RIDE 102 4 2
-                STOP_RIDE 101 10 2 48
-                BILL 101
+                START_RIDE 1 1
+                START_RIDE 4 2
+                STOP_RIDE 1 Beach 10 2 48
+                BILL 1
                 """;
 
         String expectedOutput = """
                 DRIVERS_MATCHED 2 3 1
                 DRIVERS_MATCHED 1 2 3
-                RIDE_STARTED 101
-                Invalid Ride - 102
-                RIDE_STOPPED 101
-                BILL 101 2 234.6
+                RIDE_STARTED 1
+                Invalid Ride
+                RIDE_STOPPED 1
+                BILL 1 2 234.6
                 """;
 
         runTest(input, expectedOutput);
@@ -386,14 +354,14 @@ class CLITest {
     @Test
     void StopAlreadyCompletedRide_ThrowsException() {
         String input = """
-                ADD_DRIVER 1 1 1
-                ADD_DRIVER 2 4 5
-                ADD_DRIVER 3 2 2
-                ADD_RIDER 1 0 0
+                ADD_DRIVER d1@email.com 9876556789 1 1
+                ADD_DRIVER d1@email.com 9876556789 4 5
+                ADD_DRIVER d1@email.com 9876556789 2 2
+                ADD_RIDER r1@email.com 9876556789 0 0
                 MATCH 1
-                START_RIDE 1 2 1
-                STOP_RIDE 1 4 5 32
-                STOP_RIDE 1 1 1 10
+                START_RIDE 2 1
+                STOP_RIDE 1 Beach 4 5 32
+                STOP_RIDE 1 Beach 1 1 10
                 BILL 1
                 """;
 
@@ -410,14 +378,14 @@ class CLITest {
     @Test
     void StopNonExistentRide_ThrowsException() {
         String input = """
-                ADD_DRIVER 1 1 1
-                ADD_DRIVER 2 4 5
-                ADD_DRIVER 3 2 2
-                ADD_RIDER 1 0 0
+                ADD_DRIVER d1@email.com 9876556789 1 1
+                ADD_DRIVER d1@email.com 9876556789 4 5
+                ADD_DRIVER d1@email.com 9876556789 2 2
+                ADD_RIDER r1@email.com 9876556789 0 0
                 MATCH 1
-                START_RIDE 1 2 1
-                STOP_RIDE 1 4 5 32
-                STOP_RIDE 999 1 1 10
+                START_RIDE 2 1
+                STOP_RIDE 1 Beach 4 5 32
+                STOP_RIDE 999 Mall 1 1 10
                 BILL 1
                 """;
 
@@ -434,13 +402,13 @@ class CLITest {
     @Test
     void TestAdminCommands() {
         String input = """
-                ADD_DRIVER 1 1 1
-                ADD_DRIVER 2 4 5
-                ADD_DRIVER 3 2 2
-                ADD_RIDER 1 0 0
+                ADD_DRIVER d1@email.com 9876556789 1 1
+                ADD_DRIVER d1@email.com 9876556789 4 5
+                ADD_DRIVER d1@email.com 9876556789 2 2
+                ADD_RIDER r1@email.com 9876556789 0 0
                 MATCH 1
-                START_RIDE 1 2 1
-                STOP_RIDE 1 4 5 32
+                START_RIDE 2 1
+                STOP_RIDE 1 Beach 4 5 32
                 BILL 1
                 RATE_DRIVER 3 4.5
                 ADMIN_REMOVE_DRIVER 2
@@ -463,13 +431,13 @@ class CLITest {
     @Test
     void DeleteNonExistentDriver_ThrowsException() {
         String input = """
-                ADD_DRIVER 1 1 1
-                ADD_DRIVER 2 4 5
-                ADD_DRIVER 3 2 2
-                ADD_RIDER 1 0 0
+                ADD_DRIVER d1@email.com 9876556789 1 1
+                ADD_DRIVER d1@email.com 9876556789 4 5
+                ADD_DRIVER d1@email.com 9876556789 2 2
+                ADD_RIDER r1@email.com 9876556789 0 0
                 MATCH 1
-                START_RIDE 1 2 1
-                STOP_RIDE 1 4 5 32
+                START_RIDE 2 1
+                STOP_RIDE 1 Beach 4 5 32
                 BILL 1
                 ADMIN_REMOVE_DRIVER 99
                 """;

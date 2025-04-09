@@ -11,6 +11,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.List;
@@ -21,6 +22,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest
 @AutoConfigureMockMvc
+@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 public class MVCTest {
 
     @Autowired
@@ -50,19 +52,22 @@ public class MVCTest {
     public void TestFullRideFlow() throws Exception {
         // Add drivers
         mockMvc.perform(post("/driver/add")
-                        .param("driverID", "1")
+                        .param("email", "d1@email.com")
+                        .param("phoneNumber", "9876556789")
                         .param("x", "1")
                         .param("y", "1"))
                 .andExpect(status().isCreated());
 
         mockMvc.perform(post("/driver/add")
-                        .param("driverID", "2")
+                        .param("email", "d2@email.com")
+                        .param("phoneNumber", "9876556789")
                         .param("x", "4")
                         .param("y", "5"))
                 .andExpect(status().isCreated());
 
         mockMvc.perform(post("/driver/add")
-                        .param("driverID", "3")
+                        .param("email", "d3@email.com")
+                        .param("phoneNumber", "9876556789")
                         .param("x", "2")
                         .param("y", "2"))
                 .andExpect(status().isCreated());
@@ -70,7 +75,8 @@ public class MVCTest {
 
         // Add rider
         mockMvc.perform(post("/ride/rider/add")
-                        .param("riderID", "1")
+                        .param("email", "r1@email.com")
+                        .param("phoneNumber", "9876556789")
                         .param("x", "0")
                         .param("y", "0"))
                 .andExpect(status().isCreated());
@@ -91,7 +97,6 @@ public class MVCTest {
         String expectedRideStatusJson = new ObjectMapper().writeValueAsString(expectedRideStatus);
 
         mockMvc.perform(post("/ride/start")
-                        .param("rideID", "1")
                         .param("N", "2")
                         .param("riderID", "1"))
                 .andExpect(status().isOk())
@@ -104,6 +109,7 @@ public class MVCTest {
 
         mockMvc.perform(post("/ride/stop")
                         .param("rideID", "1")
+                        .param("destination", "Beach")
                         .param("x", "4")
                         .param("y", "5")
                         .param("timeInMins", "32"))
@@ -127,33 +133,38 @@ public class MVCTest {
     public void TestMultipleRidersFlow() throws Exception {
         // Add drivers
         mockMvc.perform(post("/driver/add")
-                        .param("driverID", "1")
+                        .param("email", "d1@email.com")
+                        .param("phoneNumber", "9876556789")
                         .param("x", "0")
                         .param("y", "1"))
                 .andExpect(status().isCreated());
 
         mockMvc.perform(post("/driver/add")
-                        .param("driverID", "2")
+                        .param("email", "d2@email.com")
+                        .param("phoneNumber", "9876556789")
                         .param("x", "2")
                         .param("y", "3"))
                 .andExpect(status().isCreated());
 
         mockMvc.perform(post("/driver/add")
-                        .param("driverID", "3")
+                        .param("email", "d3@email.com")
+                        .param("phoneNumber", "9876556789")
                         .param("x", "4")
                         .param("y", "2"))
                 .andExpect(status().isCreated());
 
 
-        // Add riders
+        // Add rider
         mockMvc.perform(post("/ride/rider/add")
-                        .param("riderID", "1")
+                        .param("email", "r1@email.com")
+                        .param("phoneNumber", "9876556789")
                         .param("x", "3")
                         .param("y", "5"))
                 .andExpect(status().isCreated());
 
         mockMvc.perform(post("/ride/rider/add")
-                        .param("riderID", "2")
+                        .param("email", "r2@email.com")
+                        .param("phoneNumber", "9876556789")
                         .param("x", "1")
                         .param("y", "1"))
                 .andExpect(status().isCreated());
@@ -179,22 +190,20 @@ public class MVCTest {
 
 
         // Start rides
-        RideStatusDTO expectedRideStatus = new RideStatusDTO(101, 1, 2, RideStatus.ONGOING);
+        RideStatusDTO expectedRideStatus = new RideStatusDTO(1, 1, 2, RideStatus.ONGOING);
         String expectedRideStatusJson = new ObjectMapper().writeValueAsString(expectedRideStatus);
 
         mockMvc.perform(post("/ride/start")
-                        .param("rideID", "101")
                         .param("N", "1")
                         .param("riderID", "1"))
                 .andExpect(status().isOk())
                 .andExpect(content().json(expectedRideStatusJson));
 
 
-        expectedRideStatus = new RideStatusDTO(102, 2, 1, RideStatus.ONGOING);
+        expectedRideStatus = new RideStatusDTO(2, 2, 1, RideStatus.ONGOING);
         expectedRideStatusJson = new ObjectMapper().writeValueAsString(expectedRideStatus);
 
         mockMvc.perform(post("/ride/start")
-                        .param("rideID", "102")
                         .param("N", "1")
                         .param("riderID", "2"))
                 .andExpect(status().isOk())
@@ -202,11 +211,12 @@ public class MVCTest {
 
 
         // Stop rides
-        expectedRideStatus = new RideStatusDTO(101, 1, 2, RideStatus.FINISHED);
+        expectedRideStatus = new RideStatusDTO(1, 1, 2, RideStatus.FINISHED);
         expectedRideStatusJson = new ObjectMapper().writeValueAsString(expectedRideStatus);
 
         mockMvc.perform(post("/ride/stop")
-                        .param("rideID", "101")
+                        .param("rideID", "1")
+                        .param("destination", "Beach")
                         .param("x", "10")
                         .param("y", "2")
                         .param("timeInMins", "48"))
@@ -214,11 +224,12 @@ public class MVCTest {
                 .andExpect(content().json(expectedRideStatusJson));
 
 
-        expectedRideStatus = new RideStatusDTO(102, 2, 1, RideStatus.FINISHED);
+        expectedRideStatus = new RideStatusDTO(2, 2, 1, RideStatus.FINISHED);
         expectedRideStatusJson = new ObjectMapper().writeValueAsString(expectedRideStatus);
 
         mockMvc.perform(post("/ride/stop")
-                        .param("rideID", "102")
+                        .param("rideID", "2")
+                        .param("destination", "Beach")
                         .param("x", "7")
                         .param("y", "9")
                         .param("timeInMins", "50"))
@@ -228,7 +239,7 @@ public class MVCTest {
 
         // Get bills
         String response = mockMvc.perform(get("/ride/bill")
-                        .param("rideID", "101"))
+                        .param("rideID", "1"))
                 .andExpect(status().isOk())
                 .andReturn()
                 .getResponse()
@@ -238,7 +249,7 @@ public class MVCTest {
 
 
         response = mockMvc.perform(get("/ride/bill")
-                        .param("rideID", "102"))
+                        .param("rideID", "2"))
                 .andExpect(status().isOk())
                 .andReturn()
                 .getResponse()
@@ -251,19 +262,22 @@ public class MVCTest {
     public void BillRiderUsingWallet() throws Exception {
         // Add drivers
         mockMvc.perform(post("/driver/add")
-                        .param("driverID", "1")
+                        .param("email", "d1@email.com")
+                        .param("phoneNumber", "9876556789")
                         .param("x", "1")
                         .param("y", "1"))
                 .andExpect(status().isCreated());
 
         mockMvc.perform(post("/driver/add")
-                        .param("driverID", "2")
+                        .param("email", "d2@email.com")
+                        .param("phoneNumber", "9876556789")
                         .param("x", "4")
                         .param("y", "5"))
                 .andExpect(status().isCreated());
 
         mockMvc.perform(post("/driver/add")
-                        .param("driverID", "3")
+                        .param("email", "d3@email.com")
+                        .param("phoneNumber", "9876556789")
                         .param("x", "2")
                         .param("y", "2"))
                 .andExpect(status().isCreated());
@@ -271,7 +285,8 @@ public class MVCTest {
 
         // Add rider
         mockMvc.perform(post("/ride/rider/add")
-                        .param("riderID", "1")
+                        .param("email", "r1@email.com")
+                        .param("phoneNumber", "9876556789")
                         .param("x", "0")
                         .param("y", "0"))
                 .andExpect(status().isCreated());
@@ -304,7 +319,6 @@ public class MVCTest {
         String expectedRideStatusJson = new ObjectMapper().writeValueAsString(expectedRideStatus);
 
         mockMvc.perform(post("/ride/start")
-                        .param("rideID", "1")
                         .param("N", "2")
                         .param("riderID", "1"))
                 .andExpect(status().isOk())
@@ -317,6 +331,7 @@ public class MVCTest {
 
         mockMvc.perform(post("/ride/stop")
                         .param("rideID", "1")
+                        .param("destination", "Beach")
                         .param("x", "4")
                         .param("y", "5")
                         .param("timeInMins", "32"))
@@ -337,7 +352,7 @@ public class MVCTest {
 
         // Pay using wallet
         PaymentDetailsDTO expectedPaymentDetails = new PaymentDetailsDTO(
-                2,
+                1,
                 1,
                 3,
                 186.7f,
@@ -368,19 +383,22 @@ public class MVCTest {
     public void BillRiderUsingWalletWithLowBalance() throws Exception {
         // Add drivers
         mockMvc.perform(post("/driver/add")
-                        .param("driverID", "1")
+                        .param("email", "d1@email.com")
+                        .param("phoneNumber", "9876556789")
                         .param("x", "1")
                         .param("y", "1"))
                 .andExpect(status().isCreated());
 
         mockMvc.perform(post("/driver/add")
-                        .param("driverID", "2")
+                        .param("email", "d2@email.com")
+                        .param("phoneNumber", "9876556789")
                         .param("x", "4")
                         .param("y", "5"))
                 .andExpect(status().isCreated());
 
         mockMvc.perform(post("/driver/add")
-                        .param("driverID", "3")
+                        .param("email", "d3@email.com")
+                        .param("phoneNumber", "9876556789")
                         .param("x", "2")
                         .param("y", "2"))
                 .andExpect(status().isCreated());
@@ -388,7 +406,8 @@ public class MVCTest {
 
         // Add rider
         mockMvc.perform(post("/ride/rider/add")
-                        .param("riderID", "1")
+                        .param("email", "r1@email.com")
+                        .param("phoneNumber", "9876556789")
                         .param("x", "0")
                         .param("y", "0"))
                 .andExpect(status().isCreated());
@@ -421,7 +440,6 @@ public class MVCTest {
         String expectedRideStatusJson = new ObjectMapper().writeValueAsString(expectedRideStatus);
 
         mockMvc.perform(post("/ride/start")
-                        .param("rideID", "1")
                         .param("N", "2")
                         .param("riderID", "1"))
                 .andExpect(status().isOk())
@@ -434,6 +452,7 @@ public class MVCTest {
 
         mockMvc.perform(post("/ride/stop")
                         .param("rideID", "1")
+                        .param("destination", "Beach")
                         .param("x", "4")
                         .param("y", "5")
                         .param("timeInMins", "32"))
@@ -475,19 +494,22 @@ public class MVCTest {
     public void TestAdminEndpoints() throws Exception {
         // Add drivers
         mockMvc.perform(post("/driver/add")
-                        .param("driverID", "1")
+                        .param("email", "d1@email.com")
+                        .param("phoneNumber", "9876556789")
                         .param("x", "1")
                         .param("y", "1"))
                 .andExpect(status().isCreated());
 
         mockMvc.perform(post("/driver/add")
-                        .param("driverID", "2")
+                        .param("email", "d2@email.com")
+                        .param("phoneNumber", "9876556789")
                         .param("x", "4")
                         .param("y", "5"))
                 .andExpect(status().isCreated());
 
         mockMvc.perform(post("/driver/add")
-                        .param("driverID", "3")
+                        .param("email", "d3@email.com")
+                        .param("phoneNumber", "9876556789")
                         .param("x", "2")
                         .param("y", "2"))
                 .andExpect(status().isCreated());
@@ -495,7 +517,8 @@ public class MVCTest {
 
         // Add rider
         mockMvc.perform(post("/ride/rider/add")
-                        .param("riderID", "1")
+                        .param("email", "r1@email.com")
+                        .param("phoneNumber", "9876556789")
                         .param("x", "0")
                         .param("y", "0"))
                 .andExpect(status().isCreated());
@@ -516,7 +539,6 @@ public class MVCTest {
         String expectedRideStatusJson = new ObjectMapper().writeValueAsString(expectedRideStatus);
 
         mockMvc.perform(post("/ride/start")
-                        .param("rideID", "1")
                         .param("N", "2")
                         .param("riderID", "1"))
                 .andExpect(status().isOk())
@@ -529,6 +551,7 @@ public class MVCTest {
 
         mockMvc.perform(post("/ride/stop")
                         .param("rideID", "1")
+                        .param("destination", "Beach")
                         .param("x", "4")
                         .param("y", "5")
                         .param("timeInMins", "32"))

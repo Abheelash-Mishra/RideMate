@@ -3,6 +3,7 @@ package org.example;
 import lombok.extern.slf4j.Slf4j;
 import org.example.dto.DriverDTO;
 import org.example.dto.PaymentDetailsDTO;
+import org.example.dto.RideStatusDTO;
 import org.example.exceptions.*;
 import org.example.models.PaymentMethodType;
 import org.example.models.PaymentStatus;
@@ -119,12 +120,11 @@ public class RiderAppCLI {
                     break;
 
                 case START_RIDE:
-                    rideID = Long.parseLong(parts[1]);
-                    N = Integer.parseInt(parts[2]);
-                    riderID = Long.parseLong(parts[3]);
+                    N = Integer.parseInt(parts[1]);
+                    riderID = Long.parseLong(parts[2]);
 
-                    rideService.startRide(N, riderID);
-                    log.info("RIDE_STARTED {}", rideID);
+                    RideStatusDTO rideStatus = rideService.startRide(N, riderID);
+                    log.info("RIDE_STARTED {}", rideStatus.getRideID());
                     break;
 
                 case STOP_RIDE:

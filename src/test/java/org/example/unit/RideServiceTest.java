@@ -45,11 +45,11 @@ class RideServiceTest {
 
     @Test
     void addRider() {
-        Rider rider = new Rider(1, 0, 0);
+        Rider rider = new Rider("r1@email.com", "9876556789", 0, 0);
 
         when(riderRepository.save(any(Rider.class))).thenReturn(rider);
 
-        rideService.addRider(1, 0, 0);
+        rideService.addRider("r1@email.com", "9876556789", 0, 0);
 
         verify(riderRepository).save(any(Rider.class));
     }
@@ -57,12 +57,15 @@ class RideServiceTest {
     @Test
     void matchRider() {
         long riderID = 1;
-        Rider rider = new Rider(riderID, 0, 0);
+        Rider rider = new Rider("r1@email.com", "9876556789", 0, 0);
+        rider.setRiderID(riderID);
 
-        List<Driver> drivers = List.of(
-                new Driver(1, 1, 1),
-                new Driver(3, 2, 2)
-        );
+        Driver d1 = new Driver("d1@email.com", "9876556789", 1, 1);
+        d1.setDriverID(1);
+        Driver d3 = new Driver("d3@email.com", "9876556789", 2, 2);
+        d3.setDriverID(3);
+
+        List<Driver> drivers = List.of(d1, d3);
 
         when(riderRepository.findById(riderID)).thenReturn(Optional.of(rider));
         when(driverRepository.findAll()).thenReturn(drivers);
@@ -75,23 +78,21 @@ class RideServiceTest {
 
     @Test
     void startRide() {
-        long rideID = 1;
-
         long riderID = 1;
-        Rider rider = new Rider(riderID, 0, 0);
+        Rider rider = new Rider("r1@email.com", "9876556789", 0, 0);
         rider.setMatchedDrivers(List.of(1L, 3L));
 
         long driverID = 3;
-        Driver driver = new Driver(driverID, 2, 2);
+        Driver driver = new Driver("d3@email.com", "9876556789", 2, 2);
 
-        Ride ride = new Ride(rideID, rider, driver);
+        Ride ride = new Ride(rider, driver);
 
         when(riderRepository.findById(riderID)).thenReturn(Optional.of(rider));
         when(driverRepository.findById(driverID)).thenReturn(Optional.of(driver));
         when(rideRepository.save(any(Ride.class))).thenReturn(ride);
 
-        RideStatusDTO expected = new RideStatusDTO(1, 1, 3, RideStatus.ONGOING);
-        RideStatusDTO actual = rideService.startRide(rideID, 2, riderID);
+        RideStatusDTO expected = new RideStatusDTO(0, 1, 3, RideStatus.ONGOING);
+        RideStatusDTO actual = rideService.startRide(2, riderID);
 
         assertEquals(expected, actual, "Ride was not started correctly");
     }
@@ -101,20 +102,22 @@ class RideServiceTest {
         long rideID = 1;
 
         long riderID = 1;
-        Rider rider = new Rider(riderID, 0, 0);
+        Rider rider = new Rider("r1@email.com", "9876556789", 0, 0);
+        rider.setRiderID(riderID);
         rider.setMatchedDrivers(List.of(1L, 3L));
 
         long driverID = 3;
-        Driver driver = new Driver(driverID, 2, 2);
+        Driver driver = new Driver("d3@email.com", "9876556789", 2, 2);
+        driver.setDriverID(driverID);
 
-        Ride ride = new Ride(rideID, rider, driver);
+        Ride ride = new Ride(rider, driver);
         ride.setStatus(RideStatus.ONGOING);
 
         when(rideRepository.findById(rideID)).thenReturn(Optional.of(ride));
         when(driverRepository.findById(driverID)).thenReturn(Optional.of(driver));
 
         RideStatusDTO expected = new RideStatusDTO(1, 1, 3, RideStatus.FINISHED);
-        RideStatusDTO actual = rideService.stopRide(rideID, 4, 5, 32);
+        RideStatusDTO actual = rideService.stopRide(rideID, "Beach", 4, 5, 32);
 
         assertEquals(expected, actual, "Ride status should be FINISHED");
     }
@@ -123,14 +126,12 @@ class RideServiceTest {
     void billRide() {
         long rideID = 1;
 
-        long riderID = 1;
-        Rider rider = new Rider(riderID, 0, 0);
+        Rider rider = new Rider("r1@email.com", "9876556789", 0, 0);
         rider.setMatchedDrivers(List.of(1L, 3L));
 
-        long driverID = 3;
-        Driver driver = new Driver(driverID, 2, 2);
+        Driver driver = new Driver("d3@email.com", "9876556789", 2, 2);
 
-        Ride ride = new Ride(rideID, rider, driver);
+        Ride ride = new Ride(rider, driver);
         ride.setDestinationCoordinates(List.of(4, 5));
         ride.setTimeTakenInMins(32);
         ride.setStatus(RideStatus.FINISHED);
@@ -146,11 +147,11 @@ class RideServiceTest {
     @Test
     void matchRiderWhenNoDriversAvailable() {
         long riderID = 1;
-        Rider rider = new Rider(riderID, 0, 0);
+        Rider rider = new Rider("r1@email.com", "9876556789", 0, 0);
 
         List<Driver> drivers = List.of(
-                new Driver(1, 7, 1),
-                new Driver(3, 7, 2)
+                new Driver("d1@email.com", "9876556789", 7, 1),
+                new Driver("d2@email.com", "9876556789", 7, 2)
         );
 
         when(riderRepository.findById(riderID)).thenReturn(Optional.of(rider));
@@ -164,29 +165,27 @@ class RideServiceTest {
 
     @Test
     void startRideWithNonExistentDriver_ThrowsException() {
-        long rideID = 1;
-
         long riderID = 1;
-        Rider rider = new Rider(riderID, 0, 0);
+        Rider rider = new Rider("r1@email.com", "9876556789", 0, 0);
         rider.setMatchedDrivers(List.of(1L, 3L));
 
         long driverID = 2;
-        Driver driver = new Driver(driverID, 2, 2);
+        Driver driver = new Driver("d2@email.com", "9876556789", 2, 2);
 
-        Ride ride = new Ride(rideID, rider, driver);
+        Ride ride = new Ride(rider, driver);
 
         when(riderRepository.findById(riderID)).thenReturn(Optional.of(rider));
         when(driverRepository.findById(driverID)).thenReturn(Optional.of(driver));
         when(rideRepository.save(any(Ride.class))).thenReturn(ride);
 
-        Exception exception = Assertions.assertThrows(InvalidDriverIDException.class, () -> rideService.startRide(rideID, 2, riderID));
+        Exception exception = Assertions.assertThrows(InvalidDriverIDException.class, () -> rideService.startRide(2, riderID));
 
         assertEquals("Invalid Driver ID - 3, no such driver exists", exception.getMessage(), "Ride should not be started with this driver");
     }
 
     @Test
     void stopInvalidRide_ThrowsException() {
-        Exception exception = Assertions.assertThrows(InvalidRideException.class, () -> rideService.stopRide(1, 4, 5, 32));
+        Exception exception = Assertions.assertThrows(InvalidRideException.class, () -> rideService.stopRide(1, "Beach", 4, 5, 32));
 
         assertEquals("Invalid Ride ID - 1, no such ride exists", exception.getMessage(), "There is no ride that can be stopped");
     }
@@ -195,14 +194,12 @@ class RideServiceTest {
     void billUnfinishedRide_ThrowsException() {
         long rideID = 1;
 
-        long riderID = 1;
-        Rider rider = new Rider(riderID, 0, 0);
+        Rider rider = new Rider("r1@email.com", "9876556789", 0, 0);
         rider.setMatchedDrivers(List.of(1L, 3L));
 
-        long driverID = 3;
-        Driver driver = new Driver(driverID, 2, 2);
+        Driver driver = new Driver("d3@email.com", "9876556789", 2, 2);
 
-        Ride ride = new Ride(rideID, rider, driver);
+        Ride ride = new Ride(rider, driver);
         ride.setDestinationCoordinates(List.of(4, 5));
         ride.setTimeTakenInMins(32);
 

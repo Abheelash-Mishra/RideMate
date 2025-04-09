@@ -47,13 +47,15 @@ class PaymentServiceTest {
         long rideID = 1;
 
         long riderID = 1;
-        testRider = new Rider(riderID, 0, 0);
+        testRider = new Rider("r1@email.com", "9876556789", 0, 0);
+        testRider.setRiderID(riderID);
         testRider.setMatchedDrivers(List.of(1L, 3L));
 
         long driverID = 3;
-        Driver testDriver = new Driver(driverID, 2, 2);
+        Driver testDriver = new Driver("d1@email.com", "9876556789", 2, 2);
+        testDriver.setDriverID(driverID);
 
-        Ride testRide = new Ride(rideID, testRider, testDriver);
+        Ride testRide = new Ride(testRider, testDriver);
         testRide.setDestinationCoordinates(List.of(4, 5));
         testRide.setTimeTakenInMins(32);
         testRide.setStatus(RideStatus.FINISHED);
