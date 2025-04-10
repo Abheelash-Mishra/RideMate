@@ -12,7 +12,7 @@ public class Payment {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private long paymentID;
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "ride_id")
     private Ride ride;
 
