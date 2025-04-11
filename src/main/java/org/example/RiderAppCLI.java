@@ -28,13 +28,13 @@ public class RiderAppCLI {
     private static final HashMap<Command, String> usageMsg = new HashMap<>();
 
     static {
-        usageMsg.put(Command.ADD_DRIVER, "Expectation: ADD_DRIVER <DRIVER ID> <X COORDINATE> <Y COORDINATE>");
-        usageMsg.put(Command.ADD_RIDER, "Expectation: ADD_RIDER <RIDER ID> <X COORDINATE> <Y COORDINATE>");
+        usageMsg.put(Command.ADD_DRIVER, "Expectation: ADD_DRIVER <X COORDINATE> <Y COORDINATE>");
+        usageMsg.put(Command.ADD_RIDER, "Expectation: ADD_RIDER <X COORDINATE> <Y COORDINATE>");
         usageMsg.put(Command.MATCH, "Expectation: MATCH <RIDER ID>");
-        usageMsg.put(Command.START_RIDE, "Expectation: START_RIDE <RIDE ID> <N> <RIDER ID>");
-        usageMsg.put(Command.STOP_RIDE, "Expectation: STOP_RIDE <RIDE ID> <DESTINATION X COORDINATE> <DESTINATION Y COORDINATE> <RIDE TIME IN MINUTES>");
+        usageMsg.put(Command.START_RIDE, "Expectation: START_RIDE <N> <RIDER ID>");
+        usageMsg.put(Command.STOP_RIDE, "Expectation: STOP_RIDE <RIDE ID> <DESTINATION> <DESTINATION X COORDINATE> <DESTINATION Y COORDINATE> <RIDE TIME IN MINUTES>");
         usageMsg.put(Command.RATE_DRIVER, "Expectation: RATE_DRIVER <DRIVER ID> <RATING>");
-        usageMsg.put(Command.BILL, "Expectation: BILL <RIDE ID> <N> <RIDER ID>");
+        usageMsg.put(Command.BILL, "Expectation: BILL <RIDE ID>");
         usageMsg.put(Command.PAY, "Expectation: PAY <RIDE ID> <PAYMENT METHOD>");
         usageMsg.put(Command.ADD_MONEY, "Expectation: ADD_MONEY <RIDER ID> <AMOUNT>");
         usageMsg.put(Command.ADMIN_REMOVE_DRIVER, "Expectation: ADMIN_REMOVE_DRIVER <DRIVER ID>");
