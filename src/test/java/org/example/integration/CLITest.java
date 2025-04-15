@@ -69,8 +69,8 @@ class CLITest {
                 ADD_DRIVER d1@email.com 9876556789 2 2
                 ADD_RIDER r1@email.com 9876556789 0 0
                 MATCH 1
-                START_RIDE 2 1
-                STOP_RIDE 1 Beach 4 5 32
+                START_RIDE 2 1 Beach 4 5
+                STOP_RIDE 1 32
                 BILL 1
                 """;
 
@@ -94,10 +94,10 @@ class CLITest {
                 ADD_RIDER r2@email.com 9876556789 1 1
                 MATCH 1
                 MATCH 2
-                START_RIDE 1 1
-                START_RIDE 1 2
-                STOP_RIDE 1 Beach 10 2 48
-                STOP_RIDE 2 Mall 7 9 50
+                START_RIDE 1 1 Beach 10 2
+                START_RIDE 1 2 Mall 7 9
+                STOP_RIDE 1 48
+                STOP_RIDE 2 50
                 BILL 1
                 BILL 2
                 """;
@@ -124,8 +124,8 @@ class CLITest {
                 ADD_DRIVER d1@email.com 9876556789 2 2
                 ADD_RIDER r1@email.com 9876556789 0 0
                 MATCH 1
-                START_RIDE 2 1
-                STOP_RIDE 1 Beach 4 5 32
+                START_RIDE 2 1 Beach 4 5
+                STOP_RIDE 1 32
                 BILL 1
                 RATE_DRIVER 3 4.5
                 """;
@@ -150,8 +150,8 @@ class CLITest {
                 ADD_RIDER r1@email.com 9876556789 0 0
                 ADD_MONEY 1 520
                 MATCH 1
-                START_RIDE 2 1
-                STOP_RIDE 1 Beach 4 5 32
+                START_RIDE 2 1 Beach 4 5
+                STOP_RIDE 1 32
                 BILL 1
                 PAY 1 WALLET
                 ADMIN_VIEW_DRIVER_EARNINGS 3
@@ -179,8 +179,8 @@ class CLITest {
                 ADD_RIDER r1@email.com 9876556789 0 0
                 ADD_MONEY 1 100
                 MATCH 1
-                START_RIDE 2 1
-                STOP_RIDE 1 Beach 4 5 32
+                START_RIDE 2 1 Beach 4 5
+                STOP_RIDE 1 32
                 BILL 1
                 PAY 1 WALLET
                 """;
@@ -205,8 +205,8 @@ class CLITest {
                 ADD_DRIVER d1@email.com 9876556789 2 2
                 ADD_RIDER r1@email.com 9876556789 0 0
                 MATCH 1
-                START_RIDE 2 1
-                STOP_RIDE 1 Beach 4 5 32
+                START_RIDE 2 1 Beach 4 5
+                STOP_RIDE 1 32
                 BILL 1
                 PAY 1 CASH
                 ADMIN_VIEW_DRIVER_EARNINGS 3
@@ -232,8 +232,8 @@ class CLITest {
                 ADD_DRIVER d1@email.com 9876556789 2 2
                 ADD_RIDER r1@email.com 9876556789 0 0
                 MATCH 1
-                START_RIDE 2 1
-                STOP_RIDE 1 Beach 4 5 32
+                START_RIDE 2 1 Beach 4 5
+                STOP_RIDE 1 32
                 BILL 1
                 PAY 1 CARD
                 ADMIN_VIEW_DRIVER_EARNINGS 3
@@ -259,8 +259,8 @@ class CLITest {
                 ADD_DRIVER d1@email.com 9876556789 2 2
                 ADD_RIDER r1@email.com 9876556789 0 0
                 MATCH 1
-                START_RIDE 2 1
-                STOP_RIDE 1 Beach 4 5 32
+                START_RIDE 2 1 Beach 4 5
+                STOP_RIDE 1 32
                 BILL 1
                 PAY 1 UPI
                 ADMIN_VIEW_DRIVER_EARNINGS 3
@@ -305,9 +305,9 @@ class CLITest {
                 ADD_RIDER r2@email.com 9876556789 1 1
                 MATCH 1
                 MATCH 2
-                START_RIDE 1 1
-                START_RIDE 2 2
-                STOP_RIDE 1 Beach 10 2 48
+                START_RIDE 1 1 Beach 10 2
+                START_RIDE 2 2 Mall 5 7
+                STOP_RIDE 1 48
                 BILL 1
                 """;
 
@@ -333,9 +333,9 @@ class CLITest {
                 ADD_RIDER r2@email.com 9876556789 1 1
                 MATCH 1
                 MATCH 2
-                START_RIDE 1 1
-                START_RIDE 4 2
-                STOP_RIDE 1 Beach 10 2 48
+                START_RIDE 1 1 Beach 10 2
+                START_RIDE 4 2 Mall 5 7
+                STOP_RIDE 1 48
                 BILL 1
                 """;
 
@@ -359,9 +359,9 @@ class CLITest {
                 ADD_DRIVER d1@email.com 9876556789 2 2
                 ADD_RIDER r1@email.com 9876556789 0 0
                 MATCH 1
-                START_RIDE 2 1
-                STOP_RIDE 1 Beach 4 5 32
-                STOP_RIDE 1 Beach 1 1 10
+                START_RIDE 2 1 Beach 4 5
+                STOP_RIDE 1 32
+                STOP_RIDE 1 10
                 BILL 1
                 """;
 
@@ -383,9 +383,9 @@ class CLITest {
                 ADD_DRIVER d1@email.com 9876556789 2 2
                 ADD_RIDER r1@email.com 9876556789 0 0
                 MATCH 1
-                START_RIDE 2 1
-                STOP_RIDE 1 Beach 4 5 32
-                STOP_RIDE 999 Mall 1 1 10
+                START_RIDE 2 1 Beach 4 5
+                STOP_RIDE 1 32
+                STOP_RIDE 999 10
                 BILL 1
                 """;
 
@@ -407,8 +407,8 @@ class CLITest {
                 ADD_DRIVER d1@email.com 9876556789 2 2
                 ADD_RIDER r1@email.com 9876556789 0 0
                 MATCH 1
-                START_RIDE 2 1
-                STOP_RIDE 1 Beach 4 5 32
+                START_RIDE 2 1 Beach 4 5
+                STOP_RIDE 1 32
                 BILL 1
                 RATE_DRIVER 3 4.5
                 ADMIN_REMOVE_DRIVER 2
@@ -436,8 +436,8 @@ class CLITest {
                 ADD_DRIVER d1@email.com 9876556789 2 2
                 ADD_RIDER r1@email.com 9876556789 0 0
                 MATCH 1
-                START_RIDE 2 1
-                STOP_RIDE 1 Beach 4 5 32
+                START_RIDE 2 1 Beach 4 5
+                STOP_RIDE 1 32
                 BILL 1
                 ADMIN_REMOVE_DRIVER 99
                 """;

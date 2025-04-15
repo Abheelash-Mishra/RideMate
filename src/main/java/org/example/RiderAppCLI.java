@@ -122,19 +122,19 @@ public class RiderAppCLI {
                 case START_RIDE:
                     N = Integer.parseInt(parts[1]);
                     riderID = Long.parseLong(parts[2]);
+                    String destination = parts[3];
+                    int dest_x_coordinate = Integer.parseInt(parts[4]);
+                    int dest_y_coordinate = Integer.parseInt(parts[5]);
 
-                    RideStatusDTO rideStatus = rideService.startRide(N, riderID);
+                    RideStatusDTO rideStatus = rideService.startRide(N, riderID, destination, dest_x_coordinate, dest_y_coordinate);
                     log.info("RIDE_STARTED {}", rideStatus.getRideID());
                     break;
 
                 case STOP_RIDE:
                     rideID = Long.parseLong(parts[1]);
-                    String destination = parts[2];
-                    int dest_x_coordinate = Integer.parseInt(parts[3]);
-                    int dest_y_coordinate = Integer.parseInt(parts[4]);
-                    int timeTakenInMins = Integer.parseInt(parts[5]);
+                    int timeTakenInMins = Integer.parseInt(parts[2]);
 
-                    rideService.stopRide(rideID, destination, dest_x_coordinate, dest_y_coordinate, timeTakenInMins);
+                    rideService.stopRide(rideID, timeTakenInMins);
                     log.info("RIDE_STOPPED {}", rideID);
                     break;
 

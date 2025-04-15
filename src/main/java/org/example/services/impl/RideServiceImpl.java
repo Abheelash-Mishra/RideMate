@@ -126,7 +126,7 @@ public class RideServiceImpl implements RideService {
 
 
     @Override
-    public RideStatusDTO startRide(int N, long riderID) {
+    public RideStatusDTO startRide(int N, long riderID, String destination, int destX, int destY) {
         Rider rider = riderRepository.findById(riderID)
                 .orElseThrow(() -> new InvalidRiderIDException("Invalid Rider ID - " + riderID + ", no such rider exists"));
 
@@ -151,12 +151,16 @@ public class RideServiceImpl implements RideService {
             rider.setMatchedDrivers(Collections.emptyList());
             riderRepository.save(rider);
 
-            Ride ride = new Ride(rider, driver);
-            rideRepository.save(ride);
+            Ride currentRide = new Ride(rider, driver);
+
+            // Code breaks because the ride does not save if we don't use new ArrayList<>
+            currentRide.setDestinationCoordinates(new ArrayList<>(List.of(destX, destY)));
+            currentRide.setDestination(destination);
+            rideRepository.save(currentRide);
 
             log.info("Successfully started a ride for rider '{}' with driver '{}'", riderID, driverID);
 
-            long rideID = ride.getRideID();
+            long rideID = currentRide.getRideID();
 
             return new RideStatusDTO(rideID, riderID, driverID, RideStatus.ONGOING);
         } catch (Exception e) {
@@ -169,7 +173,7 @@ public class RideServiceImpl implements RideService {
 
 
     @Override
-    public RideStatusDTO stopRide(long rideID, String destination, int destX, int destY, int timeTakenInMins) {
+    public RideStatusDTO stopRide(long rideID, int timeTakenInMins) {
         Ride currentRide = rideRepository.findById(rideID)
                 .orElseThrow(() -> new InvalidRideException("Invalid Ride ID - " + rideID + ", no such ride exists"));
 
@@ -185,9 +189,6 @@ public class RideServiceImpl implements RideService {
             driver.setAvailable(true);
             driverRepository.save(driver);
 
-            // Code breaks because the ride does not save if we don't use new ArrayList<>
-            currentRide.setDestinationCoordinates(new ArrayList<>(List.of(destX, destY)));
-            currentRide.setDestination(destination);
             currentRide.setTimeTakenInMins(timeTakenInMins);
             currentRide.setStatus(RideStatus.FINISHED);
             rideRepository.save(currentRide);

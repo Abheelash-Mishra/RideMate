@@ -98,7 +98,10 @@ public class MVCTest {
 
         mockMvc.perform(post("/ride/start")
                         .param("N", "2")
-                        .param("riderID", "1"))
+                        .param("riderID", "1")
+                        .param("destination", "Beach")
+                        .param("x", "4")
+                        .param("y", "5"))
                 .andExpect(status().isOk())
                 .andExpect(content().json(expectedRideStatusJson));
 
@@ -109,9 +112,6 @@ public class MVCTest {
 
         mockMvc.perform(post("/ride/stop")
                         .param("rideID", "1")
-                        .param("destination", "Beach")
-                        .param("x", "4")
-                        .param("y", "5")
                         .param("timeInMins", "32"))
                 .andExpect(status().isOk())
                 .andExpect(content().json(expectedRideStatusJson));
@@ -195,7 +195,10 @@ public class MVCTest {
 
         mockMvc.perform(post("/ride/start")
                         .param("N", "1")
-                        .param("riderID", "1"))
+                        .param("riderID", "1")
+                        .param("destination", "Beach")
+                        .param("x", "10")
+                        .param("y", "2"))
                 .andExpect(status().isOk())
                 .andExpect(content().json(expectedRideStatusJson));
 
@@ -205,7 +208,10 @@ public class MVCTest {
 
         mockMvc.perform(post("/ride/start")
                         .param("N", "1")
-                        .param("riderID", "2"))
+                        .param("riderID", "2")
+                        .param("destination", "Beach")
+                        .param("x", "7")
+                        .param("y", "9"))
                 .andExpect(status().isOk())
                 .andExpect(content().json(expectedRideStatusJson));
 
@@ -216,9 +222,6 @@ public class MVCTest {
 
         mockMvc.perform(post("/ride/stop")
                         .param("rideID", "1")
-                        .param("destination", "Beach")
-                        .param("x", "10")
-                        .param("y", "2")
                         .param("timeInMins", "48"))
                 .andExpect(status().isOk())
                 .andExpect(content().json(expectedRideStatusJson));
@@ -229,9 +232,6 @@ public class MVCTest {
 
         mockMvc.perform(post("/ride/stop")
                         .param("rideID", "2")
-                        .param("destination", "Beach")
-                        .param("x", "7")
-                        .param("y", "9")
                         .param("timeInMins", "50"))
                 .andExpect(status().isOk())
                 .andExpect(content().json(expectedRideStatusJson));
@@ -320,7 +320,10 @@ public class MVCTest {
 
         mockMvc.perform(post("/ride/start")
                         .param("N", "2")
-                        .param("riderID", "1"))
+                        .param("riderID", "1")
+                        .param("destination", "Beach")
+                        .param("x", "4")
+                        .param("y", "5"))
                 .andExpect(status().isOk())
                 .andExpect(content().json(expectedRideStatusJson));
 
@@ -331,9 +334,6 @@ public class MVCTest {
 
         mockMvc.perform(post("/ride/stop")
                         .param("rideID", "1")
-                        .param("destination", "Beach")
-                        .param("x", "4")
-                        .param("y", "5")
                         .param("timeInMins", "32"))
                 .andExpect(status().isOk())
                 .andExpect(content().json(expectedRideStatusJson));
@@ -441,7 +441,10 @@ public class MVCTest {
 
         mockMvc.perform(post("/ride/start")
                         .param("N", "2")
-                        .param("riderID", "1"))
+                        .param("riderID", "1")
+                        .param("destination", "Beach")
+                        .param("x", "4")
+                        .param("y", "5"))
                 .andExpect(status().isOk())
                 .andExpect(content().json(expectedRideStatusJson));
 
@@ -452,9 +455,6 @@ public class MVCTest {
 
         mockMvc.perform(post("/ride/stop")
                         .param("rideID", "1")
-                        .param("destination", "Beach")
-                        .param("x", "4")
-                        .param("y", "5")
                         .param("timeInMins", "32"))
                 .andExpect(status().isOk())
                 .andExpect(content().json(expectedRideStatusJson));
@@ -540,7 +540,10 @@ public class MVCTest {
 
         mockMvc.perform(post("/ride/start")
                         .param("N", "2")
-                        .param("riderID", "1"))
+                        .param("riderID", "1")
+                        .param("destination", "Beach")
+                        .param("x", "4")
+                        .param("y", "5"))
                 .andExpect(status().isOk())
                 .andExpect(content().json(expectedRideStatusJson));
 
@@ -551,9 +554,6 @@ public class MVCTest {
 
         mockMvc.perform(post("/ride/stop")
                         .param("rideID", "1")
-                        .param("destination", "Beach")
-                        .param("x", "4")
-                        .param("y", "5")
                         .param("timeInMins", "32"))
                 .andExpect(status().isOk())
                 .andExpect(content().json(expectedRideStatusJson));

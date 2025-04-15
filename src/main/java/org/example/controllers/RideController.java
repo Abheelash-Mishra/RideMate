@@ -40,24 +40,24 @@ public class RideController {
     @PostMapping("/start")
     public ResponseEntity<RideStatusDTO> startRide(
             @RequestParam("N") int N,
-            @RequestParam("riderID") long riderID
+            @RequestParam("riderID") long riderID,
+            @RequestParam("destination") String destination,
+            @RequestParam("x") int x,
+            @RequestParam("y") int y
     ) {
-        log.info("Accessing endpoint: /ride/start || PARAMS: N={}, riderID={}", N, riderID);
+        log.info("Accessing endpoint: /ride/start || PARAMS: N={}, riderID={}, destination={}, x={}, y={}", N, riderID, destination, x, y);
 
-        return ResponseEntity.ok(rideService.startRide(N, riderID));
+        return ResponseEntity.ok(rideService.startRide(N, riderID, destination, x, y));
     }
 
     @PostMapping("/stop")
     public ResponseEntity<RideStatusDTO> stopRide(
             @RequestParam("rideID") long rideID,
-            @RequestParam("destination") String destination,
-            @RequestParam("x") int x,
-            @RequestParam("y") int y,
             @RequestParam("timeInMins") int timeInMins
     ) {
-        log.info("Accessing endpoint: /ride/stop || PARAMS: rideID={}, x={}, y={}, timeInMins={}", rideID, x, y, timeInMins);
+        log.info("Accessing endpoint: /ride/stop || PARAMS: rideID={}, timeInMins={}", rideID, timeInMins);
 
-        return ResponseEntity.ok(rideService.stopRide(rideID, destination, x, y, timeInMins));
+        return ResponseEntity.ok(rideService.stopRide(rideID, timeInMins));
     }
 
     @GetMapping("/bill")

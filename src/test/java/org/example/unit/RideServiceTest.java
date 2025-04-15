@@ -92,7 +92,7 @@ class RideServiceTest {
         when(rideRepository.save(any(Ride.class))).thenReturn(ride);
 
         RideStatusDTO expected = new RideStatusDTO(0, 1, 3, RideStatus.ONGOING);
-        RideStatusDTO actual = rideService.startRide(2, riderID);
+        RideStatusDTO actual = rideService.startRide(2, riderID, "Beach", 10, 10);
 
         assertEquals(expected, actual, "Ride was not started correctly");
     }
@@ -117,7 +117,7 @@ class RideServiceTest {
         when(driverRepository.findById(driverID)).thenReturn(Optional.of(driver));
 
         RideStatusDTO expected = new RideStatusDTO(1, 1, 3, RideStatus.FINISHED);
-        RideStatusDTO actual = rideService.stopRide(rideID, "Beach", 4, 5, 32);
+        RideStatusDTO actual = rideService.stopRide(rideID, 32);
 
         assertEquals(expected, actual, "Ride status should be FINISHED");
     }
@@ -178,14 +178,14 @@ class RideServiceTest {
         when(driverRepository.findById(driverID)).thenReturn(Optional.of(driver));
         when(rideRepository.save(any(Ride.class))).thenReturn(ride);
 
-        Exception exception = Assertions.assertThrows(InvalidDriverIDException.class, () -> rideService.startRide(2, riderID));
+        Exception exception = Assertions.assertThrows(InvalidDriverIDException.class, () -> rideService.startRide(2, riderID, "Beach", 10, 10));
 
         assertEquals("Invalid Driver ID - 3, no such driver exists", exception.getMessage(), "Ride should not be started with this driver");
     }
 
     @Test
     void stopInvalidRide_ThrowsException() {
-        Exception exception = Assertions.assertThrows(InvalidRideException.class, () -> rideService.stopRide(1, "Beach", 4, 5, 32));
+        Exception exception = Assertions.assertThrows(InvalidRideException.class, () -> rideService.stopRide(1, 32));
 
         assertEquals("Invalid Ride ID - 1, no such ride exists", exception.getMessage(), "There is no ride that can be stopped");
     }
