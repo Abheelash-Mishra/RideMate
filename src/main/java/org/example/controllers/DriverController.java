@@ -31,11 +31,13 @@ public class DriverController {
 
     @PostMapping("/rate")
     public ResponseEntity<DriverRatingDTO> rateDriver(
+            @RequestParam("rideID") long rideID,
             @RequestParam("driverID") long driverID,
-            @RequestParam("rating") float rating
+            @RequestParam("rating") float rating,
+            @RequestParam("comment") String comment
     ) {
-        log.info("Accessing endpoint: /driver/rate || PARAMS: driverID={}, rating={}", driverID, rating);
+        log.info("Accessing endpoint: /driver/rate || PARAMS: driverID={}, rating={}, comment={}", driverID, rating, comment);
 
-        return ResponseEntity.ok(driverService.rateDriver(driverID, rating));
+        return ResponseEntity.ok(driverService.rateDriver(rideID, driverID, rating, comment));
     }
 }
