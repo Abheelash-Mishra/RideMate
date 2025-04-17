@@ -2,6 +2,7 @@ package org.example.services.impl;
 
 import lombok.extern.slf4j.Slf4j;
 import org.example.dto.MatchedDriversDTO;
+import org.example.dto.RideDetailsDTO;
 import org.example.dto.RideStatusDTO;
 import org.example.exceptions.InvalidRiderIDException;
 import org.example.models.RideStatus;
@@ -244,6 +245,25 @@ public class RideServiceImpl implements RideService {
 
             throw new RuntimeException("Failed to generate bill for ride " + rideID, e);
         }
+    }
+
+    @Override
+    public List<RideDetailsDTO> getAllRides(long riderID) {
+        List<Object[]> rawData = rideRepository.findAllRides(riderID);
+        List<RideDetailsDTO> summaryList = new ArrayList<>();
+
+        for (Object[] row : rawData) {
+            RideDetailsDTO dto = new RideDetailsDTO(
+                    (Long) row[0],
+                    (Long) row[1],
+                    (String) row[2],
+                    (Float) row[3],
+                    (Integer) row[4]
+            );
+            summaryList.add(dto);
+        }
+
+        return summaryList;
     }
 
     public record DriverDistancePair(long ID, double distance) {
