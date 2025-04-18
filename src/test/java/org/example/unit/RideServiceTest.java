@@ -149,18 +149,31 @@ class RideServiceTest {
     void getAllRidesOfARider() {
         long riderId = 1L;
 
-        Object[] row1 = new Object[]{1L, 2L, "City A", 230.5f, 2};
-        Object[] row2 = new Object[]{2L, 3L, "City B", 450.0f, 1};
+        Object[] row1 = new Object[]{1L, 2L, "City A", 230.5f, 21};
+        Object[] row2 = new Object[]{2L, 3L, "City B", 450.0f, 51};
 
         when(rideRepository.findAllRides(riderId)).thenReturn(Arrays.asList(row1, row2));
 
         List<RideDetailsDTO> expected = List.of(
-                new RideDetailsDTO(1L, 2L, "City A", 230.5f, 2),
-                new RideDetailsDTO(2L, 3L, "City B", 450.0f, 1)
+                new RideDetailsDTO(1L, 2L, "City A", 230.5f, 21),
+                new RideDetailsDTO(2L, 3L, "City B", 450.0f, 51)
         );
         List<RideDetailsDTO> result = rideService.getAllRides(riderId);
 
         assertEquals(2, result.size());
+        assertEquals(expected, result);
+    }
+
+    @Test
+    void getAllRidesOfANewRider() {
+        long riderId = 1L;
+
+        when(rideRepository.findAllRides(riderId)).thenReturn(Collections.emptyList());
+
+        List<RideDetailsDTO> expected = Collections.emptyList();
+        List<RideDetailsDTO> result = rideService.getAllRides(riderId);
+
+        assertEquals(0, result.size());
         assertEquals(expected, result);
     }
 
