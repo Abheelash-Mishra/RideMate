@@ -139,10 +139,12 @@ public class RiderAppCLI {
                     break;
 
                 case RATE_DRIVER:
-                    driverID = Long.parseLong(parts[1]);
-                    float rating = Float.parseFloat(parts[2]);
+                    rideID = Long.parseLong(parts[1]);
+                    driverID = Long.parseLong(parts[2]);
+                    float rating = Float.parseFloat(parts[3]);
+                    String comment = parts[4];
 
-                    float newRating = driverService.rateDriver(driverID, rating).getRating();
+                    float newRating = driverService.rateDriver(rideID, driverID, rating, comment).getRating();
                     log.info("CURRENT_RATING {} {}", driverID, newRating);
                     break;
 

@@ -127,7 +127,7 @@ class CLITest {
                 START_RIDE 2 1 Beach 4 5
                 STOP_RIDE 1 32
                 BILL 1
-                RATE_DRIVER 3 4.5
+                RATE_DRIVER 1 3 4.5 'Nice!'
                 """;
 
         String expectedOutput = """
@@ -410,7 +410,7 @@ class CLITest {
                 START_RIDE 2 1 Beach 4 5
                 STOP_RIDE 1 32
                 BILL 1
-                RATE_DRIVER 3 4.5
+                RATE_DRIVER 1 3 4.5 'Drove well!'
                 ADMIN_REMOVE_DRIVER 2
                 ADMIN_LIST_DRIVERS 2
                 """;
