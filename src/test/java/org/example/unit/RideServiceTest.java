@@ -1,6 +1,7 @@
 package org.example.unit;
 
 import org.example.dto.MatchedDriversDTO;
+import org.example.dto.RideDetailsDTO;
 import org.example.dto.RideStatusDTO;
 import org.example.exceptions.InvalidDriverIDException;
 import org.example.exceptions.InvalidRideException;
@@ -142,6 +143,25 @@ class RideServiceTest {
         double bill = rideService.billRide(rideID);
 
         assertEquals(186.7, bill, 0.1);
+    }
+
+    @Test
+    void getAllRidesOfARider() {
+        long riderId = 1L;
+
+        Object[] row1 = new Object[]{1L, 2L, "City A", 230.5f, 2};
+        Object[] row2 = new Object[]{2L, 3L, "City B", 450.0f, 1};
+
+        when(rideRepository.findAllRides(riderId)).thenReturn(Arrays.asList(row1, row2));
+
+        List<RideDetailsDTO> expected = List.of(
+                new RideDetailsDTO(1L, 2L, "City A", 230.5f, 2),
+                new RideDetailsDTO(2L, 3L, "City B", 450.0f, 1)
+        );
+        List<RideDetailsDTO> result = rideService.getAllRides(riderId);
+
+        assertEquals(2, result.size());
+        assertEquals(expected, result);
     }
 
     @Test
