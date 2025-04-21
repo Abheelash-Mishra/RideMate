@@ -249,21 +249,29 @@ public class RideServiceImpl implements RideService {
 
     @Override
     public List<RideDetailsDTO> getAllRides(long riderID) {
-        List<Object[]> rawData = rideRepository.findAllRides(riderID);
-        List<RideDetailsDTO> summaryList = new ArrayList<>();
+        try {
+            List<Object[]> rawData = rideRepository.findAllRides(riderID);
+            List<RideDetailsDTO> summaryList = new ArrayList<>();
 
-        for (Object[] row : rawData) {
-            RideDetailsDTO dto = new RideDetailsDTO(
-                    (Long) row[0],
-                    (Long) row[1],
-                    (String) row[2],
-                    (Float) row[3],
-                    (Integer) row[4]
-            );
-            summaryList.add(dto);
+            for (Object[] row : rawData) {
+                RideDetailsDTO dto = new RideDetailsDTO(
+                        (Long) row[0],
+                        (Long) row[1],
+                        (String) row[2],
+                        (Float) row[3],
+                        (Integer) row[4],
+                        row[5].toString()
+                );
+                summaryList.add(dto);
+            }
+
+            return summaryList;
+        } catch (Exception e) {
+            log.error("Unexpected error while fetching all rides of rider '{}'", riderID);
+            log.error("Exception: {}", e.getMessage(), e);
+
+            throw new RuntimeException("Failed to fetch all rides of rider " + riderID, e);
         }
-
-        return summaryList;
     }
 
     public record DriverDistancePair(long ID, double distance) {
