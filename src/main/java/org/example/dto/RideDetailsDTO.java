@@ -13,4 +13,5 @@ public class RideDetailsDTO {
     private String destination;
     private float billAmount;
     private int rideDuration;
+    private String paymentMethod;
 }

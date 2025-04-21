@@ -5,10 +5,7 @@ import org.example.dto.RideDetailsDTO;
 import org.example.dto.RideStatusDTO;
 import org.example.exceptions.InvalidDriverIDException;
 import org.example.exceptions.InvalidRideException;
-import org.example.models.RideStatus;
-import org.example.models.Driver;
-import org.example.models.Ride;
-import org.example.models.Rider;
+import org.example.models.*;
 
 import org.example.repository.DriverRepository;
 import org.example.repository.RideRepository;
@@ -149,14 +146,14 @@ class RideServiceTest {
     void getAllRidesOfARider() {
         long riderId = 1L;
 
-        Object[] row1 = new Object[]{1L, 2L, "City A", 230.5f, 21};
-        Object[] row2 = new Object[]{2L, 3L, "City B", 450.0f, 51};
+        Object[] row1 = new Object[]{1L, 2L, "City A", 230.5f, 21, PaymentMethodType.CASH.toString()};
+        Object[] row2 = new Object[]{2L, 3L, "City B", 450.0f, 51, PaymentMethodType.CASH.toString()};
 
         when(rideRepository.findAllRides(riderId)).thenReturn(Arrays.asList(row1, row2));
 
         List<RideDetailsDTO> expected = List.of(
-                new RideDetailsDTO(1L, 2L, "City A", 230.5f, 21),
-                new RideDetailsDTO(2L, 3L, "City B", 450.0f, 51)
+                new RideDetailsDTO(1L, 2L, "City A", 230.5f, 21, PaymentMethodType.CASH.toString()),
+                new RideDetailsDTO(2L, 3L, "City B", 450.0f, 51, PaymentMethodType.CASH.toString())
         );
         List<RideDetailsDTO> result = rideService.getAllRides(riderId);
 
