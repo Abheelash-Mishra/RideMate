@@ -2,12 +2,15 @@ package org.example.controllers;
 
 import lombok.extern.slf4j.Slf4j;
 import org.example.dto.MatchedDriversDTO;
+import org.example.dto.RideDetailsDTO;
 import org.example.dto.RideStatusDTO;
 import org.example.services.RideService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @Slf4j
 @CrossOrigin
@@ -65,5 +68,12 @@ public class RideController {
         log.info("Accessing endpoint: /ride/bill || PARAMS: rideID={}", rideID);
 
         return rideService.billRide(rideID);
+    }
+
+    @GetMapping("/all")
+    public ResponseEntity<List<RideDetailsDTO>> getAllRides(@RequestParam("riderID") long riderID) {
+        log.info("Accessing endpoint: /ride/all || PARAMS: riderID={}", riderID);
+
+        return ResponseEntity.ok(rideService.getAllRides(riderID));
     }
 }
