@@ -575,8 +575,10 @@ public class MVCTest {
         String expectedDriverRatingJson = new ObjectMapper().writeValueAsString(expectedDriverRating);
 
         mockMvc.perform(post("/driver/rate")
+                        .param("rideID", "1")
                         .param("driverID", "3")
-                        .param("rating", "4.5"))
+                        .param("rating", "4.5")
+                        .param("comment", "Drove well!"))
                 .andExpect(status().isOk())
                 .andExpect(content().json(expectedDriverRatingJson));
 

@@ -22,6 +22,7 @@ public class Ride {
     @JoinColumn(name = "driver_id")
     private Driver driver;
 
+    private String comment;
     private String destination;
 
     @ElementCollection(fetch = FetchType.EAGER)
