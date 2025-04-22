@@ -148,7 +148,7 @@ class CLITest {
                 ADD_DRIVER d1@email.com 9876556789 4 5
                 ADD_DRIVER d1@email.com 9876556789 2 2
                 ADD_RIDER r1@email.com 9876556789 0 0
-                ADD_MONEY 1 520
+                ADD_MONEY 1 520 UPI
                 MATCH 1
                 START_RIDE 2 1 Beach 4 5
                 STOP_RIDE 1 32
@@ -177,7 +177,7 @@ class CLITest {
                 ADD_DRIVER d1@email.com 9876556789 4 5
                 ADD_DRIVER d1@email.com 9876556789 2 2
                 ADD_RIDER r1@email.com 9876556789 0 0
-                ADD_MONEY 1 100
+                ADD_MONEY 1 100 CARD
                 MATCH 1
                 START_RIDE 2 1 Beach 4 5
                 STOP_RIDE 1 32

@@ -7,10 +7,7 @@ import org.example.exceptions.InvalidRideException;
 import org.example.exceptions.InvalidRiderIDException;
 import org.example.models.*;
 
-import org.example.repository.DriverRepository;
-import org.example.repository.PaymentRepository;
-import org.example.repository.RideRepository;
-import org.example.repository.RiderRepository;
+import org.example.repository.*;
 import org.example.services.PaymentType;
 import org.example.models.PaymentMethodType;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,6 +28,9 @@ public class WalletPayment implements PaymentType {
 
     @Autowired
     private PaymentRepository paymentRepository;
+
+    @Autowired
+    private WalletTransactionRepository walletTransactionRepository;
 
     @Override
     public PaymentDetailsDTO sendMoney(long rideID) {
@@ -69,6 +69,10 @@ public class WalletPayment implements PaymentType {
                         PaymentMethodType.WALLET,
                         PaymentStatus.COMPLETE
                 );
+
+                WalletTransaction walletTransaction = new WalletTransaction(rider, -currentRide.getBill(), null);
+                walletTransactionRepository.save(walletTransaction);
+
                 driver.setEarnings(driver.getEarnings() + currentRide.getBill());
             }
             else {
@@ -104,13 +108,16 @@ public class WalletPayment implements PaymentType {
         }
     }
 
-    public float addMoney(long riderID, float amount) {
+    public float addMoney(long riderID, float amount, PaymentMethodType rechargeMethodType) {
         try {
             Rider rider = riderRepository.findById(riderID)
                     .orElseThrow(() -> new InvalidRiderIDException("Invalid Rider ID - " + riderID + ", no such ride exists"));
 
             rider.setWalletAmount(rider.getWalletAmount() + amount);
             riderRepository.save(rider);
+
+            WalletTransaction walletTransaction = new WalletTransaction(rider, amount, rechargeMethodType);
+            walletTransactionRepository.save(walletTransaction);
 
             log.info("Successfully added Rs. {} to wallet of rider '{}'", amount, riderID);
 

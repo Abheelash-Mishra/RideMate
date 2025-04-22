@@ -36,7 +36,7 @@ public class DriverController {
             @RequestParam("rating") float rating,
             @RequestParam("comment") String comment
     ) {
-        log.info("Accessing endpoint: /driver/rate || PARAMS: driverID={}, rating={}, comment={}", driverID, rating, comment);
+        log.info("Accessing endpoint: /driver/rate || PARAMS: driverID={}, rating={}, comment='{}'", driverID, rating, comment);
 
         return ResponseEntity.ok(driverService.rateDriver(rideID, driverID, rating, comment));
     }

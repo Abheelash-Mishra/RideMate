@@ -2,10 +2,7 @@ package org.example.unit;
 
 import org.example.models.*;
 import org.example.dto.PaymentDetailsDTO;
-import org.example.repository.DriverRepository;
-import org.example.repository.PaymentRepository;
-import org.example.repository.RideRepository;
-import org.example.repository.RiderRepository;
+import org.example.repository.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.example.services.PaymentService;
@@ -36,6 +33,9 @@ class PaymentServiceTest {
 
     @MockitoBean
     private PaymentRepository paymentRepository;
+
+    @MockitoBean
+    private WalletTransactionRepository walletTransactionRepository;
 
     @Autowired
     private PaymentService paymentService;
@@ -129,6 +129,9 @@ class PaymentServiceTest {
                 PaymentMethodType.WALLET,
                 PaymentStatus.COMPLETE
         );
+
+        WalletTransaction walletTransaction = new WalletTransaction(testRider, -201.3F, null);
+        when(walletTransactionRepository.save(any(WalletTransaction.class))).thenReturn(walletTransaction);
 
         PaymentDetailsDTO response = paymentService.processPayment(1, PaymentMethodType.WALLET);
 

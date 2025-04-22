@@ -79,9 +79,10 @@ public class RiderAppCLI {
 
             command = Command.valueOf(parts[0].toUpperCase());
 
+            PaymentMethodType paymentMethodType;
             int x_coordinate, y_coordinate, N;
             long riderID, rideID, driverID;
-            String email, phoneNumber;
+            String email, phoneNumber, type;
             StringBuilder output;
 
             switch (command) {
@@ -160,9 +161,9 @@ public class RiderAppCLI {
 
                 case PAY:
                     rideID = Long.parseLong(parts[1]);
-                    String type = parts[2];
+                    type = parts[2];
 
-                    PaymentMethodType paymentMethodType = PaymentMethodType.valueOf(type.toUpperCase());
+                    paymentMethodType = PaymentMethodType.valueOf(type.toUpperCase());
 
                     PaymentDetailsDTO paymentDetails = paymentService.processPayment(rideID, paymentMethodType);
                     if (paymentDetails.getPaymentStatus() == PaymentStatus.FAILED) {
@@ -175,8 +176,11 @@ public class RiderAppCLI {
                 case ADD_MONEY:
                     riderID = Long.parseLong(parts[1]);
                     float amount = Float.parseFloat(parts[2]);
+                    type = parts[3];
 
-                    float balance = paymentService.addMoney(riderID, amount);
+                    paymentMethodType = PaymentMethodType.valueOf(type.toUpperCase());
+
+                    float balance = paymentService.addMoney(riderID, amount, paymentMethodType);
                     log.info("CURRENT_BALANCE {} {}", riderID, balance);
                     break;
 

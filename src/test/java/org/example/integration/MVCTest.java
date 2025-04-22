@@ -295,7 +295,8 @@ public class MVCTest {
         // Add money to rider's wallet
         String response = mockMvc.perform(post("/payment/add-money")
                         .param("riderID", "1")
-                        .param("amount", "520"))
+                        .param("amount", "520")
+                        .param("type", "UPI"))
                 .andExpect(status().isOk())
                 .andReturn()
                 .getResponse()
@@ -416,7 +417,8 @@ public class MVCTest {
         // Add money to rider's wallet
         String response = mockMvc.perform(post("/payment/add-money")
                         .param("riderID", "1")
-                        .param("amount", "100"))
+                        .param("amount", "100")
+                        .param("type", "CARD"))
                 .andExpect(status().isOk())
                 .andReturn()
                 .getResponse()
