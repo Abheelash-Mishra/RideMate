@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.regex.Pattern;
 
 @Slf4j
 @CrossOrigin
@@ -29,6 +30,12 @@ public class RideController {
             @RequestParam("y") int y
     ) {
         log.info("Accessing endpoint: /ride/rider/add");
+
+        String emailRegex = "^[a-zA-Z0-9_.±]+@[a-zA-Z0-9-]+\\.[a-zA-Z0-9-.]+$";
+        if (!Pattern.matches(emailRegex, email)) {
+            log.warn("Invalid email ID was used. Rider was not registered");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(-1L);
+        }
 
         return ResponseEntity.status(HttpStatus.CREATED).body(rideService.addRider(email, phoneNumber, x, y));
     }

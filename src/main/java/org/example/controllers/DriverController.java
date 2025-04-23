@@ -9,6 +9,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.regex.Pattern;
+
 @Slf4j
 @CrossOrigin
 @RestController
@@ -25,6 +27,12 @@ public class DriverController {
             @RequestParam("y") int y
     ) {
         log.info("Accessing endpoint: /driver/add");
+
+        String emailRegex = "^[a-zA-Z0-9_.±]+@[a-zA-Z0-9-]+\\.[a-zA-Z0-9-.]+$";
+        if (!Pattern.matches(emailRegex, email)) {
+            log.warn("Invalid email ID was used. Driver was not registered");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(-1L);
+        }
 
         return ResponseEntity.status(HttpStatus.CREATED).body(driverService.addDriver(email, phoneNumber, x, y));
     }
