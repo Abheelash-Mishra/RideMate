@@ -31,7 +31,7 @@ public class RideController {
     ) {
         log.info("Accessing endpoint: /ride/rider/add");
 
-        String emailRegex = "^[a-zA-Z0-9_.±]+@[a-zA-Z0-9-]+\\.[a-zA-Z0-9-.]+$";
+        String emailRegex = "^[a-zA-Z0-9_.]+@[a-zA-Z0-9-]+\\.[a-zA-Z0-9-.]+$";
         if (!Pattern.matches(emailRegex, email)) {
             log.warn("Invalid email ID was used. Rider was not registered");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(-1L);
