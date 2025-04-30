@@ -36,15 +36,15 @@ To run it in CLI mode, enter the following command into your terminal.
 java -jar target/riderapp-1.0.jar cli
 ```
 
-Now, you can run the CLI application. Below are some examples for the commands.
+Now, you can run the CLI application. Below is a command sequence example.
 ```sh
-ADD_DRIVER 1 1 1
-ADD_DRIVER 2 4 5
-ADD_DRIVER 3 2 2
-ADD_RIDER 1 0 0
+ADD_DRIVER d1@email.com 9876556789 1 1
+ADD_DRIVER d1@email.com 9876556789 4 5
+ADD_DRIVER d1@email.com 9876556789 2 2
+ADD_RIDER r1@email.com 9876556789 0 0
 MATCH 1
-START_RIDE 1 2 1
-STOP_RIDE 1 4 5 32
+START_RIDE 2 1 Beach 4 5
+STOP_RIDE 1 32
 BILL 1
 ```
 
@@ -76,13 +76,101 @@ Since RiderApp is a Spring Boot application, it has an embedded Apache Tomcat se
 
 Test with **Postman** or **cURL**:
 ```sh
-curl -X GET http://localhost:8080/ride/bill?rideID=RIDE-001
+curl -X POST http://localhost:8080/riderapp/ride/rider/add?email=test@gmail.com&phoneNumber=9876556789&x=0&y=0
 ```
 
 ---
-## Testing
-#### **Run Tests**
+Here's an improved version of your `README.md` with a section about running tests and installing k6 using GitHub releases:
+
+---
+
+
+# Testing
+
+### **Run Tests**
+
+To run the unit and integration tests for this project, you can use the following command:
+
 ```sh
 mvn test
 ```
 
+This will run all tests and show the results in the terminal.
+
+---
+
+## k6 Installation For Performance Testing
+
+### **Install k6 from GitHub Releases**
+
+To install **k6** on your machine using GitHub releases, follow these steps:
+
+1. **Download the latest k6 release**
+
+   Go to the [k6 GitHub Releases page](https://github.com/grafana/k6/releases) and find the latest release. At the time of writing, we're focusing on **k6 v0.58.0**. You can download the `.tar.gz` or `.zip` file for your operating system (Linux, macOS, or Windows).
+
+   Alternatively, run the following commands to download the release directly:
+
+   ```sh
+   curl -LO https://github.com/grafana/k6/releases/download/v0.58.0/k6-v0.58.0-linux-amd64.tar.gz
+   ```
+
+2. **Extract the downloaded file**
+
+   After downloading, extract the file:
+
+   ```sh
+   tar -xvzf k6-v0.58.0-linux-amd64.tar.gz
+   ```
+
+3. **Move the k6 binary to `~/bin` and add it to your PATH**
+
+   Move the `k6` binary to a directory included in your `PATH`:
+
+   ```sh
+   mv k6-v0.58.0-linux-amd64/k6 ~/bin
+   ```
+   
+   Next ensure you have `export PATH=$HOME/bin:$PATH` added at the end of your `.bashrc` file. To do so, edit the file using nano:
+   
+   ```sh
+   nano ~/.bashrc
+   ```
+   
+   To execute the changes:
+
+   ```sh
+   source ~/.bashrc
+   ```
+
+4. **Verify the installation**
+
+   To verify that k6 has been installed correctly, run:
+
+   ```sh
+   k6 version
+   ```
+
+### **Running k6 Scripts**
+
+Before running the scripts, ensure that the API is live!
+
+```sh
+docker-compose up --build
+```
+
+After installing k6, you can use it to run load testing scripts. Here's how to run the scripts. First edit the options to reflect the type of test you want to run, and adjust the VU count. Then in your terminal, run the following command:
+
+```sh
+cd performance_test
+k6 run populate_with_drivers.js
+```
+
+OR
+
+```sh
+cd performance_test
+k6 run test_ride_flow.js
+```
+
+This will execute the script, which makes requests to the API and imitate how a real user traffic would be. k6 will then display the results in your terminal after the test completes, showing you important metrics like the request rate, response time, and more.
