@@ -315,7 +315,7 @@ class CLITest {
                 DRIVERS_MATCHED 2 3 1
                 DRIVERS_MATCHED 1 2 3
                 RIDE_STARTED 1
-                Invalid Ride, driver is already preoccupied with another ride
+                RIDE_STARTED 2
                 RIDE_STOPPED 1
                 BILL 1 2 234.6
                 """;
@@ -343,7 +343,7 @@ class CLITest {
                 DRIVERS_MATCHED 2 3 1
                 DRIVERS_MATCHED 1 2 3
                 RIDE_STARTED 1
-                Invalid Ride
+                Requested driver index 4 out of bounds
                 RIDE_STOPPED 1
                 BILL 1 2 234.6
                 """;

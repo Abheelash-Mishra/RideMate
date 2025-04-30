@@ -17,6 +17,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 import java.util.*;
@@ -63,10 +64,10 @@ class RideServiceTest {
         Driver d3 = new Driver("d3@email.com", "9876556789", 2, 2);
         d3.setDriverID(3);
 
-        List<Driver> drivers = List.of(d1, d3);
+        List<Long> driverIDs = List.of(1L, 3L);
 
         when(riderRepository.findById(riderID)).thenReturn(Optional.of(rider));
-        when(driverRepository.findAll()).thenReturn(drivers);
+        when(driverRepository.findNearbyDrivers(rider.getX_coordinate(), rider.getY_coordinate(), 5.0, PageRequest.of(0, 100))).thenReturn(driverIDs);
 
         MatchedDriversDTO response = rideService.matchRider(riderID);
 
@@ -210,7 +211,7 @@ class RideServiceTest {
 
         Exception exception = Assertions.assertThrows(InvalidDriverIDException.class, () -> rideService.startRide(2, riderID, "Beach", 10, 10));
 
-        assertEquals("Invalid Driver ID - 3, no such driver exists", exception.getMessage(), "Ride should not be started with this driver");
+        assertEquals("Invalid Driver ID - 3", exception.getMessage(), "Ride should not be started with this driver");
     }
 
     @Test

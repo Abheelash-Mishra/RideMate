@@ -68,10 +68,7 @@ public class RideServiceImpl implements RideService {
 
             List<Long> nearbyDrivers = driverRepository.findNearbyDrivers(rider.getX_coordinate(), rider.getY_coordinate(), LIMIT, PageRequest.of(0, 100));
 
-            MatchedDriversDTO matchedDriversDTO = driversMatched(rider, nearbyDrivers);
-            log.info("Found drivers: {}", matchedDriversDTO.getMatchedDrivers());
-
-            return matchedDriversDTO;
+            return driversMatched(rider, nearbyDrivers);
         } catch (Exception e) {
             log.error("Unexpected error while matching drivers with rider '{}'", riderID);
             log.error("Exception: {}", e.getMessage(), e);
@@ -92,6 +89,7 @@ public class RideServiceImpl implements RideService {
         riderRepository.save(rider);
 
         log.info("Found potential driver(s) for rider '{}'", rider.getRiderID());
+        log.info("Drivers: {}", nearbyDrivers);
 
         return new MatchedDriversDTO(nearbyDrivers);
     }
