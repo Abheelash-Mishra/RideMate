@@ -15,8 +15,8 @@ public class Rider {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private long riderID;
 
-    @ElementCollection(fetch = FetchType.EAGER)
-    private List<Integer> coordinates;
+    private int x_coordinate;
+    private int y_coordinate;
 
     private String email;
     private String phoneNumber;
@@ -29,6 +29,7 @@ public class Rider {
     public Rider(String email, String phoneNumber, int x_coordinate, int y_coordinate) {
         this.email = email;
         this.phoneNumber = phoneNumber;
-        this.coordinates = List.of(x_coordinate, y_coordinate);
+        this.x_coordinate = x_coordinate;
+        this.y_coordinate = y_coordinate;
     }
 }

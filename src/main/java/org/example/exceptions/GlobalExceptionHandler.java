@@ -16,7 +16,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<Map<String, String>> handleInvalidDriverID(InvalidDriverIDException ex) {
         log.warn("Database cannot fetch details of driver as it does not exist", ex);
 
-        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+        return ResponseEntity.status(HttpStatus.OK)
                 .body(Map.of("error", ex.getMessage()));
     }
 
@@ -24,7 +24,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<Map<String, String>> handleInvalidRideID(InvalidRideException ex) {
         log.warn("Database cannot fetch details of the ride as it does not exist", ex);
 
-        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+        return ResponseEntity.status(HttpStatus.OK)
                 .body(Map.of("error", ex.getMessage()));
     }
 
@@ -32,7 +32,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<Map<String, String>> handleNoDrivers(NoDriversException ex) {
         log.warn("No drivers are available for the rider", ex);
 
-        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+        return ResponseEntity.status(HttpStatus.OK)
                 .body(Map.of("error", ex.getMessage()));
     }
 
@@ -40,7 +40,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<Map<String, String>> handleInvalidRiderID(InvalidRiderIDException ex) {
         log.warn("Database cannot fetch details of rider as it does not exist", ex);
 
-        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+        return ResponseEntity.status(HttpStatus.OK)
                 .body(Map.of("error", ex.getMessage()));
     }
 

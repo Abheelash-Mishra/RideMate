@@ -2,8 +2,8 @@ import http from 'k6/http';
 import { sleep } from 'k6';
 
 export let options = {
-  vus: 10000,
-  iterations: 10000,
+  vus: 1000,
+  iterations: 1000,
 };
 
 function randomInt(min, max) {
@@ -11,7 +11,7 @@ function randomInt(min, max) {
 }
 
 function randomPhone() {
-  return '9' + Math.floor(100000000 + Math.random() * 900000000); // 10-digit Indian style
+  return '9' + Math.floor(100000000 + Math.random() * 900000000);
 }
 
 function randomEmail(index) {

@@ -18,7 +18,9 @@ import org.example.repository.RiderRepository;
 import org.example.services.RideService;
 import org.example.utilities.DistanceUtility;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 
@@ -61,36 +63,15 @@ public class RideServiceImpl implements RideService {
         Rider rider = riderRepository.findById(riderID)
                 .orElseThrow(() -> new InvalidRiderIDException("Invalid Rider ID - " + riderID + " || No Such Rider Exists"));
 
-        List<Driver> allDrivers = driverRepository.findAll();
-
-        PriorityQueue<DriverDistancePair> nearestDrivers = new PriorityQueue<>((pair1, pair2) -> {
-            if (pair1.distance < pair2.distance) {
-                return -1;
-            } else if (pair1.distance > pair2.distance) {
-                return 1;
-            }
-
-            if (pair1.ID < pair2.ID) {
-                return -1;
-            } else if (pair1.ID > pair2.ID) {
-                return 1;
-            }
-
-            return 0;
-        });
-
         try {
             log.info("Searching for potential drivers for rider '{}'....", riderID);
-            for (Driver driver : allDrivers) {
-                if (driver.isAvailable()) {
-                    double distance = DistanceUtility.calculate(rider.getCoordinates(), driver.getCoordinates());
-                    if (distance <= LIMIT) {
-                        nearestDrivers.add(new DriverDistancePair(driver.getDriverID(), distance));
-                    }
-                }
-            }
 
-            return driversMatched(rider, nearestDrivers);
+            List<Long> nearbyDrivers = driverRepository.findNearbyDrivers(rider.getX_coordinate(), rider.getY_coordinate(), LIMIT, PageRequest.of(0, 100));
+
+            MatchedDriversDTO matchedDriversDTO = driversMatched(rider, nearbyDrivers);
+            log.info("Found drivers: {}", matchedDriversDTO.getMatchedDrivers());
+
+            return matchedDriversDTO;
         } catch (Exception e) {
             log.error("Unexpected error while matching drivers with rider '{}'", riderID);
             log.error("Exception: {}", e.getMessage(), e);
@@ -100,75 +81,78 @@ public class RideServiceImpl implements RideService {
     }
 
 
-    private MatchedDriversDTO driversMatched(Rider rider, PriorityQueue<DriverDistancePair> nearestDrivers) {
-        if (nearestDrivers.isEmpty()) {
+    private MatchedDriversDTO driversMatched(Rider rider, List<Long> nearbyDrivers) {
+        if (nearbyDrivers.isEmpty()) {
+            log.info("No suitable drivers available for rider '{}'", rider.getRiderID());
+
             return new MatchedDriversDTO(Collections.emptyList());
         }
 
-        List<Long> matchedDrivers = new ArrayList<>();
-        int size = Math.min(nearestDrivers.size(), 5);
-
-        for (int i = 0; i < size; i++) {
-            matchedDrivers.add(Objects.requireNonNull(nearestDrivers.poll()).ID);
-        }
-
-        rider.setMatchedDrivers(matchedDrivers);
+        rider.setMatchedDrivers(nearbyDrivers);
         riderRepository.save(rider);
 
-        if (!matchedDrivers.isEmpty()) {
-            log.info("Found potential driver(s) for rider '{}'", rider.getRiderID());
-        }
-        else {
-            log.info("No suitable drivers available for rider '{}'", rider.getRiderID());
-        }
+        log.info("Found potential driver(s) for rider '{}'", rider.getRiderID());
 
-        return new MatchedDriversDTO(matchedDrivers);
+        return new MatchedDriversDTO(nearbyDrivers);
     }
 
 
     @Override
     public RideStatusDTO startRide(int N, long riderID, String destination, int destX, int destY) {
         Rider rider = riderRepository.findById(riderID)
-                .orElseThrow(() -> new InvalidRiderIDException("Invalid Rider ID - " + riderID + ", no such rider exists"));
+                .orElseThrow(() -> new InvalidRiderIDException("Invalid Rider ID - " + riderID));
 
         List<Long> matchedDrivers = rider.getMatchedDrivers();
-
         if (matchedDrivers.size() < N) {
-            throw new InvalidRideException("Invalid Ride", new ArrayIndexOutOfBoundsException("User requested for a driver that does not exist in the array"));
+            throw new InvalidRideException("Requested driver index " + N + " out of bounds");
         }
 
-        long driverID = matchedDrivers.get(N - 1);
-        Driver driver = driverRepository.findById(driverID)
-                .orElseThrow(() -> new InvalidDriverIDException("Invalid Driver ID - " + driverID + ", no such driver exists"));
+        Long chosenDriverId = null;
+        List<Long> rotation = new ArrayList<>();
 
-        if (!driver.isAvailable()) {
-            throw new InvalidRideException("Invalid Ride, driver is already preoccupied with another ride");
+        rotation.addAll(matchedDrivers.subList(N - 1, matchedDrivers.size()));
+        rotation.addAll(matchedDrivers.subList(0, N - 1));
+
+        for (Long driverId : rotation) {
+            Driver driver = driverRepository.findById(driverId)
+                    .orElseThrow(() -> new InvalidDriverIDException("Invalid Driver ID - " + driverId));
+
+            if (driver.isAvailable()) {
+                chosenDriverId = driverId;
+                driver.setAvailable(false);
+                driverRepository.save(driver);
+                break;
+            }
         }
 
-        try {
-            driver.setAvailable(false);
-            driverRepository.save(driver);
-
+        if (chosenDriverId == null) {
             rider.setMatchedDrivers(Collections.emptyList());
             riderRepository.save(rider);
 
-            Ride currentRide = new Ride(rider, driver);
+            throw new InvalidRideException("All matched drivers are currently busy");
+        }
 
-            // Code breaks because the ride does not save if we don't use new ArrayList<>
-            currentRide.setDestinationCoordinates(new ArrayList<>(List.of(destX, destY)));
-            currentRide.setDestination(destination);
-            rideRepository.save(currentRide);
+        try {
+            rider.setMatchedDrivers(Collections.emptyList());
+            riderRepository.save(rider);
 
-            log.info("Successfully started a ride for rider '{}' with driver '{}'", riderID, driverID);
+            Long finalChosenDriverId = chosenDriverId;
+            Driver driver = driverRepository.findById(finalChosenDriverId)
+                    .orElseThrow(() -> new InvalidDriverIDException("Invalid Driver ID - " + finalChosenDriverId));
 
-            long rideID = currentRide.getRideID();
+            Ride ride = new Ride(rider, driver);
+            ride.setDestination(destination);
+            ride.setDestinationCoordinates(new ArrayList<>(List.of(destX, destY)));
+            rideRepository.save(ride);
 
-            return new RideStatusDTO(rideID, riderID, driverID, RideStatus.ONGOING);
+            log.info("Ride started for rider {} with driver {}", riderID, chosenDriverId);
+
+            return new RideStatusDTO(ride.getRideID(), riderID, chosenDriverId, RideStatus.ONGOING);
         } catch (Exception e) {
             log.error("Unexpected error while starting a ride");
             log.error("Exception: {}", e.getMessage(), e);
 
-            throw new RuntimeException("Failed to start a ride for rider " + riderID, e);
+            throw new RuntimeException("Failed to start ride for rider " + riderID, e);
         }
     }
 
@@ -207,6 +191,7 @@ public class RideServiceImpl implements RideService {
 
 
     @Override
+    @Transactional
     public double billRide(long rideID) {
         Ride currentRide = rideRepository.findById(rideID)
                 .orElseThrow(() -> new InvalidRideException("Invalid Ride ID - " + rideID, new NoSuchElementException("Ride does not exist in database")));
@@ -223,9 +208,8 @@ public class RideServiceImpl implements RideService {
 
             double finalBill = BASE_FARE;
 
-            List<Integer> startCoordinates = currentRide.getRider().getCoordinates();
             List<Integer> destCoordinates = currentRide.getDestinationCoordinates();
-            double distanceTravelled = DistanceUtility.calculate(startCoordinates, destCoordinates);
+            double distanceTravelled = DistanceUtility.calculate(currentRide.getRider().getX_coordinate(), currentRide.getRider().getY_coordinate(), destCoordinates.get(0), destCoordinates.get(1));
             finalBill += (distanceTravelled * PER_KM);
 
             int timeTakenInMins = currentRide.getTimeTakenInMins();
@@ -272,8 +256,5 @@ public class RideServiceImpl implements RideService {
 
             throw new RuntimeException("Failed to fetch all rides of rider " + riderID, e);
         }
-    }
-
-    public record DriverDistancePair(long ID, double distance) {
     }
 }
