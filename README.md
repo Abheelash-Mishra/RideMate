@@ -80,9 +80,6 @@ curl -X POST http://localhost:8080/riderapp/ride/rider/add?email=test@gmail.com&
 ```
 
 ---
-Here's an improved version of your `README.md` with a section about running tests and installing k6 using GitHub releases:
-
----
 
 
 # Testing
@@ -99,7 +96,7 @@ This will run all tests and show the results in the terminal.
 
 ---
 
-## 📊 Performance Report
+## Performance Report
 
 The following table summarizes the API performance tested using [k6](https://k6.io). Metrics were gathered across various virtual user (VU) counts and durations.
 
@@ -186,7 +183,7 @@ cd performance_test
 k6 run register_drivers.js
 ```
 
-OR
+**OR**
 
 ```sh
 cd performance_test
