@@ -81,15 +81,14 @@ public class RideServiceImpl implements RideService {
     private MatchedDriversDTO driversMatched(Rider rider, List<Long> nearbyDrivers) {
         if (nearbyDrivers.isEmpty()) {
             log.info("No suitable drivers available for rider '{}'", rider.getRiderID());
-
-            return new MatchedDriversDTO(Collections.emptyList());
+        }
+        else {
+            log.info("Found potential driver(s) for rider '{}'", rider.getRiderID());
+            log.info("Drivers: {}", nearbyDrivers);
         }
 
         rider.setMatchedDrivers(nearbyDrivers);
         riderRepository.save(rider);
-
-        log.info("Found potential driver(s) for rider '{}'", rider.getRiderID());
-        log.info("Drivers: {}", nearbyDrivers);
 
         return new MatchedDriversDTO(nearbyDrivers);
     }
@@ -101,6 +100,11 @@ public class RideServiceImpl implements RideService {
                 .orElseThrow(() -> new InvalidRiderIDException("Invalid Rider ID - " + riderID));
 
         List<Long> matchedDrivers = rider.getMatchedDrivers();
+
+        if (matchedDrivers.isEmpty()) {
+            throw new InvalidRideException("No drivers are available around you");
+        }
+
         if (matchedDrivers.size() < N) {
             throw new InvalidRideException("Requested driver index " + N + " out of bounds");
         }

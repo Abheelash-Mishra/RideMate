@@ -99,6 +99,25 @@ This will run all tests and show the results in the terminal.
 
 ---
 
+## 📊 Performance Report
+
+The following table summarizes the API performance tested using [k6](https://k6.io). Metrics were gathered across various virtual user (VU) counts and durations.
+
+| Script Name         | VUs   | Duration | Avg R.D | Min R.D | Max R.D   | p(90) R.D. | p(95) R.D. | Success Rate |
+|---------------------|-------|----------|---------|---------|-----------|------------|------------|--------------|
+| register_drivers.js | 1000  | 1m       | 0.65 ms | 0.36 ms | 9.09 ms   | 0.76 ms    | 0.79 ms    | 100%         |
+|                     | 5000  | 1m       | 0.58 ms | 0.32 ms | 13.43 ms  | 0.71 ms    | 0.77 ms    | 100%         |
+|                     | 10000 | 2m       | 0.65 ms | 0.36 ms | 9.09 ms   | 0.75 ms    | 0.79 ms    | 100%         |
+| test_ride_flow.js   | 1000  | 1m       | 1.90 ms | 0.37 ms | 42.82 ms  | 6.95 ms    | 7.90 ms    | 100%         |
+|                     | 5000  | 1m30s    | 2.29 ms | 0.31 ms | 166.23 ms | 8.42 ms    | 10.83 ms   | 100%         |
+|                     | 10000 | 2m       | 4.05 ms | 0.31 ms | 453.42 ms | 10.29 ms   | 12.98 ms   | 100%         |
+
+> **Notes:**
+> - R.D. = Response Duration
+> - `p(90)` and `p(95)` refer to the 90th and 95th percentile response times respectively.
+
+**See [performance_tests.md](/performance_test/performance_tests.md) for detailed screenshots and graphs of each test run.**
+
 ## k6 Installation For Performance Testing
 
 ### **Install k6 from GitHub Releases**
@@ -156,14 +175,15 @@ To install **k6** on your machine using GitHub releases, follow these steps:
 Before running the scripts, ensure that the API is live!
 
 ```sh
-docker-compose up --build
+mvn package
+java -jar target/riderapp-1.0.jar
 ```
 
 After installing k6, you can use it to run load testing scripts. Here's how to run the scripts. First edit the options to reflect the type of test you want to run, and adjust the VU count. Then in your terminal, run the following command:
 
 ```sh
 cd performance_test
-k6 run populate_with_drivers.js
+k6 run register_drivers.js
 ```
 
 OR

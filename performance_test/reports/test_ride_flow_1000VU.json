@@ -1,0 +1,179 @@
+{
+    "metrics": {
+        "data_received": {
+            "rate": 33740.681802666564,
+            "count": 2225911
+        },
+        "http_req_connecting": {
+            "min": 0,
+            "med": 0,
+            "max": 7.918785,
+            "p(90)": 0.1253215,
+            "p(95)": 0.14918599999999999,
+            "avg": 0.023412962226333635
+        },
+        "http_req_duration{expected_response:true}": {
+            "avg": 1.9061141251927212,
+            "min": 0.372134,
+            "med": 0.8188805,
+            "max": 42.82741,
+            "p(90)": 6.9560379999999995,
+            "p(95)": 7.909358
+        },
+        "http_req_failed": {
+            "passes": 0,
+            "fails": 6486,
+            "thresholds": {
+                "rate<0.01": false
+            },
+            "value": 0
+        },
+        "iterations": {
+            "rate": 15.158145048326984,
+            "count": 1000
+        },
+        "vus_max": {
+            "value": 1000,
+            "min": 1000,
+            "max": 1000
+        },
+        "http_reqs": {
+            "count": 6486,
+            "rate": 98.31572878344882
+        },
+        "http_req_blocked": {
+            "med": 0.005552,
+            "max": 7.981242,
+            "p(90)": 0.18066949999999998,
+            "p(95)": 0.20811925,
+            "avg": 0.03751989777983343,
+            "min": 0.001983
+        },
+        "http_req_duration": {
+            "max": 42.82741,
+            "p(90)": 6.9560379999999995,
+            "p(95)": 7.909358,
+            "avg": 1.9061141251927212,
+            "min": 0.372134,
+            "med": 0.8188805
+        },
+        "http_req_receiving": {
+            "avg": 0.054237840117175286,
+            "min": 0.016443,
+            "med": 0.0507625,
+            "max": 0.575351,
+            "p(90)": 0.07510649999999999,
+            "p(95)": 0.08542074999999999
+        },
+        "vus": {
+            "value": 1,
+            "min": 1,
+            "max": 1000
+        },
+        "http_req_sending": {
+            "avg": 0.020240381591119298,
+            "min": 0.0059,
+            "med": 0.015697,
+            "max": 0.324241,
+            "p(90)": 0.0385055,
+            "p(95)": 0.0488245
+        },
+        "http_req_waiting": {
+            "avg": 1.8316359034844236,
+            "min": 0.304865,
+            "med": 0.7513175,
+            "max": 42.781781,
+            "p(90)": 6.8796610000000005,
+            "p(95)": 7.81245225
+        },
+        "data_sent": {
+            "count": 952946,
+            "rate": 14444.893691223007
+        },
+        "iteration_duration": {
+            "min": 6076.467179,
+            "med": 35947.846198,
+            "max": 65951.998751,
+            "p(90)": 60038.3411224,
+            "p(95)": 62861.669808599996,
+            "avg": 35915.10630766698
+        },
+        "http_req_tls_handshaking": {
+            "avg": 0,
+            "min": 0,
+            "med": 0,
+            "max": 0,
+            "p(90)": 0,
+            "p(95)": 0
+        },
+        "checks": {
+            "passes": 6486,
+            "fails": 0,
+            "value": 1
+        }
+    },
+    "root_group": {
+        "groups": {},
+        "checks": {
+                "Registered successfully": {
+                    "name": "Registered successfully",
+                    "path": "::Registered successfully",
+                    "id": "84d1f1c8f7d8d43b5ed3286443b2c104",
+                    "passes": 1000,
+                    "fails": 0
+                },
+                "Matched rider": {
+                    "name": "Matched rider",
+                    "path": "::Matched rider",
+                    "id": "bdc9348f7bdc3479b3073758cad90eba",
+                    "passes": 1000,
+                    "fails": 0
+                },
+                "Is ride starting func working": {
+                    "name": "Is ride starting func working",
+                    "path": "::Is ride starting func working",
+                    "id": "db1062486ab858dde449d08437212a0f",
+                    "passes": 1000,
+                    "fails": 0
+                },
+                "Stopped ride": {
+                    "fails": 0,
+                    "name": "Stopped ride",
+                    "path": "::Stopped ride",
+                    "id": "1247a18b52ca4b8a8eae8b47bd89c458",
+                    "passes": 1000
+                },
+                "Generated bill": {
+                    "path": "::Generated bill",
+                    "id": "83ab65a4dea633a18fc8ef0e96fd2a8d",
+                    "passes": 1000,
+                    "fails": 0,
+                    "name": "Generated bill"
+                },
+                "Payment successful": {
+                    "path": "::Payment successful",
+                    "id": "1df2932b15c57251e2e33b8f95bf9753",
+                    "passes": 1000,
+                    "fails": 0,
+                    "name": "Payment successful"
+                },
+                "Wallet credited": {
+                    "name": "Wallet credited",
+                    "path": "::Wallet credited",
+                    "id": "07607288e1cd3e2d80a0dde5fc053109",
+                    "passes": 243,
+                    "fails": 0
+                },
+                "Received past wallet transactions": {
+                    "name": "Received past wallet transactions",
+                    "path": "::Received past wallet transactions",
+                    "id": "43b2f7a3b460979c4b17a6b10f06ae5a",
+                    "passes": 243,
+                    "fails": 0
+                }
+            },
+        "name": "",
+        "path": "",
+        "id": "d41d8cd98f00b204e9800998ecf8427e"
+    }
+}

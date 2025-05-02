@@ -7,7 +7,7 @@ export let options = {
             executor: 'per-vu-iterations',
             vus: 10000,
             iterations: 1,
-            maxDuration: '5m',
+            maxDuration: '2m',
             exec: 'main',
         },
     },
@@ -17,14 +17,14 @@ export let options = {
 };
 
 export function main() {
-    sleep(Math.random() * 60 * 5); // Each VU starts at a random point in the x-minute window
-
     const baseUrl = 'http://localhost:8080/riderapp';
 
     const email = `rider${__VU}_${__ITER}@test.com`;
     const phone = `98765${Math.floor(Math.random() * 10000).toString().padStart(4, '0')}`;
     let x = Math.floor(Math.random() * 101);
     let y = Math.floor(Math.random() * 101);
+
+    sleep(Math.random() * 60 * 2); // Each VU starts at a random point in the x-minute window
 
     let res = http.post(`${baseUrl}/ride/rider/add?email=${email}&phoneNumber=${phone}&x=${x}&y=${y}`);
     check(res, { 'Registered successfully': (r) => r.status === 201 });
@@ -45,16 +45,17 @@ export function main() {
     y = Math.floor(Math.random() * 101);
 
     res = http.post(`${baseUrl}/ride/start?N=1&riderID=${riderID}&destination=Mall&x=${x}&y=${y}`);
-    check(res, { 'Started ride': (r) => r.status === 200 });
+    check(res, { 'Is ride starting func working': (r) => r.status === 200 });
     const rideID = res.json('rideID');
     if (!rideID) {
-        console.log('Ride start failed:', res.json('error'));
+        console.log('Ride cannot start:', res.json('error'));
         return;
     }
 
     sleep(1);
 
-    res = http.post(`${baseUrl}/ride/stop?rideID=${rideID}&timeInMins=32`);
+    const rideDuration = Math.floor(Math.random() * (100 - 20 + 1)) + 20;
+    res = http.post(`${baseUrl}/ride/stop?rideID=${rideID}&timeInMins=${rideDuration}`);
     check(res, { 'Stopped ride': (r) => r.status === 200 });
 
     sleep(1);
@@ -64,7 +65,18 @@ export function main() {
 
     sleep(1);
 
-    res = http.post(`${baseUrl}/payment/pay?rideID=${rideID}&type=CASH`);
+    const paymentMethods = ["CASH", "CARD", "WALLET", "UPI"]
+    let method = paymentMethods[Math.floor(Math.random() * 4)];
+
+    if (method === "WALLET") {
+        res = http.post(`${baseUrl}/payment/add-money?riderID=${riderID}&amount=3000&type=UPI`);
+        check(res, { 'Wallet credited': (r) => r.status === 200 })
+
+        res = http.get(`${baseUrl}/payment/wallet/transactions?riderID=${riderID}`);
+        check(res, { 'Received past wallet transactions': (r) => r.status === 200 })
+    }
+
+    res = http.post(`${baseUrl}/payment/pay?rideID=${rideID}&type=${method}`);
     check(res, { 'Payment successful': (r) => r.status === 200 });
 
     sleep(1);
