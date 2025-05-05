@@ -1,0 +1,144 @@
+{
+    "root_group": {
+        "name": "",
+        "path": "",
+        "id": "d41d8cd98f00b204e9800998ecf8427e",
+        "groups": {},
+        "checks": {
+                "Fetched drivers": {
+                    "fails": 0,
+                    "name": "Fetched drivers",
+                    "path": "::Fetched drivers",
+                    "id": "203b73082eeed4e487658c1718752a59",
+                    "passes": 100
+                },
+                "Fetched driver's earnings": {
+                    "name": "Fetched driver's earnings",
+                    "path": "::Fetched driver's earnings",
+                    "id": "72772baf5113e1081a874d5bb2bf0095",
+                    "passes": 100,
+                    "fails": 0
+                },
+                "Removed driver": {
+                    "name": "Removed driver",
+                    "path": "::Removed driver",
+                    "id": "c423fbfaa5d502cd84911ac058cc262c",
+                    "passes": 6,
+                    "fails": 0
+                }
+            }
+    },
+    "metrics": {
+        "http_req_connecting": {
+            "p(90)": 0.17417500000000002,
+            "p(95)": 0.18519625,
+            "avg": 0.07527756796116505,
+            "min": 0,
+            "med": 0,
+            "max": 0.238834
+        },
+        "data_sent": {
+            "count": 25051,
+            "rate": 840.7696389809715
+        },
+        "iterations": {
+            "rate": 3.356231842964239,
+            "count": 100
+        },
+        "vus_max": {
+            "value": 100,
+            "min": 100,
+            "max": 100
+        },
+        "http_req_duration{expected_response:true}": {
+            "max": 10.286581,
+            "p(90)": 3.136295,
+            "p(95)": 3.313512,
+            "avg": 1.887446577669903,
+            "min": 0.891373,
+            "med": 1.68509
+        },
+        "http_req_waiting": {
+            "avg": 1.6728389514563107,
+            "min": 0.804026,
+            "med": 1.5156049999999999,
+            "max": 9.927363,
+            "p(90)": 2.709418,
+            "p(95)": 3.02552775
+        },
+        "checks": {
+            "passes": 206,
+            "fails": 0,
+            "value": 1
+        },
+        "data_received": {
+            "count": 2517768,
+            "rate": 84502.13134796386
+        },
+        "http_req_receiving": {
+            "avg": 0.1843789611650486,
+            "min": 0.045903,
+            "med": 0.126443,
+            "max": 0.574324,
+            "p(90)": 0.371811,
+            "p(95)": 0.434642
+        },
+        "iteration_duration": {
+            "min": 15.678292,
+            "med": 14242.7206635,
+            "max": 29794.665124,
+            "p(90)": 26616.2113741,
+            "p(95)": 28761.2261899,
+            "avg": 14966.25924692
+        },
+        "http_reqs": {
+            "count": 206,
+            "rate": 6.913837596506332
+        },
+        "vus": {
+            "value": 4,
+            "min": 4,
+            "max": 97
+        },
+        "http_req_duration": {
+            "avg": 1.887446577669903,
+            "min": 0.891373,
+            "med": 1.68509,
+            "max": 10.286581,
+            "p(90)": 3.136295,
+            "p(95)": 3.313512
+        },
+        "http_req_failed": {
+            "fails": 206,
+            "passes": 0,
+            "thresholds": {
+                "rate<0.01": false
+            },
+            "value": 0
+        },
+        "http_req_sending": {
+            "avg": 0.03022866504854369,
+            "min": 0.008781,
+            "med": 0.029161,
+            "max": 0.092716,
+            "p(90)": 0.057578000000000004,
+            "p(95)": 0.07058375
+        },
+        "http_req_tls_handshaking": {
+            "avg": 0,
+            "min": 0,
+            "med": 0,
+            "max": 0,
+            "p(90)": 0,
+            "p(95)": 0
+        },
+        "http_req_blocked": {
+            "p(90)": 0.23284349999999998,
+            "p(95)": 0.25367075,
+            "avg": 0.10497895631067965,
+            "min": 0.003037,
+            "med": 0.0129195,
+            "max": 0.31503
+        }
+    }
+}

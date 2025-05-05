@@ -100,14 +100,17 @@ This will run all tests and show the results in the terminal.
 
 The following table summarizes the API performance tested using [k6](https://k6.io). Metrics were gathered across various virtual user (VU) counts and durations.
 
-| Script Name         | VUs   | Duration | Avg R.D | Min R.D | Max R.D   | p(90) R.D. | p(95) R.D. | Success Rate |
-|---------------------|-------|----------|---------|---------|-----------|------------|------------|--------------|
-| register_drivers.js | 1000  | 1m       | 0.65 ms | 0.36 ms | 9.09 ms   | 0.76 ms    | 0.79 ms    | 100%         |
-|                     | 5000  | 1m       | 0.58 ms | 0.32 ms | 13.43 ms  | 0.71 ms    | 0.77 ms    | 100%         |
-|                     | 10000 | 2m       | 0.65 ms | 0.36 ms | 9.09 ms   | 0.75 ms    | 0.79 ms    | 100%         |
-| test_ride_flow.js   | 1000  | 1m       | 1.90 ms | 0.37 ms | 42.82 ms  | 6.95 ms    | 7.90 ms    | 100%         |
-|                     | 5000  | 1m30s    | 2.29 ms | 0.31 ms | 166.23 ms | 8.42 ms    | 10.83 ms   | 100%         |
-|                     | 10000 | 2m       | 4.05 ms | 0.31 ms | 453.42 ms | 10.29 ms   | 12.98 ms   | 100%         |
+| Script Name             | VUs   | Duration | Avg R.D | Min R.D | Max R.D   | p(90) R.D. | p(95) R.D. | Success Rate |
+|-------------------------|-------|----------|---------|---------|-----------|------------|------------|--------------|
+| **register_drivers.js** | 1000  | 1m       | 0.65 ms | 0.36 ms | 9.09 ms   | 0.76 ms    | 0.79 ms    | 100%         |
+|                         | 5000  | 1m       | 0.58 ms | 0.32 ms | 13.43 ms  | 0.71 ms    | 0.77 ms    | 100%         |
+|                         | 10000 | 2m       | 0.65 ms | 0.36 ms | 9.09 ms   | 0.75 ms    | 0.79 ms    | 100%         |
+| **test_ride_flow.js**   | 1000  | 1m       | 1.90 ms | 0.37 ms | 42.82 ms  | 6.95 ms    | 7.90 ms    | 100%         |
+|                         | 5000  | 1m30s    | 2.29 ms | 0.31 ms | 166.23 ms | 8.42 ms    | 10.83 ms   | 100%         |
+|                         | 10000 | 2m       | 4.05 ms | 0.31 ms | 453.42 ms | 10.29 ms   | 12.98 ms   | 100%         |
+| **test_admin_usage.js** | 100   | 30s      | 1.88 ms | 0.89 ms | 10.28 ms  | 3.13 ms    | 3.31 ms    | 100%         |
+|                         | 500   | 30s      | 1.70 ms | 0.45 ms | 13.06 ms  | 2.97 ms    | 3.54 ms    | 100%         |
+|                         | 1000  | 30s      | 1.96 ms | 0.59 ms | 13.64 ms  | 3.36 ms    | 3.91 ms    | 100%         |
 
 > **Notes:**
 > - R.D. = Response Duration
