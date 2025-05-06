@@ -10,6 +10,7 @@ services:
       MYSQL_PASSWORD: mypass
     ports:
       - "3306:3306"
+    command: --max_connections=510
     volumes:
       - mysql_data:/var/lib/mysql
 

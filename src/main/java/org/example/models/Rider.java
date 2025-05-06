@@ -21,6 +21,8 @@ public class Rider {
     private String email;
     private String phoneNumber;
     private float walletAmount = 0;
+
+    @Column(name = "matched_drivers", columnDefinition = "VARBINARY(1024)")
     private List<Long> matchedDrivers;
 
     @OneToMany(mappedBy = "rider", cascade = CascadeType.ALL, orphanRemoval = true)
