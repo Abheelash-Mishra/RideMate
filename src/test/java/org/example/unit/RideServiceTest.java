@@ -11,12 +11,14 @@ import org.example.repository.DriverRepository;
 import org.example.repository.RideRepository;
 import org.example.repository.RiderRepository;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.example.services.RideService;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.cache.CacheManager;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
@@ -41,6 +43,14 @@ class RideServiceTest {
 
     @Autowired
     private RideService rideService;
+
+    @Autowired
+    private CacheManager cacheManager;
+
+    @BeforeEach
+    void clearCaches() {
+        cacheManager.getCacheNames().forEach(name -> Objects.requireNonNull(cacheManager.getCache(name)).clear());
+    }
 
     @Test
     void addRider() {
@@ -67,7 +77,7 @@ class RideServiceTest {
         List<Long> driverIDs = List.of(1L, 3L);
 
         when(riderRepository.findById(riderID)).thenReturn(Optional.of(rider));
-        when(driverRepository.findNearbyDrivers(rider.getX_coordinate(), rider.getY_coordinate(), 5.0, PageRequest.of(0, 100))).thenReturn(driverIDs);
+        when(driverRepository.findNearbyDrivers(rider.getX_coordinate(), rider.getY_coordinate(), 5.0, PageRequest.of(0, 20))).thenReturn(driverIDs);
 
         MatchedDriversDTO response = rideService.matchRider(riderID);
 

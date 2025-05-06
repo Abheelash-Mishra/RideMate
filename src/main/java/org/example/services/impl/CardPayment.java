@@ -13,7 +13,10 @@ import org.example.repository.RideRepository;
 import org.example.services.PaymentType;
 import org.example.models.PaymentMethodType;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.CacheManager;
 import org.springframework.stereotype.Component;
+
+import java.util.Objects;
 
 
 @Slf4j
@@ -28,17 +31,21 @@ public class CardPayment implements PaymentType {
     @Autowired
     private PaymentRepository paymentRepository;
 
+    @Autowired
+    private CacheManager cacheManager;
+
     @Override
     public PaymentDetailsDTO sendMoney(long rideID) {
-        try {
-            Ride currentRide = rideRepository.findById(rideID)
-                    .orElseThrow(() -> new InvalidRideException("Invalid Ride ID - " + rideID + ", no such ride exists"));
+        Ride currentRide = rideRepository.findById(rideID)
+                .orElseThrow(() -> new InvalidRideException("Invalid Ride ID - " + rideID + ", no such ride exists"));
 
+        try {
             Driver driver = currentRide.getDriver();
+            long riderID = currentRide.getRider().getRiderID();
 
             Payment paymentDetails = new Payment(
                     currentRide,
-                    currentRide.getRider().getRiderID(),
+                    riderID,
                     driver.getDriverID(),
                     currentRide.getBill(),
                     PaymentMethodType.CARD,
@@ -49,6 +56,9 @@ public class CardPayment implements PaymentType {
 
             driver.setEarnings(driver.getEarnings() + currentRide.getBill());
             driverRepository.save(driver);
+
+            Objects.requireNonNull(cacheManager.getCache("walletAmount")).evict(riderID);
+            Objects.requireNonNull(cacheManager.getCache("allTransactions")).evict(riderID);
 
             log.info("Card payment of amount Rs. {} to driver '{}' was successful", currentRide.getBill(), driver.getDriverID());
 

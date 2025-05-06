@@ -18,9 +18,10 @@ import org.example.repository.RiderRepository;
 import org.example.services.RideService;
 import org.example.utilities.DistanceUtility;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 
@@ -66,14 +67,14 @@ public class RideServiceImpl implements RideService {
         try {
             log.info("Searching for potential drivers for rider '{}'....", riderID);
 
-            List<Long> nearbyDrivers = driverRepository.findNearbyDrivers(rider.getX_coordinate(), rider.getY_coordinate(), LIMIT, PageRequest.of(0, 100));
+            List<Long> nearbyDrivers = driverRepository.findNearbyDrivers(rider.getX_coordinate(), rider.getY_coordinate(), LIMIT, PageRequest.of(0, 20));
 
             return driversMatched(rider, nearbyDrivers);
         } catch (Exception e) {
             log.error("Unexpected error while matching drivers with rider '{}'", riderID);
             log.error("Exception: {}", e.getMessage(), e);
 
-            throw new RuntimeException("Failed to match a driver for rider  " + riderID, e);
+            throw new RuntimeException("Failed to match a driver for rider " + riderID, e);
         }
     }
 
@@ -95,6 +96,7 @@ public class RideServiceImpl implements RideService {
 
 
     @Override
+    @CacheEvict(value = "allRides", key = "#riderID")
     public RideStatusDTO startRide(int N, long riderID, String destination, int destX, int destY) {
         Rider rider = riderRepository.findById(riderID)
                 .orElseThrow(() -> new InvalidRiderIDException("Invalid Rider ID - " + riderID));
@@ -193,7 +195,6 @@ public class RideServiceImpl implements RideService {
 
 
     @Override
-    @Transactional
     public double billRide(long rideID) {
         Ride currentRide = rideRepository.findById(rideID)
                 .orElseThrow(() -> new InvalidRideException("Invalid Ride ID - " + rideID, new NoSuchElementException("Ride does not exist in database")));
@@ -234,6 +235,7 @@ public class RideServiceImpl implements RideService {
     }
 
     @Override
+    @Cacheable(value = "allRides", key = "#riderID")
     public List<RideDetailsDTO> getAllRides(long riderID) {
         try {
             List<Object[]> rawData = rideRepository.findAllRides(riderID);

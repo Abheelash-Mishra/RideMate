@@ -11,6 +11,8 @@ import org.example.repository.WalletTransactionRepository;
 import org.example.services.PaymentType;
 import org.example.services.PaymentService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -50,6 +52,7 @@ public class PaymentServiceImpl implements PaymentService {
     }
 
     @Override
+    @CacheEvict(value = {"walletAmount", "allTransactions"}, key = "#riderID")
     public float addMoney(long riderID, float amount, PaymentMethodType rechargeMethodType) {
         this.paymentMethod = this.paymentMethods.get(PaymentMethodType.WALLET);
 
@@ -59,6 +62,7 @@ public class PaymentServiceImpl implements PaymentService {
     }
 
     @Override
+    @Cacheable(value = "walletAmount", key = "#riderID")
     public float getBalance(long riderID) {
         Rider rider = riderRepository.findById(riderID)
                 .orElseThrow(() -> new InvalidRiderIDException("Invalid Rider ID - " + riderID + " || No such rider exists"));
@@ -67,6 +71,7 @@ public class PaymentServiceImpl implements PaymentService {
     }
 
     @Override
+    @Cacheable(value = "allTransactions", key = "#riderID")
     public List<TransactionDetailsDTO> getAllTransactions(long riderID) {
         try {
             List<Object[]> rawData = walletTransactionRepository.findAllTransactionsByRiderID(riderID);

@@ -11,7 +11,10 @@ import org.example.repository.*;
 import org.example.services.PaymentType;
 import org.example.models.PaymentMethodType;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.CacheManager;
 import org.springframework.stereotype.Component;
+
+import java.util.Objects;
 
 
 @Slf4j
@@ -31,6 +34,9 @@ public class WalletPayment implements PaymentType {
 
     @Autowired
     private WalletTransactionRepository walletTransactionRepository;
+
+    @Autowired
+    private CacheManager cacheManager;
 
     @Override
     public PaymentDetailsDTO sendMoney(long rideID) {
@@ -91,6 +97,9 @@ public class WalletPayment implements PaymentType {
             paymentRepository.save(paymentDetails);
             riderRepository.save(rider);
             driverRepository.save(driver);
+
+            Objects.requireNonNull(cacheManager.getCache("walletAmount")).evict(riderID);
+            Objects.requireNonNull(cacheManager.getCache("allTransactions")).evict(riderID);
 
             return new PaymentDetailsDTO(
                     paymentDetails.getPaymentID(),
