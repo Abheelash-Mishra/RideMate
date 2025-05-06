@@ -1,9 +1,28 @@
 services:
-  riderapp:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    image: riderapp:latest
-    container_name: riderapp_container
+  mysql:
+    image: mysql:latest
+    container_name: mysql-container
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpass
+      MYSQL_DATABASE: ridemate
+      MYSQL_USER: myuser
+      MYSQL_PASSWORD: mypass
     ports:
-      - "8080:8080"
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: phpmyadmin
+    restart: always
+    ports:
+      - "8090:80"
+    environment:
+      PMA_HOST: mysql
+      PMA_PORT: 3306
+      MYSQL_ROOT_PASSWORD: rootpass
+
+volumes:
+  mysql_data:
