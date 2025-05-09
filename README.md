@@ -2,7 +2,7 @@
 
 RideMate is a console-based and RESTAPI-enabled ride-hailing application written in Java using **Spring Boot**. It supports both **CLI commands** and **REST API endpoints** for managing rides, drivers, and riders.
 
-**Deployed Link:** https://ridemate-ikfj.onrender.com
+**Deployed Backend API Link:** https://ridemate-ikfj.onrender.com
 
 ## Features
 - **CLI Mode**: Interact with the system through terminal commands.
@@ -120,6 +120,11 @@ The following table summarizes the API performance tested using [k6](https://k6.
 
 **Click [here](/performance_test/performance_tests.md) for detailed screenshots and graphs of each test run.**
 
+All testing was done on the local machine. API has also been deployed on Render's free tier as a Docker container. Below are its specifications:
+
+- **CPU:** 0.1
+- **Memory:** 512 MB
+
 ## k6 Installation For Performance Testing
 
 ### **Install k6 from GitHub Releases**
@@ -174,9 +179,10 @@ To install **k6** on your machine using GitHub releases, follow these steps:
 
 ### **Running k6 Scripts**
 
-Before running the scripts, ensure that the API is live!
+Before running the scripts, ensure that the API and PostgreSQL is live!
 
 ```sh
+docker-compose up
 mvn package
 java -jar target/riderapp-1.0.jar
 ```
