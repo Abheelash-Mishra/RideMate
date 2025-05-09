@@ -7,7 +7,8 @@ RideMate is a console-based and RESTAPI-enabled ride-hailing application written
 ## Features
 - **CLI Mode**: Interact with the system through terminal commands.
 - **REST API Mode**: Use HTTP requests to manage rides and users.
-- **H2 Database**: Stores data using an in-memory database.
+- **PostgreSQL Database**: Primary database used by the main application.
+- **H2 for Testing**: In-memory H2 database used for unit and integration tests.
 - **Flexible Payment System**: Supports multiple payment methods via interfaces.
 - **Unit & Integration Testing**: Tested using JUnit and MockMvc.
 
@@ -100,17 +101,17 @@ This will run all tests and show the results in the terminal.
 
 The following table summarizes the API performance tested using [k6](https://k6.io). Metrics were gathered across various virtual user (VU) counts and durations.
 
-| Script Name             | VUs   | Duration | Avg R.D | Min R.D | Max R.D   | p(90) R.D. | p(95) R.D. | Success Rate |
-|-------------------------|-------|----------|---------|---------|-----------|------------|------------|--------------|
-| **register_drivers.js** | 1000  | 1m       | 0.65 ms | 0.36 ms | 9.09 ms   | 0.76 ms    | 0.79 ms    | 100%         |
-|                         | 5000  | 1m       | 0.58 ms | 0.32 ms | 13.43 ms  | 0.71 ms    | 0.77 ms    | 100%         |
-|                         | 10000 | 2m       | 0.65 ms | 0.36 ms | 9.09 ms   | 0.75 ms    | 0.79 ms    | 100%         |
-| **test_ride_flow.js**   | 1000  | 1m       | 1.90 ms | 0.37 ms | 42.82 ms  | 6.95 ms    | 7.90 ms    | 100%         |
-|                         | 5000  | 1m30s    | 2.29 ms | 0.31 ms | 166.23 ms | 8.42 ms    | 10.83 ms   | 100%         |
-|                         | 10000 | 2m       | 4.05 ms | 0.31 ms | 453.42 ms | 10.29 ms   | 12.98 ms   | 100%         |
-| **test_admin_usage.js** | 100   | 30s      | 1.88 ms | 0.89 ms | 10.28 ms  | 3.13 ms    | 3.31 ms    | 100%         |
-|                         | 500   | 30s      | 1.70 ms | 0.45 ms | 13.06 ms  | 2.97 ms    | 3.54 ms    | 100%         |
-|                         | 1000  | 30s      | 1.96 ms | 0.59 ms | 13.64 ms  | 3.36 ms    | 3.91 ms    | 100%         |
+| Script Name         | VUs   | Duration | Req/s    | Avg R.D  | Min R.D | Max R.D   | p(90) R.D | p(95) R.D | p(90) N.L | p(95) N.L | Success Rate |
+|---------------------|-------|----------|----------|----------|---------|-----------|-----------|-----------|-----------|-----------|--------------|
+| register_drivers.js | 1000  | 1m       | 16.68/s  | 6.34 ms  | 2.94 ms | 206.65 ms | 9.85 ms   | 10.46 ms  | 9 ms      | 9 ms      | 100%         |
+|                     | 5000  | 1m       | 83.22/s  | 3.66 ms  | 1.51 ms | 159.90 ms | 3.77 ms   | 6.67 ms   | 3 ms      | 6 ms      | 100%         |
+|                     | 10000 | 2m       | 84.12/s  | 3.65 ms  | 1.32 ms | 214.88 ms | 2.73 ms   | 3.84 ms   | 2 ms      | 3 ms      | 100%         |
+| test_ride_flow.js   | 1000  | 1m       | 98.56/s  | 7.35 ms  | 1.41 ms | 33.40 ms  | 11.89 ms  | 13.44 ms  | 11 ms     | 13 ms     | 100%         |
+|                     | 5000  | 1m30s    | 337.62/s | 11.35 ms | 1.34 ms | 156.17 ms | 19.25 ms  | 25.56 ms  | 19 ms     | 25 ms     | 100%         |
+|                     | 10000 | 2m       | 516.72/s | 12.36 ms | 1.19 ms | 233.87 ms | 21.99 ms  | 33.68 ms  | 21 ms     | 33 ms     | 100%         |
+| test_admin_usage.js | 100   | 30s      | 7.21/s   | 4.74 ms  | 1.03 ms | 141.30 ms | 4.91 ms   | 12.06 ms  | 4 ms      | 11 ms     | 100%         |
+|                     | 500   | 30s      | 34.95/s  | 5.20 ms  | 0.81 ms | 133.23 ms | 5.99 ms   | 11.30 ms  | 5 ms      | 10 ms     | 100%         |
+|                     | 1000  | 30s      | 69.87/s  | 4.98 ms  | 0.73 ms | 173.86 ms | 5.20 ms   | 10.75 ms  | 11 ms     | 13 ms     | 100%         |
 
 > **Notes:**
 > - R.D. = Response Duration
