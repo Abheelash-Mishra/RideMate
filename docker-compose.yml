@@ -1,29 +1,32 @@
 services:
-  mysql:
-    image: mysql:latest
-    container_name: mysql-container
-    restart: always
-    environment:
-      MYSQL_ROOT_PASSWORD: rootpass
-      MYSQL_DATABASE: ridemate
-      MYSQL_USER: myuser
-      MYSQL_PASSWORD: mypass
+  postgres:
+    image: postgres:17
+    container_name: ridemate-postgres
     ports:
-      - "3306:3306"
-    command: --max_connections=510
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: pass
+      POSTGRES_DB: ridemate
+    command: ["postgres", "-c", "max_connections=510"]
     volumes:
-      - mysql_data:/var/lib/mysql
+      - postgres-data:/var/lib/postgresql/data
+    restart: unless-stopped
 
-  phpmyadmin:
-    image: phpmyadmin/phpmyadmin
-    container_name: phpmyadmin
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: pgadmin4
     restart: always
-    ports:
-      - "8090:80"
     environment:
-      PMA_HOST: mysql
-      PMA_PORT: 3306
-      MYSQL_ROOT_PASSWORD: rootpass
+      PGADMIN_DEFAULT_EMAIL: admin@admin.com
+      PGADMIN_DEFAULT_PASSWORD: password
+    ports:
+      - "5050:80"
+    volumes:
+      - pgadmin-data:/var/lib/pgadmin
+    depends_on:
+      - postgres
 
 volumes:
-  mysql_data:
+  postgres-data:
+  pgadmin-data:
