@@ -10,6 +10,10 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 import java.util.List;
@@ -35,25 +39,42 @@ class PaymentServiceTest {
     private PaymentRepository paymentRepository;
 
     @MockitoBean
+    private UserRepository userRepository;
+
+    @MockitoBean
     private WalletTransactionRepository walletTransactionRepository;
 
     @Autowired
     private PaymentService paymentService;
 
     private Rider testRider;
+    private Driver testDriver;
 
     @BeforeEach
     void setUp() {
+        String mockEmail = "rider@example.com";
+        Authentication auth = new UsernamePasswordAuthenticationToken(mockEmail, null);
+        SecurityContext context = SecurityContextHolder.createEmptyContext();
+        context.setAuthentication(auth);
+        SecurityContextHolder.setContext(context);
+
         long rideID = 1;
 
-        long riderID = 1;
-        testRider = new Rider("r1@email.com", "9876556789", 0, 0);
-        testRider.setRiderID(riderID);
+        User mockUser = new User();
+        mockUser.setId(1L);
+        mockUser.setEmail(mockEmail);
+        mockUser.setPassword("test@abc");
+        mockUser.setRole(Role.RIDER);
+
+        long riderID = 1L;
+        testRider = new Rider("9876556789", "Main Street", 0, 0);
+        testRider.setId(riderID);
+        testRider.setUser(mockUser);
         testRider.setMatchedDrivers(List.of(1L, 3L));
 
         long driverID = 3;
-        Driver testDriver = new Driver("d1@email.com", "9876556789", 2, 2);
-        testDriver.setDriverID(driverID);
+        testDriver = new Driver("9876556789", "Second Street", 2, 2);
+        testDriver.setId(driverID);
 
         Ride testRide = new Ride(testRider, testDriver);
         testRide.setDestinationCoordinates(List.of(4, 5));
@@ -61,8 +82,9 @@ class PaymentServiceTest {
         testRide.setStatus(RideStatus.FINISHED);
         testRide.setBill(201.3F);
 
+        when(userRepository.findByEmail("rider@example.com")).thenReturn(Optional.of(mockUser));
+        when(riderRepository.findByUserId(1L)).thenReturn(Optional.of(testRider));
         when(rideRepository.findById(rideID)).thenReturn(Optional.of(testRide));
-        when(riderRepository.findById(riderID)).thenReturn(Optional.of(testRider));
         when(driverRepository.findById(driverID)).thenReturn(Optional.of(testDriver));
 
         when(paymentRepository.save(any(Payment.class))).thenReturn(null);
@@ -120,6 +142,17 @@ class PaymentServiceTest {
     @Test
     void processWalletPayment() {
         testRider.setWalletAmount(500F);
+
+        long rideID = 1L;
+        long riderID = 1L;
+        long driverID = 3L;
+
+        Ride ride = new Ride(testRider, testDriver);
+        ride.setBill(201.3f);
+
+        when(rideRepository.findById(rideID)).thenReturn(Optional.of(ride));
+        when(riderRepository.findById(riderID)).thenReturn(Optional.of(testRider));
+        when(driverRepository.findById(driverID)).thenReturn(Optional.of(testDriver));
 
         PaymentDetailsDTO expected = new PaymentDetailsDTO(
                 0,

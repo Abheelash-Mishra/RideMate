@@ -1,26 +1,26 @@
 package org.example.services.impl;
 
 import lombok.extern.slf4j.Slf4j;
+import org.example.dto.DriverRatingDTO;
 import org.example.dto.MatchedDriversDTO;
 import org.example.dto.RideDetailsDTO;
 import org.example.dto.RideStatusDTO;
 import org.example.exceptions.InvalidRiderIDException;
-import org.example.models.RideStatus;
-import org.example.models.Driver;
-import org.example.models.Ride;
-import org.example.models.Rider;
+import org.example.models.*;
 
 import org.example.exceptions.InvalidRideException;
 import org.example.exceptions.InvalidDriverIDException;
 import org.example.repository.DriverRepository;
 import org.example.repository.RideRepository;
 import org.example.repository.RiderRepository;
+import org.example.repository.UserRepository;
 import org.example.services.RideService;
 import org.example.utilities.DistanceUtility;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -38,53 +38,37 @@ public class RideServiceImpl implements RideService {
     @Autowired
     private DriverRepository driverRepository;
 
-    @Override
-    public long addRider(String email, String phoneNumber, int x_coordinate, int y_coordinate) {
-        try {
-            Rider rider = new Rider(email, phoneNumber, x_coordinate, y_coordinate);
-            riderRepository.save(rider);
-
-            long riderID = rider.getRiderID();
-            log.info("Added rider '{}' to database", riderID);
-
-            return riderID;
-        } catch (Exception e) {
-            log.error("Unexpected error while adding new rider");
-            log.error("Exception: {}", e.getMessage(), e);
-
-            throw new RuntimeException("Failed to add rider", e);
-        }
-    }
-
+    @Autowired
+    private UserRepository userRepository;
 
     @Override
-    public MatchedDriversDTO matchRider(long riderID) {
+    public MatchedDriversDTO matchRider() {
         final double LIMIT = 5.0;
 
-        Rider rider = riderRepository.findById(riderID)
-                .orElseThrow(() -> new InvalidRiderIDException("Invalid Rider ID - " + riderID + " || No Such Rider Exists"));
+        Rider rider = riderRepository.findByUserId(getUserId())
+                .orElseThrow(() -> new InvalidRiderIDException("No Such Rider Exists"));
 
         try {
-            log.info("Searching for potential drivers for rider '{}'....", riderID);
+            log.info("Searching for potential drivers for rider '{}'....", rider.getId());
 
             List<Long> nearbyDrivers = driverRepository.findNearbyDrivers(rider.getX_coordinate(), rider.getY_coordinate(), LIMIT, PageRequest.of(0, 20));
 
             return driversMatched(rider, nearbyDrivers);
         } catch (Exception e) {
-            log.error("Unexpected error while matching drivers with rider '{}'", riderID);
+            log.error("Unexpected error while matching drivers with rider '{}'", rider.getId());
             log.error("Exception: {}", e.getMessage(), e);
 
-            throw new RuntimeException("Failed to match a driver for rider " + riderID, e);
+            throw new RuntimeException("Failed to match a driver for rider " + rider.getId(), e);
         }
     }
 
 
     private MatchedDriversDTO driversMatched(Rider rider, List<Long> nearbyDrivers) {
         if (nearbyDrivers.isEmpty()) {
-            log.info("No suitable drivers available for rider '{}'", rider.getRiderID());
+            log.info("No suitable drivers available for rider '{}'", rider.getId());
         }
         else {
-            log.info("Found potential driver(s) for rider '{}'", rider.getRiderID());
+            log.info("Found potential driver(s) for rider '{}'", rider.getId());
             log.info("Drivers: {}", nearbyDrivers);
         }
 
@@ -96,10 +80,10 @@ public class RideServiceImpl implements RideService {
 
 
     @Override
-    @CacheEvict(value = "allRides", key = "#riderID")
-    public RideStatusDTO startRide(int N, long riderID, String destination, int destX, int destY) {
-        Rider rider = riderRepository.findById(riderID)
-                .orElseThrow(() -> new InvalidRiderIDException("Invalid Rider ID - " + riderID));
+    @CacheEvict(value = "allRides", key = "#root.target.getUserId()")
+    public RideStatusDTO startRide(int N, String destination, int destX, int destY) {
+        Rider rider = riderRepository.findByUserId(getUserId())
+                .orElseThrow(() -> new InvalidRiderIDException("No such rider"));
 
         List<Long> matchedDrivers = rider.getMatchedDrivers();
 
@@ -149,14 +133,14 @@ public class RideServiceImpl implements RideService {
             ride.setDestinationCoordinates(new ArrayList<>(List.of(destX, destY)));
             rideRepository.save(ride);
 
-            log.info("Ride started for rider {} with driver {}", riderID, chosenDriverId);
+            log.info("Ride started for rider '{}' with driver '{}'", rider.getId(), chosenDriverId);
 
-            return new RideStatusDTO(ride.getRideID(), riderID, chosenDriverId, RideStatus.ONGOING);
+            return new RideStatusDTO(ride.getRideID(), rider.getId(), chosenDriverId, RideStatus.ONGOING);
         } catch (Exception e) {
             log.error("Unexpected error while starting a ride");
             log.error("Exception: {}", e.getMessage(), e);
 
-            throw new RuntimeException("Failed to start ride for rider " + riderID, e);
+            throw new RuntimeException("Failed to start ride for rider " + rider.getId(), e);
         }
     }
 
@@ -170,7 +154,7 @@ public class RideServiceImpl implements RideService {
             throw new InvalidRideException("Invalid Ride Status - " + rideID + ", ride already finished");
         }
 
-        long driverID = currentRide.getDriver().getDriverID();
+        long driverID = currentRide.getDriver().getId();
         Driver driver = driverRepository.findById(driverID)
                 .orElseThrow(() -> new InvalidDriverIDException("Invalid Driver ID - " + driverID + ", no such driver exists"));
 
@@ -184,7 +168,7 @@ public class RideServiceImpl implements RideService {
 
             log.info("Successfully stopped ride '{}'", rideID);
 
-            return new RideStatusDTO(rideID, currentRide.getRider().getRiderID(), currentRide.getDriver().getDriverID(), RideStatus.FINISHED);
+            return new RideStatusDTO(rideID, currentRide.getRider().getId(), currentRide.getDriver().getId(), RideStatus.FINISHED);
         } catch (Exception e) {
             log.error("Unexpected error while stopping ride '{}'", rideID);
             log.error("Exception: {}", e.getMessage(), e);
@@ -235,10 +219,38 @@ public class RideServiceImpl implements RideService {
     }
 
     @Override
-    @Cacheable(value = "allRides", key = "#riderID")
-    public List<RideDetailsDTO> getAllRides(long riderID) {
+    public DriverRatingDTO rateDriver(long rideID, long driverID, float rating, String comment) {
+        log.info("Fetching details of driver '{}'...", driverID);
+
+        Driver driver = driverRepository.findById(driverID)
+                .orElseThrow(() -> new InvalidDriverIDException("Invalid driver ID - " +  driverID + ", no such driver exists"));
+
+        driver.setRidesDone(driver.getRidesDone() + 1);
+        driver.setRatingSum(driver.getRatingSum() + rating);
+        driver.setRating(driver.getRatingSum() / driver.getRidesDone());
+
+        driverRepository.save(driver);
+
+        Ride currentRide = rideRepository.findById(rideID)
+                .orElseThrow(() -> new InvalidRideException("Invalid Ride ID - " + rideID, new NoSuchElementException("Ride does not exist in database")));
+
+        currentRide.setComment(comment);
+
+        rideRepository.save(currentRide);
+
+        log.info("Updated the ratings of driver '{}'", driverID);
+
+        return new DriverRatingDTO(driverID, driver.getRating());
+    }
+
+    @Override
+    @Cacheable(value = "allRides", key = "#root.target.getUserId()")
+    public List<RideDetailsDTO> getAllRides() {
+        Rider rider = riderRepository.findByUserId(getUserId())
+                .orElseThrow(() -> new InvalidRiderIDException("No such rider"));
+
         try {
-            List<Object[]> rawData = rideRepository.findAllRides(riderID);
+            List<Object[]> rawData = rideRepository.findAllRides(rider.getId());
             List<RideDetailsDTO> summaryList = new ArrayList<>();
 
             for (Object[] row : rawData) {
@@ -255,10 +267,17 @@ public class RideServiceImpl implements RideService {
 
             return summaryList;
         } catch (Exception e) {
-            log.error("Unexpected error while fetching all rides of rider '{}'", riderID);
+            log.error("Unexpected error while fetching all rides of rider '{}'", rider.getId());
             log.error("Exception: {}", e.getMessage(), e);
 
-            throw new RuntimeException("Failed to fetch all rides of rider " + riderID, e);
+            throw new RuntimeException("Failed to fetch all rides of rider " + rider.getId(), e);
         }
+    }
+
+    public long getUserId() {
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+        User user = userRepository.findByEmail(email).orElseThrow();
+
+        return user.getId();
     }
 }

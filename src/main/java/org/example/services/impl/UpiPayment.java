@@ -42,12 +42,12 @@ public class UpiPayment implements PaymentType {
 
         try {
             Driver driver = currentRide.getDriver();
-            long riderID = currentRide.getRider().getRiderID();
+            long riderID = currentRide.getRider().getId();
 
             Payment paymentDetails = new Payment(
                     currentRide,
                     riderID,
-                    driver.getDriverID(),
+                    driver.getId(),
                     currentRide.getBill(),
                     PaymentMethodType.UPI,
                     PaymentStatus.COMPLETE
@@ -61,7 +61,7 @@ public class UpiPayment implements PaymentType {
             Objects.requireNonNull(cacheManager.getCache("walletAmount")).evict(riderID);
             Objects.requireNonNull(cacheManager.getCache("allTransactions")).evict(riderID);
 
-            log.info("UPI payment of amount Rs. {} to driver '{}' was successful", currentRide.getBill(), driver.getDriverID());
+            log.info("UPI payment of amount Rs. {} to driver '{}' was successful", currentRide.getBill(), driver.getId());
 
             return new PaymentDetailsDTO(
                     paymentDetails.getPaymentID(),

@@ -11,6 +11,6 @@ import java.util.List;
 @Repository
 public interface WalletTransactionRepository extends JpaRepository<WalletTransaction, Long> {
 
-    @Query("SELECT t.transactionID, t.amount, t.rechargeMethodType FROM WalletTransaction t WHERE t.rider.riderID = :riderID ORDER BY t.transactionID DESC")
+    @Query("SELECT t.transactionID, t.amount, t.rechargeMethodType FROM WalletTransaction t WHERE t.rider.id = :riderID ORDER BY t.transactionID DESC")
     List<Object[]> findAllTransactionsByRiderID(@Param("riderID") long riderID);
 }

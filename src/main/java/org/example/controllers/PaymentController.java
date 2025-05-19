@@ -40,19 +40,18 @@ public class PaymentController {
 
     @PostMapping("/add-money")
     public ResponseEntity<Float> addMoney(
-            @RequestParam("riderID") long riderID,
             @RequestParam("amount") float amount,
             @RequestParam("type") String paymentMethodType
     ) {
-        log.info("Accessing endpoint: /payment/add-money | riderID={}, amount={}, type={}", riderID, amount, paymentMethodType);
+        log.info("Accessing endpoint: /payment/add-money || amount={}, type={}", amount, paymentMethodType);
 
         try {
             PaymentMethodType type = PaymentMethodType.valueOf(paymentMethodType.toUpperCase());
-            float balance = paymentService.addMoney(riderID, amount, type);
+            float balance = paymentService.addMoney(amount, type);
 
             return ResponseEntity.ok(balance);
         } catch (Exception e) {
-            log.error("Could not add funds to the rider {}'s wallet unexpectedly", riderID);
+            log.error("Could not add funds to wallet unexpectedly");
             log.error("Exception: {}", e.getMessage(), e);
 
             throw new RuntimeException("Wallet recharge failed unexpectedly, please try again later", e);
@@ -60,17 +59,17 @@ public class PaymentController {
     }
 
     @GetMapping("/wallet")
-    public ResponseEntity<Float> fetchBalance(@RequestParam("riderID") long riderID) {
-        log.info("Accessing endpoint: /payment/wallet | riderID={}", riderID);
-        float balance = paymentService.getBalance(riderID);
+    public ResponseEntity<Float> fetchBalance() {
+        log.info("Accessing endpoint: /payment/wallet");
+        float balance = paymentService.getBalance();
 
         return ResponseEntity.ok(balance);
     }
 
     @GetMapping("/wallet/transactions")
-    public ResponseEntity<List<TransactionDetailsDTO>> fetchAllTransactions(@RequestParam("riderID") long riderID) {
-        log.info("Accessing endpoint: /payment/wallet/transactions || riderID={}", riderID);
+    public ResponseEntity<List<TransactionDetailsDTO>> fetchAllTransactions() {
+        log.info("Accessing endpoint: /payment/wallet/transactions");
 
-        return ResponseEntity.ok(paymentService.getAllTransactions(riderID));
+        return ResponseEntity.ok(paymentService.getAllTransactions());
     }
 }

@@ -8,7 +8,8 @@ import java.util.List;
 
 public interface PaymentService {
     PaymentDetailsDTO processPayment(long rideID, PaymentMethodType paymentMethodType);
-    float addMoney(long riderID, float amount, PaymentMethodType rechargeMethodType);
-    float getBalance(long riderID);
-    List<TransactionDetailsDTO> getAllTransactions(long riderID);
+    float addMoney(float amount, PaymentMethodType rechargeMethodType);
+    float getBalance();
+    List<TransactionDetailsDTO> getAllTransactions();
+    long getUserId();
 }

@@ -12,6 +12,7 @@ import org.example.services.PaymentType;
 import org.example.models.PaymentMethodType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.CacheManager;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
 import java.util.Objects;
@@ -33,6 +34,9 @@ public class WalletPayment implements PaymentType {
     private PaymentRepository paymentRepository;
 
     @Autowired
+    private UserRepository userRepository;
+
+    @Autowired
     private WalletTransactionRepository walletTransactionRepository;
 
     @Autowired
@@ -43,11 +47,11 @@ public class WalletPayment implements PaymentType {
         Ride currentRide = rideRepository.findById(rideID)
                 .orElseThrow(() -> new InvalidRideException("Invalid Ride ID - " + rideID + ", no such ride exists"));
 
-        long riderID = currentRide.getRider().getRiderID();
+        long riderID = currentRide.getRider().getId();
         Rider rider = riderRepository.findById(riderID)
                 .orElseThrow(() -> new InvalidRiderIDException("Invalid Rider ID - " + riderID + ", no such rider exists"));
 
-        long driverID = currentRide.getDriver().getDriverID();
+        long driverID = currentRide.getDriver().getId();
         Driver driver = driverRepository.findById(driverID)
                 .orElseThrow(() -> new InvalidDriverIDException("Invalid Driver ID - " + driverID + ", no such driver exists"));
 
@@ -65,12 +69,12 @@ public class WalletPayment implements PaymentType {
 
             Payment paymentDetails;
             if (success) {
-                log.info("Wallet payment of amount Rs. {} to driver '{}' was successful", currentRide.getBill(), driver.getDriverID());
+                log.info("Wallet payment of amount Rs. {} to driver '{}' was successful", currentRide.getBill(), driver.getId());
 
                 paymentDetails = new Payment(
                         currentRide,
-                        currentRide.getRider().getRiderID(),
-                        driver.getDriverID(),
+                        currentRide.getRider().getId(),
+                        driver.getId(),
                         currentRide.getBill(),
                         PaymentMethodType.WALLET,
                         PaymentStatus.COMPLETE
@@ -82,12 +86,12 @@ public class WalletPayment implements PaymentType {
                 driver.setEarnings(driver.getEarnings() + currentRide.getBill());
             }
             else {
-                log.info("Wallet payment of amount Rs. {} to driver '{}' had failed", currentRide.getBill(), driver.getDriverID());
+                log.info("Wallet payment of amount Rs. {} to driver '{}' had failed", currentRide.getBill(), driver.getId());
 
                 paymentDetails = new Payment(
                         currentRide,
-                        currentRide.getRider().getRiderID(),
-                        driver.getDriverID(),
+                        currentRide.getRider().getId(),
+                        driver.getId(),
                         currentRide.getBill(),
                         PaymentMethodType.WALLET,
                         PaymentStatus.FAILED
@@ -117,25 +121,28 @@ public class WalletPayment implements PaymentType {
         }
     }
 
-    public float addMoney(long riderID, float amount, PaymentMethodType rechargeMethodType) {
-        try {
-            Rider rider = riderRepository.findById(riderID)
-                    .orElseThrow(() -> new InvalidRiderIDException("Invalid Rider ID - " + riderID + ", no such ride exists"));
+    public float addMoney(float amount, PaymentMethodType rechargeMethodType) {
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+        User user = userRepository.findByEmail(email).orElseThrow();
 
+        Rider rider = riderRepository.findByUserId(user.getId())
+                .orElseThrow(() -> new InvalidRiderIDException("No such rider exists"));
+
+        try {
             rider.setWalletAmount(rider.getWalletAmount() + amount);
             riderRepository.save(rider);
 
             WalletTransaction walletTransaction = new WalletTransaction(rider, amount, rechargeMethodType);
             walletTransactionRepository.save(walletTransaction);
 
-            log.info("Successfully added Rs. {} to wallet of rider '{}'", amount, riderID);
+            log.info("Successfully added Rs. {} to wallet of rider '{}'", amount, rider.getId());
 
             return rider.getWalletAmount();
         } catch (InvalidRiderIDException e) {
-            log.error("Unexpected error while adding funds to wallet of rider '{}'", riderID);
+            log.error("Unexpected error while adding funds to wallet of rider '{}'", rider.getId());
             log.error("Exception: {}", e.getMessage(), e);
 
-            throw new RuntimeException("Wallet recharge failed for rider " + riderID, e);
+            throw new RuntimeException("Wallet recharge failed for rider " + rider.getId(), e);
         }
     }
 }

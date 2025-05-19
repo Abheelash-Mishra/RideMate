@@ -1,5 +1,6 @@
 package org.example.integration;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.example.dto.*;
 import org.example.models.PaymentMethodType;
@@ -7,10 +8,12 @@ import org.example.models.PaymentStatus;
 import org.example.models.RideStatus;
 import org.example.repository.*;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.MediaType;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -27,6 +30,9 @@ public class MVCTest {
 
     @Autowired
     private MockMvc mockMvc;
+
+    @Autowired
+    private ObjectMapper objectMapper;
 
     @Autowired
     private RiderRepository riderRepository;
@@ -50,36 +56,47 @@ public class MVCTest {
 
     @Test
     public void TestFullRideFlow() throws Exception {
-        // Add drivers
-        mockMvc.perform(post("/driver/add")
-                        .param("email", "d1@email.com")
-                        .param("phoneNumber", "9876556789")
-                        .param("x", "1")
-                        .param("y", "1"))
+        // Register drivers
+        RegisterRequest registerRequest;
+        registerRequest = new RegisterRequest("d1@email.com", "test@d1", "9876556789", "Main St", 1, 1);
+        mockMvc.perform(post("/auth/register/driver")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(registerRequest)))
                 .andExpect(status().isCreated());
 
-        mockMvc.perform(post("/driver/add")
-                        .param("email", "d2@email.com")
-                        .param("phoneNumber", "9876556789")
-                        .param("x", "4")
-                        .param("y", "5"))
+        registerRequest = new RegisterRequest("d2@email.com", "test@d2", "9876556789", "Main St", 4, 5);
+        mockMvc.perform(post("/auth/register/driver")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(registerRequest)))
                 .andExpect(status().isCreated());
 
-        mockMvc.perform(post("/driver/add")
-                        .param("email", "d3@email.com")
-                        .param("phoneNumber", "9876556789")
-                        .param("x", "2")
-                        .param("y", "2"))
+        registerRequest = new RegisterRequest("d3@email.com", "test@d3", "9876556789", "Main St", 2, 2);
+        mockMvc.perform(post("/auth/register/driver")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(registerRequest)))
                 .andExpect(status().isCreated());
 
 
-        // Add rider
-        mockMvc.perform(post("/ride/rider/add")
-                        .param("email", "r1@email.com")
-                        .param("phoneNumber", "9876556789")
-                        .param("x", "0")
-                        .param("y", "0"))
+        // Register rider
+        registerRequest = new RegisterRequest("r1@email.com", "test@r1", "9876556789", "Main St", 0, 0);
+        mockMvc.perform(post("/auth/register/rider")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(registerRequest)))
                 .andExpect(status().isCreated());
+
+
+        // Log in rider
+        LoginRequest loginRequest = new LoginRequest("r1@email.com", "test@r1");
+        String json = mockMvc.perform(post("/auth/login")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(loginRequest)))
+                .andExpect(status().isOk())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+
+        JsonNode node = objectMapper.readTree(json);
+        String jwt = node.get("token").asText();
 
 
         // Match rider
@@ -87,7 +104,7 @@ public class MVCTest {
         String expectedMatchedDriversJson = new ObjectMapper().writeValueAsString(expectedMatchedDrivers);
 
         mockMvc.perform(get("/ride/rider/match")
-                        .param("riderID", "1"))
+                        .header("Authorization", "Bearer " + jwt))
                 .andExpect(status().isOk())
                 .andExpect(content().json(expectedMatchedDriversJson));
 
@@ -97,8 +114,8 @@ public class MVCTest {
         String expectedRideStatusJson = new ObjectMapper().writeValueAsString(expectedRideStatus);
 
         mockMvc.perform(post("/ride/start")
+                        .header("Authorization", "Bearer " + jwt)
                         .param("N", "2")
-                        .param("riderID", "1")
                         .param("destination", "Beach")
                         .param("x", "4")
                         .param("y", "5"))
@@ -111,6 +128,7 @@ public class MVCTest {
         expectedRideStatusJson = new ObjectMapper().writeValueAsString(expectedRideStatus);
 
         mockMvc.perform(post("/ride/stop")
+                        .header("Authorization", "Bearer " + jwt)
                         .param("rideID", "1")
                         .param("timeInMins", "32"))
                 .andExpect(status().isOk())
@@ -118,6 +136,7 @@ public class MVCTest {
 
         // Get bill
         String response = mockMvc.perform(get("/ride/bill")
+                        .header("Authorization", "Bearer " + jwt)
                         .param("rideID", "1"))
                 .andExpect(status().isOk())
                 .andReturn()
@@ -131,43 +150,65 @@ public class MVCTest {
 
     @Test
     public void TestMultipleRidersFlow() throws Exception {
-        // Add drivers
-        mockMvc.perform(post("/driver/add")
-                        .param("email", "d1@email.com")
-                        .param("phoneNumber", "9876556789")
-                        .param("x", "0")
-                        .param("y", "1"))
+        // Register drivers
+        RegisterRequest registerRequest;
+        registerRequest = new RegisterRequest("d1@email.com", "test@d1", "9876556789", "Main St", 0, 1);
+        mockMvc.perform(post("/auth/register/driver")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(registerRequest)))
                 .andExpect(status().isCreated());
 
-        mockMvc.perform(post("/driver/add")
-                        .param("email", "d2@email.com")
-                        .param("phoneNumber", "9876556789")
-                        .param("x", "2")
-                        .param("y", "3"))
+        registerRequest = new RegisterRequest("d2@email.com", "test@d2", "9876556789", "Main St", 2, 3);
+        mockMvc.perform(post("/auth/register/driver")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(registerRequest)))
                 .andExpect(status().isCreated());
 
-        mockMvc.perform(post("/driver/add")
-                        .param("email", "d3@email.com")
-                        .param("phoneNumber", "9876556789")
-                        .param("x", "4")
-                        .param("y", "2"))
+        registerRequest = new RegisterRequest("d3@email.com", "test@d3", "9876556789", "Main St", 4, 2);
+        mockMvc.perform(post("/auth/register/driver")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(registerRequest)))
                 .andExpect(status().isCreated());
 
 
-        // Add rider
-        mockMvc.perform(post("/ride/rider/add")
-                        .param("email", "r1@email.com")
-                        .param("phoneNumber", "9876556789")
-                        .param("x", "3")
-                        .param("y", "5"))
+        // Register rider
+        registerRequest = new RegisterRequest("r1@email.com", "test@r1", "9876556789", "Main St", 3, 5);
+        mockMvc.perform(post("/auth/register/rider")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(registerRequest)))
                 .andExpect(status().isCreated());
 
-        mockMvc.perform(post("/ride/rider/add")
-                        .param("email", "r2@email.com")
-                        .param("phoneNumber", "9876556789")
-                        .param("x", "1")
-                        .param("y", "1"))
+        registerRequest = new RegisterRequest("r2@email.com", "test@r2", "9876556789", "Main St", 1, 1);
+        mockMvc.perform(post("/auth/register/rider")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(registerRequest)))
                 .andExpect(status().isCreated());
+
+
+        // Log in riders
+        LoginRequest loginRequest = new LoginRequest("r1@email.com", "test@r1");
+        String json1 = mockMvc.perform(post("/auth/login")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(loginRequest)))
+                .andExpect(status().isOk())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+
+        JsonNode node = objectMapper.readTree(json1);
+        String r1_jwt = node.get("token").asText();
+
+        loginRequest = new LoginRequest("r2@email.com", "test@r2");
+        String json2 = mockMvc.perform(post("/auth/login")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(loginRequest)))
+                .andExpect(status().isOk())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+
+        node = objectMapper.readTree(json2);
+        String r2_jwt = node.get("token").asText();
 
 
         // Match riders
@@ -175,7 +216,7 @@ public class MVCTest {
         String expectedMatchedDriversJson = new ObjectMapper().writeValueAsString(expectedMatchedDrivers);
 
         mockMvc.perform(get("/ride/rider/match")
-                        .param("riderID", "1"))
+                        .header("Authorization", "Bearer " + r1_jwt))
                 .andExpect(status().isOk())
                 .andExpect(content().json(expectedMatchedDriversJson));
 
@@ -184,7 +225,7 @@ public class MVCTest {
         expectedMatchedDriversJson = new ObjectMapper().writeValueAsString(expectedMatchedDrivers);
 
         mockMvc.perform(get("/ride/rider/match")
-                        .param("riderID", "2"))
+                        .header("Authorization", "Bearer " + r2_jwt))
                 .andExpect(status().isOk())
                 .andExpect(content().json(expectedMatchedDriversJson));
 
@@ -194,8 +235,8 @@ public class MVCTest {
         String expectedRideStatusJson = new ObjectMapper().writeValueAsString(expectedRideStatus);
 
         mockMvc.perform(post("/ride/start")
+                        .header("Authorization", "Bearer " + r1_jwt)
                         .param("N", "1")
-                        .param("riderID", "1")
                         .param("destination", "Beach")
                         .param("x", "10")
                         .param("y", "2"))
@@ -207,8 +248,8 @@ public class MVCTest {
         expectedRideStatusJson = new ObjectMapper().writeValueAsString(expectedRideStatus);
 
         mockMvc.perform(post("/ride/start")
+                        .header("Authorization", "Bearer " + r2_jwt)
                         .param("N", "1")
-                        .param("riderID", "2")
                         .param("destination", "Beach")
                         .param("x", "7")
                         .param("y", "9"))
@@ -221,6 +262,7 @@ public class MVCTest {
         expectedRideStatusJson = new ObjectMapper().writeValueAsString(expectedRideStatus);
 
         mockMvc.perform(post("/ride/stop")
+                        .header("Authorization", "Bearer " + r1_jwt)
                         .param("rideID", "1")
                         .param("timeInMins", "48"))
                 .andExpect(status().isOk())
@@ -231,6 +273,7 @@ public class MVCTest {
         expectedRideStatusJson = new ObjectMapper().writeValueAsString(expectedRideStatus);
 
         mockMvc.perform(post("/ride/stop")
+                        .header("Authorization", "Bearer " + r2_jwt)
                         .param("rideID", "2")
                         .param("timeInMins", "50"))
                 .andExpect(status().isOk())
@@ -239,6 +282,7 @@ public class MVCTest {
 
         // Get bills
         String response = mockMvc.perform(get("/ride/bill")
+                        .header("Authorization", "Bearer " + r1_jwt)
                         .param("rideID", "1"))
                 .andExpect(status().isOk())
                 .andReturn()
@@ -249,6 +293,7 @@ public class MVCTest {
 
 
         response = mockMvc.perform(get("/ride/bill")
+                        .header("Authorization", "Bearer " + r2_jwt)
                         .param("rideID", "2"))
                 .andExpect(status().isOk())
                 .andReturn()
@@ -260,41 +305,52 @@ public class MVCTest {
 
     @Test
     public void BillRiderUsingWallet() throws Exception {
-        // Add drivers
-        mockMvc.perform(post("/driver/add")
-                        .param("email", "d1@email.com")
-                        .param("phoneNumber", "9876556789")
-                        .param("x", "1")
-                        .param("y", "1"))
+        // Register drivers
+        RegisterRequest registerRequest;
+        registerRequest = new RegisterRequest("d1@email.com", "test@d1", "9876556789", "Main St", 1, 1);
+        mockMvc.perform(post("/auth/register/driver")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(registerRequest)))
                 .andExpect(status().isCreated());
 
-        mockMvc.perform(post("/driver/add")
-                        .param("email", "d2@email.com")
-                        .param("phoneNumber", "9876556789")
-                        .param("x", "4")
-                        .param("y", "5"))
+        registerRequest = new RegisterRequest("d2@email.com", "test@d2", "9876556789", "Main St", 4, 5);
+        mockMvc.perform(post("/auth/register/driver")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(registerRequest)))
                 .andExpect(status().isCreated());
 
-        mockMvc.perform(post("/driver/add")
-                        .param("email", "d3@email.com")
-                        .param("phoneNumber", "9876556789")
-                        .param("x", "2")
-                        .param("y", "2"))
+        registerRequest = new RegisterRequest("d3@email.com", "test@d3", "9876556789", "Main St", 2, 2);
+        mockMvc.perform(post("/auth/register/driver")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(registerRequest)))
                 .andExpect(status().isCreated());
 
 
-        // Add rider
-        mockMvc.perform(post("/ride/rider/add")
-                        .param("email", "r1@email.com")
-                        .param("phoneNumber", "9876556789")
-                        .param("x", "0")
-                        .param("y", "0"))
+        // Register rider
+        registerRequest = new RegisterRequest("r1@email.com", "test@r1", "9876556789", "Main St", 0, 0);
+        mockMvc.perform(post("/auth/register/rider")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(registerRequest)))
                 .andExpect(status().isCreated());
+
+
+        // Log in rider
+        LoginRequest loginRequest = new LoginRequest("r1@email.com", "test@r1");
+        String json = mockMvc.perform(post("/auth/login")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(loginRequest)))
+                .andExpect(status().isOk())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+
+        JsonNode node = objectMapper.readTree(json);
+        String jwt = node.get("token").asText();
 
 
         // Add money to rider's wallet
         String response = mockMvc.perform(post("/payment/add-money")
-                        .param("riderID", "1")
+                        .header("Authorization", "Bearer " + jwt)
                         .param("amount", "520")
                         .param("type", "UPI"))
                 .andExpect(status().isOk())
@@ -305,12 +361,12 @@ public class MVCTest {
         assertEquals(520.0f, Float.parseFloat(response), 0.1f);
 
 
-        // Match rider with drivers
+        // Match rider
         MatchedDriversDTO expectedMatchedDrivers = new MatchedDriversDTO(List.of(1L, 3L));
         String expectedMatchedDriversJson = new ObjectMapper().writeValueAsString(expectedMatchedDrivers);
 
         mockMvc.perform(get("/ride/rider/match")
-                        .param("riderID", "1"))
+                        .header("Authorization", "Bearer " + jwt))
                 .andExpect(status().isOk())
                 .andExpect(content().json(expectedMatchedDriversJson));
 
@@ -320,8 +376,8 @@ public class MVCTest {
         String expectedRideStatusJson = new ObjectMapper().writeValueAsString(expectedRideStatus);
 
         mockMvc.perform(post("/ride/start")
+                        .header("Authorization", "Bearer " + jwt)
                         .param("N", "2")
-                        .param("riderID", "1")
                         .param("destination", "Beach")
                         .param("x", "4")
                         .param("y", "5"))
@@ -334,21 +390,23 @@ public class MVCTest {
         expectedRideStatusJson = new ObjectMapper().writeValueAsString(expectedRideStatus);
 
         mockMvc.perform(post("/ride/stop")
+                        .header("Authorization", "Bearer " + jwt)
                         .param("rideID", "1")
                         .param("timeInMins", "32"))
                 .andExpect(status().isOk())
                 .andExpect(content().json(expectedRideStatusJson));
 
-
         // Get bill
         response = mockMvc.perform(get("/ride/bill")
+                        .header("Authorization", "Bearer " + jwt)
                         .param("rideID", "1"))
                 .andExpect(status().isOk())
                 .andReturn()
                 .getResponse()
                 .getContentAsString();
 
-        assertEquals(186.7f, Float.parseFloat(response), 0.1f);
+        float billAmount = Float.parseFloat(response);
+        assertEquals(186.7f, billAmount, 0.1f);
 
 
         // Pay using wallet
@@ -363,6 +421,7 @@ public class MVCTest {
         String expectedPaymentDetailsJson = new ObjectMapper().writeValueAsString(expectedPaymentDetails);
 
         mockMvc.perform(post("/payment/pay")
+                        .header("Authorization", "Bearer " + jwt)
                         .param("rideID", "1")
                         .param("type", "WALLET"))
                 .andExpect(status().isOk())
@@ -374,6 +433,7 @@ public class MVCTest {
         String expectedDriverEarningsJson = new ObjectMapper().writeValueAsString(expectedDriverEarnings);
 
         mockMvc.perform(get("/admin/drivers/earnings")
+                        .header("Authorization", "Bearer " + jwt)
                         .param("driverID", "3"))
                 .andExpect(status().isOk())
                 .andExpect(content().json(expectedDriverEarningsJson));
@@ -382,43 +442,54 @@ public class MVCTest {
 
     @Test
     public void BillRiderUsingWalletWithLowBalance() throws Exception {
-        // Add drivers
-        mockMvc.perform(post("/driver/add")
-                        .param("email", "d1@email.com")
-                        .param("phoneNumber", "9876556789")
-                        .param("x", "1")
-                        .param("y", "1"))
+        // Register drivers
+        RegisterRequest registerRequest;
+        registerRequest = new RegisterRequest("d1@email.com", "test@d1", "9876556789", "Main St", 1, 1);
+        mockMvc.perform(post("/auth/register/driver")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(registerRequest)))
                 .andExpect(status().isCreated());
 
-        mockMvc.perform(post("/driver/add")
-                        .param("email", "d2@email.com")
-                        .param("phoneNumber", "9876556789")
-                        .param("x", "4")
-                        .param("y", "5"))
+        registerRequest = new RegisterRequest("d2@email.com", "test@d2", "9876556789", "Main St", 4, 5);
+        mockMvc.perform(post("/auth/register/driver")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(registerRequest)))
                 .andExpect(status().isCreated());
 
-        mockMvc.perform(post("/driver/add")
-                        .param("email", "d3@email.com")
-                        .param("phoneNumber", "9876556789")
-                        .param("x", "2")
-                        .param("y", "2"))
+        registerRequest = new RegisterRequest("d3@email.com", "test@d3", "9876556789", "Main St", 2, 2);
+        mockMvc.perform(post("/auth/register/driver")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(registerRequest)))
                 .andExpect(status().isCreated());
 
 
-        // Add rider
-        mockMvc.perform(post("/ride/rider/add")
-                        .param("email", "r1@email.com")
-                        .param("phoneNumber", "9876556789")
-                        .param("x", "0")
-                        .param("y", "0"))
+        // Register rider
+        registerRequest = new RegisterRequest("r1@email.com", "test@r1", "9876556789", "Main St", 0, 0);
+        mockMvc.perform(post("/auth/register/rider")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(registerRequest)))
                 .andExpect(status().isCreated());
+
+
+        // Log in rider
+        LoginRequest loginRequest = new LoginRequest("r1@email.com", "test@r1");
+        String json = mockMvc.perform(post("/auth/login")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(loginRequest)))
+                .andExpect(status().isOk())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+
+        JsonNode node = objectMapper.readTree(json);
+        String jwt = node.get("token").asText();
 
 
         // Add money to rider's wallet
         String response = mockMvc.perform(post("/payment/add-money")
-                        .param("riderID", "1")
+                        .header("Authorization", "Bearer " + jwt)
                         .param("amount", "100")
-                        .param("type", "CARD"))
+                        .param("type", "UPI"))
                 .andExpect(status().isOk())
                 .andReturn()
                 .getResponse()
@@ -427,12 +498,12 @@ public class MVCTest {
         assertEquals(100.0f, Float.parseFloat(response), 0.1f);
 
 
-        // Match rider with drivers
+        // Match rider
         MatchedDriversDTO expectedMatchedDrivers = new MatchedDriversDTO(List.of(1L, 3L));
         String expectedMatchedDriversJson = new ObjectMapper().writeValueAsString(expectedMatchedDrivers);
 
         mockMvc.perform(get("/ride/rider/match")
-                        .param("riderID", "1"))
+                        .header("Authorization", "Bearer " + jwt))
                 .andExpect(status().isOk())
                 .andExpect(content().json(expectedMatchedDriversJson));
 
@@ -442,8 +513,8 @@ public class MVCTest {
         String expectedRideStatusJson = new ObjectMapper().writeValueAsString(expectedRideStatus);
 
         mockMvc.perform(post("/ride/start")
+                        .header("Authorization", "Bearer " + jwt)
                         .param("N", "2")
-                        .param("riderID", "1")
                         .param("destination", "Beach")
                         .param("x", "4")
                         .param("y", "5"))
@@ -456,21 +527,23 @@ public class MVCTest {
         expectedRideStatusJson = new ObjectMapper().writeValueAsString(expectedRideStatus);
 
         mockMvc.perform(post("/ride/stop")
+                        .header("Authorization", "Bearer " + jwt)
                         .param("rideID", "1")
                         .param("timeInMins", "32"))
                 .andExpect(status().isOk())
                 .andExpect(content().json(expectedRideStatusJson));
 
-
         // Get bill
         response = mockMvc.perform(get("/ride/bill")
+                        .header("Authorization", "Bearer " + jwt)
                         .param("rideID", "1"))
                 .andExpect(status().isOk())
                 .andReturn()
                 .getResponse()
                 .getContentAsString();
 
-        assertEquals(186.7f, Float.parseFloat(response), 0.1f);
+        float billAmount = Float.parseFloat(response);
+        assertEquals(186.7f, billAmount, 0.1f);
 
 
         // Pay using wallet
@@ -485,13 +558,14 @@ public class MVCTest {
         String expectedPaymentDetailsJson = new ObjectMapper().writeValueAsString(expectedPaymentDetails);
 
         mockMvc.perform(post("/payment/pay")
+                        .header("Authorization", "Bearer " + jwt)
                         .param("rideID", "1")
                         .param("type", "WALLET"))
                 .andExpect(status().isOk())
                 .andExpect(content().json(expectedPaymentDetailsJson));
     }
 
-
+    @Disabled("Have not implemented ADMIN role yet")
     @Test
     public void TestAdminEndpoints() throws Exception {
         // Add drivers

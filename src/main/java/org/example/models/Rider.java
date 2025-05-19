@@ -10,25 +10,30 @@ import java.util.List;
 @Entity
 @Data
 @NoArgsConstructor
+@DiscriminatorValue("RIDER")
 public class Rider {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private long riderID;
+    private long id;
+
+    @OneToOne
+    @JoinColumn(name = "user_id", referencedColumnName = "id")
+    private User user;
 
     private int x_coordinate;
     private int y_coordinate;
 
-    private String email;
     private String phoneNumber;
+    private String address;
     private float walletAmount = 0;
     private List<Long> matchedDrivers;
 
     @OneToMany(mappedBy = "rider", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Ride> rides = new ArrayList<>();
 
-    public Rider(String email, String phoneNumber, int x_coordinate, int y_coordinate) {
-        this.email = email;
+    public Rider(String phoneNumber, String address, int x_coordinate, int y_coordinate) {
         this.phoneNumber = phoneNumber;
+        this.address = address;
         this.x_coordinate = x_coordinate;
         this.y_coordinate = y_coordinate;
     }

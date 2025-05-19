@@ -45,12 +45,12 @@ class AdminServiceTest {
     void listNDriverDetails() {
         int N = 4;
 
-        Driver d1 = new Driver("d1@email.com", "9876556789", 5, 5);
-        d1.setDriverID(1L);
-        Driver d2 = new Driver("d2@email.com", "9876556789", 2, 7);
-        d2.setDriverID(2L);
-        Driver d3 = new Driver("d3@email.com", "9876556789", 9, 3);
-        d3.setDriverID(3L);
+        Driver d1 = new Driver("9876556789", "Main Street", 5, 5);
+        d1.setId(1L);
+        Driver d2 = new Driver("9876556789", "Main Street", 2, 7);
+        d2.setId(2L);
+        Driver d3 = new Driver("9876556789", "Main Street", 9, 3);
+        d3.setId(3L);
 
         List<Driver> drivers = List.of(d1, d2, d3);
         when(driverRepository.findFirstNDrivers(N)).thenReturn(drivers);
@@ -69,7 +69,7 @@ class AdminServiceTest {
     @Test
     void getDriverEarnings() {
         long driverID = 1;
-        Driver driver = new Driver("d1@email.com", "9876556789", 5, 5);
+        Driver driver = new Driver("9876556789", "Main Street", 5, 5);
         driver.setEarnings(150.0f);
 
         when(driverRepository.findById(driverID)).thenReturn(Optional.of(driver));

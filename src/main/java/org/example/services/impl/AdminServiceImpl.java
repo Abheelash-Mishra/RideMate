@@ -46,7 +46,7 @@ public class AdminServiceImpl implements AdminService {
             log.info("Retrieved first N drivers successfully");
             return drivers.stream()
                     .map(driver -> new DriverDTO(
-                            driver.getDriverID(),
+                            driver.getId(),
                             driver.getX_coordinate(),
                             driver.getY_coordinate(),
                             driver.getRating()

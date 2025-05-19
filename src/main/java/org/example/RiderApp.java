@@ -11,11 +11,12 @@ public class RiderApp {
     public static void main(String[] args) {
         ConfigurableApplicationContext context = SpringApplication.run(RiderApp.class, args);
 
-        if (args.length > 0 && "cli".equalsIgnoreCase(args[0])) {
-            RiderAppCLI riderAppCLI = context.getBean(RiderAppCLI.class);
-            riderAppCLI.start();
-            context.close();
-        }
+//        CLI mode is disabled until it has been updated to work with authentication
+//        if (args.length > 0 && "cli".equalsIgnoreCase(args[0])) {
+//            RiderAppCLI riderAppCLI = context.getBean(RiderAppCLI.class);
+//            riderAppCLI.start();
+//            context.close();
+//        }
     }
 }
 
