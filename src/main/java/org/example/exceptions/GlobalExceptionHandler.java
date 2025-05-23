@@ -61,6 +61,22 @@ public class GlobalExceptionHandler {
                 .body(Map.of("error", ex.getMessage()));
     }
 
+    @ExceptionHandler(InvalidEmailException.class)
+    public ResponseEntity<Map<String, String>> handleInvalidEmail(InvalidEmailException ex) {
+        log.warn("Server received an invalid email ID for processing", ex);
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(Map.of("error", ex.getMessage()));
+    }
+
+    @ExceptionHandler(EmailAlreadyExistsException.class)
+    public ResponseEntity<Map<String, String>> handleAlreadyExistingEmail(EmailAlreadyExistsException ex) {
+        log.warn("Email ID is already in use", ex);
+
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(Map.of("error", ex.getMessage()));
+    }
+
     @ExceptionHandler(AuthenticationException.class)
     public ResponseEntity<Map<String, String>> handleAuthenticationExceptions(AuthenticationException ex) {
         log.warn("Something went wrong while authenticating", ex);
