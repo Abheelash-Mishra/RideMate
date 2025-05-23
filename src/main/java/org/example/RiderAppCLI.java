@@ -10,7 +10,6 @@ import org.example.models.PaymentStatus;
 import org.example.models.Ride;
 import org.example.repository.RideRepository;
 import org.example.services.AdminService;
-import org.example.services.DriverService;
 import org.example.services.PaymentService;
 import org.example.services.RideService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,9 +43,6 @@ public class RiderAppCLI {
 
     @Autowired
     private AdminService adminService;
-
-    @Autowired
-    private DriverService driverService;
 
     @Autowired
     private RideService rideService;
@@ -92,7 +88,7 @@ public class RiderAppCLI {
                     x_coordinate = Integer.parseInt(parts[3]);
                     y_coordinate = Integer.parseInt(parts[4]);
 
-                    driverService.addDriver(email, phoneNumber, x_coordinate, y_coordinate);
+//                    driverService.addDriverInfo(phoneNumber, "", x_coordinate, y_coordinate);
                     break;
 
                 case ADD_RIDER:
@@ -101,13 +97,13 @@ public class RiderAppCLI {
                     x_coordinate = Integer.parseInt(parts[3]);
                     y_coordinate = Integer.parseInt(parts[4]);
 
-                    rideService.addRider(email, phoneNumber, x_coordinate, y_coordinate);
+//                    rideService.addRiderInfo(phoneNumber, "", x_coordinate, y_coordinate);
                     break;
 
                 case MATCH:
                     riderID = Long.parseLong(parts[1]);
 
-                    List<Long> matchedDrivers = rideService.matchRider(riderID).getMatchedDrivers();
+                    List<Long> matchedDrivers = rideService.matchRider().getMatchedDrivers();
                     if (matchedDrivers.isEmpty()) {
                         throw new NoDriversException();
                     }
@@ -127,7 +123,7 @@ public class RiderAppCLI {
                     int dest_x_coordinate = Integer.parseInt(parts[4]);
                     int dest_y_coordinate = Integer.parseInt(parts[5]);
 
-                    RideStatusDTO rideStatus = rideService.startRide(N, riderID, destination, dest_x_coordinate, dest_y_coordinate);
+                    RideStatusDTO rideStatus = rideService.startRide(N, destination, dest_x_coordinate, dest_y_coordinate);
                     log.info("RIDE_STARTED {}", rideStatus.getRideID());
                     break;
 
@@ -145,7 +141,7 @@ public class RiderAppCLI {
                     float rating = Float.parseFloat(parts[3]);
                     String comment = parts[4];
 
-                    float newRating = driverService.rateDriver(rideID, driverID, rating, comment).getRating();
+                    float newRating = rideService.rateDriver(rideID, driverID, rating, comment).getRating();
                     log.info("CURRENT_RATING {} {}", driverID, newRating);
                     break;
 
@@ -156,7 +152,7 @@ public class RiderAppCLI {
                     Ride currentRide = rideRepository.findById(rideID)
                             .orElseThrow(() -> new InvalidRideException("Invalid Ride ID - " + rideID + ", no such ride exists"));
 
-                    log.info("BILL {} {} {}", rideID, currentRide.getDriver().getDriverID(), currentRide.getBill());
+                    log.info("BILL {} {} {}", rideID, currentRide.getDriver().getId(), currentRide.getBill());
                     break;
 
                 case PAY:
@@ -180,7 +176,7 @@ public class RiderAppCLI {
 
                     paymentMethodType = PaymentMethodType.valueOf(type.toUpperCase());
 
-                    float balance = paymentService.addMoney(riderID, amount, paymentMethodType);
+                    float balance = paymentService.addMoney(amount, paymentMethodType);
                     log.info("CURRENT_BALANCE {} {}", riderID, balance);
                     break;
 

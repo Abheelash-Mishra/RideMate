@@ -1,5 +1,6 @@
 package org.example.unit;
 
+import org.example.config.TestConfig;
 import org.example.dto.DriverRatingDTO;
 import org.example.dto.MatchedDriversDTO;
 import org.example.dto.RideDetailsDTO;
@@ -24,6 +25,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.cache.CacheManager;
+import org.springframework.context.annotation.Import;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -38,6 +40,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 @SpringBootTest
+@Import(TestConfig.class)
 @ExtendWith(MockitoExtension.class)
 class RideServiceTest {
     @MockitoBean

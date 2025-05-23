@@ -2,6 +2,7 @@ package org.example.integration;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.example.config.TestConfig;
 import org.example.dto.*;
 import org.example.models.PaymentMethodType;
 import org.example.models.PaymentStatus;
@@ -13,6 +14,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.web.servlet.MockMvc;
@@ -25,6 +27,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest
 @AutoConfigureMockMvc
+@Import(TestConfig.class)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 public class MVCTest {
 
@@ -33,6 +36,9 @@ public class MVCTest {
 
     @Autowired
     private ObjectMapper objectMapper;
+
+    @Autowired
+    private UserRepository userRepository;
 
     @Autowired
     private RiderRepository riderRepository;
@@ -58,28 +64,28 @@ public class MVCTest {
     public void TestFullRideFlow() throws Exception {
         // Register drivers
         RegisterRequest registerRequest;
-        registerRequest = new RegisterRequest("d1@email.com", "test@d1", "9876556789", "Main St", 1, 1);
-        mockMvc.perform(post("/auth/register/driver")
+        registerRequest = new RegisterRequest("d1@email.com", "test@d1", "9876556789", "Main St", 1, 1, "Driver");
+        mockMvc.perform(post("/auth/register")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(registerRequest)))
                 .andExpect(status().isCreated());
 
-        registerRequest = new RegisterRequest("d2@email.com", "test@d2", "9876556789", "Main St", 4, 5);
-        mockMvc.perform(post("/auth/register/driver")
+        registerRequest = new RegisterRequest("d2@email.com", "test@d2", "9876556789", "Main St", 4, 5, "Driver");
+        mockMvc.perform(post("/auth/register")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(registerRequest)))
                 .andExpect(status().isCreated());
 
-        registerRequest = new RegisterRequest("d3@email.com", "test@d3", "9876556789", "Main St", 2, 2);
-        mockMvc.perform(post("/auth/register/driver")
+        registerRequest = new RegisterRequest("d3@email.com", "test@d3", "9876556789", "Main St", 2, 2, "Driver");
+        mockMvc.perform(post("/auth/register")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(registerRequest)))
                 .andExpect(status().isCreated());
 
 
         // Register rider
-        registerRequest = new RegisterRequest("r1@email.com", "test@r1", "9876556789", "Main St", 0, 0);
-        mockMvc.perform(post("/auth/register/rider")
+        registerRequest = new RegisterRequest("r1@email.com", "test@r1", "9876556789", "Main St", 0, 0, "Rider");
+        mockMvc.perform(post("/auth/register")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(registerRequest)))
                 .andExpect(status().isCreated());
@@ -152,34 +158,34 @@ public class MVCTest {
     public void TestMultipleRidersFlow() throws Exception {
         // Register drivers
         RegisterRequest registerRequest;
-        registerRequest = new RegisterRequest("d1@email.com", "test@d1", "9876556789", "Main St", 0, 1);
-        mockMvc.perform(post("/auth/register/driver")
+        registerRequest = new RegisterRequest("d1@email.com", "test@d1", "9876556789", "Main St", 0, 1, "Driver");
+        mockMvc.perform(post("/auth/register")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(registerRequest)))
                 .andExpect(status().isCreated());
 
-        registerRequest = new RegisterRequest("d2@email.com", "test@d2", "9876556789", "Main St", 2, 3);
-        mockMvc.perform(post("/auth/register/driver")
+        registerRequest = new RegisterRequest("d2@email.com", "test@d2", "9876556789", "Main St", 2, 3, "Driver");
+        mockMvc.perform(post("/auth/register")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(registerRequest)))
                 .andExpect(status().isCreated());
 
-        registerRequest = new RegisterRequest("d3@email.com", "test@d3", "9876556789", "Main St", 4, 2);
-        mockMvc.perform(post("/auth/register/driver")
+        registerRequest = new RegisterRequest("d3@email.com", "test@d3", "9876556789", "Main St", 4, 2, "Driver");
+        mockMvc.perform(post("/auth/register")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(registerRequest)))
                 .andExpect(status().isCreated());
 
 
         // Register rider
-        registerRequest = new RegisterRequest("r1@email.com", "test@r1", "9876556789", "Main St", 3, 5);
-        mockMvc.perform(post("/auth/register/rider")
+        registerRequest = new RegisterRequest("r1@email.com", "test@r1", "9876556789", "Main St", 3, 5, "Rider");
+        mockMvc.perform(post("/auth/register")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(registerRequest)))
                 .andExpect(status().isCreated());
 
-        registerRequest = new RegisterRequest("r2@email.com", "test@r2", "9876556789", "Main St", 1, 1);
-        mockMvc.perform(post("/auth/register/rider")
+        registerRequest = new RegisterRequest("r2@email.com", "test@r2", "9876556789", "Main St", 1, 1, "Rider");
+        mockMvc.perform(post("/auth/register")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(registerRequest)))
                 .andExpect(status().isCreated());
@@ -307,28 +313,28 @@ public class MVCTest {
     public void BillRiderUsingWallet() throws Exception {
         // Register drivers
         RegisterRequest registerRequest;
-        registerRequest = new RegisterRequest("d1@email.com", "test@d1", "9876556789", "Main St", 1, 1);
-        mockMvc.perform(post("/auth/register/driver")
+        registerRequest = new RegisterRequest("d1@email.com", "test@d1", "9876556789", "Main St", 1, 1, "Driver");
+        mockMvc.perform(post("/auth/register")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(registerRequest)))
                 .andExpect(status().isCreated());
 
-        registerRequest = new RegisterRequest("d2@email.com", "test@d2", "9876556789", "Main St", 4, 5);
-        mockMvc.perform(post("/auth/register/driver")
+        registerRequest = new RegisterRequest("d2@email.com", "test@d2", "9876556789", "Main St", 4, 5, "Driver");
+        mockMvc.perform(post("/auth/register")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(registerRequest)))
                 .andExpect(status().isCreated());
 
-        registerRequest = new RegisterRequest("d3@email.com", "test@d3", "9876556789", "Main St", 2, 2);
-        mockMvc.perform(post("/auth/register/driver")
+        registerRequest = new RegisterRequest("d3@email.com", "test@d3", "9876556789", "Main St", 2, 2, "Driver");
+        mockMvc.perform(post("/auth/register")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(registerRequest)))
                 .andExpect(status().isCreated());
 
 
         // Register rider
-        registerRequest = new RegisterRequest("r1@email.com", "test@r1", "9876556789", "Main St", 0, 0);
-        mockMvc.perform(post("/auth/register/rider")
+        registerRequest = new RegisterRequest("r1@email.com", "test@r1", "9876556789", "Main St", 0, 0, "Rider");
+        mockMvc.perform(post("/auth/register")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(registerRequest)))
                 .andExpect(status().isCreated());
@@ -439,33 +445,32 @@ public class MVCTest {
                 .andExpect(content().json(expectedDriverEarningsJson));
     }
 
-
     @Test
     public void BillRiderUsingWalletWithLowBalance() throws Exception {
         // Register drivers
         RegisterRequest registerRequest;
-        registerRequest = new RegisterRequest("d1@email.com", "test@d1", "9876556789", "Main St", 1, 1);
-        mockMvc.perform(post("/auth/register/driver")
+        registerRequest = new RegisterRequest("d1@email.com", "test@d1", "9876556789", "Main St", 1, 1, "Driver");
+        mockMvc.perform(post("/auth/register")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(registerRequest)))
                 .andExpect(status().isCreated());
 
-        registerRequest = new RegisterRequest("d2@email.com", "test@d2", "9876556789", "Main St", 4, 5);
-        mockMvc.perform(post("/auth/register/driver")
+        registerRequest = new RegisterRequest("d2@email.com", "test@d2", "9876556789", "Main St", 4, 5, "Driver");
+        mockMvc.perform(post("/auth/register")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(registerRequest)))
                 .andExpect(status().isCreated());
 
-        registerRequest = new RegisterRequest("d3@email.com", "test@d3", "9876556789", "Main St", 2, 2);
-        mockMvc.perform(post("/auth/register/driver")
+        registerRequest = new RegisterRequest("d3@email.com", "test@d3", "9876556789", "Main St", 2, 2, "Driver");
+        mockMvc.perform(post("/auth/register")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(registerRequest)))
                 .andExpect(status().isCreated());
 
 
         // Register rider
-        registerRequest = new RegisterRequest("r1@email.com", "test@r1", "9876556789", "Main St", 0, 0);
-        mockMvc.perform(post("/auth/register/rider")
+        registerRequest = new RegisterRequest("r1@email.com", "test@r1", "9876556789", "Main St", 0, 0, "Rider");
+        mockMvc.perform(post("/auth/register")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(registerRequest)))
                 .andExpect(status().isCreated());

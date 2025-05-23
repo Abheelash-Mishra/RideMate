@@ -1,5 +1,6 @@
 package org.example.unit;
 
+import org.example.config.TestConfig;
 import org.example.dto.DriverDTO;
 import org.example.dto.DriverEarningsDTO;
 import org.example.models.Driver;
@@ -11,6 +12,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 import java.util.List;
@@ -20,6 +22,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @SpringBootTest
+@Import(TestConfig.class)
 @ExtendWith(MockitoExtension.class)
 class AdminServiceTest {
 

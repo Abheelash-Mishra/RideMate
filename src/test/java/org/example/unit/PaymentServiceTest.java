@@ -1,5 +1,6 @@
 package org.example.unit;
 
+import org.example.config.TestConfig;
 import org.example.models.*;
 import org.example.dto.PaymentDetailsDTO;
 import org.example.repository.*;
@@ -10,6 +11,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
@@ -24,6 +26,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 @SpringBootTest
+@Import(TestConfig.class)
 @ExtendWith(MockitoExtension.class)
 class PaymentServiceTest {
     @MockitoBean
