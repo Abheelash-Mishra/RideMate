@@ -1,5 +1,6 @@
 package org.example.services.impl;
 
+import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.example.dto.CompleteProfileRequest;
 import org.example.dto.JwtResponse;
@@ -19,6 +20,7 @@ import org.example.repository.UserRepository;
 import org.example.services.AuthService;
 import org.example.utilities.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -74,17 +76,14 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
+    @Transactional
     public boolean registerUser(RegisterRequest req) {
         String emailRegex = "^[a-zA-Z0-9_.±]+@[a-zA-Z0-9-]+\\.[a-zA-Z0-9-.]+$";
         if (!Pattern.matches(emailRegex, req.getEmail())) {
-            log.warn("Invalid email ID was used");
-
             throw new InvalidEmailException("Email ID received is invalid");
         }
 
         if (userRepository.existsByEmail(req.getEmail())) {
-            log.warn("Email is already in use.");
-
             throw new EmailAlreadyExistsException("Email ID already exists");
         }
 
@@ -96,26 +95,30 @@ public class AuthServiceImpl implements AuthService {
             role = Role.DRIVER;
         }
         else {
-            log.warn("Invalid role received in request");
-
             throw new InvalidRoleException("Received an unsupported role");
         }
 
-        User user = new User();
-        user.setEmail(req.getEmail());
-        user.setPassword(passwordEncoder.encode(req.getPassword()));
-        user.setRole(role);
-        User savedUser = userRepository.save(user);
+        try {
+            User user = new User();
+            user.setEmail(req.getEmail());
+            user.setPassword(passwordEncoder.encode(req.getPassword()));
+            user.setRole(role);
+            User savedUser = userRepository.save(user);
 
-        if (role == Role.RIDER) {
-            Rider rider = new Rider(req.getPhoneNumber(), req.getAddress(), req.getX_coordinate(), req.getY_coordinate());
-            rider.setUser(savedUser);
-            riderRepository.save(rider);
-        }
-        else {
-            Driver driver = new Driver(req.getPhoneNumber(), req.getAddress(), req.getX_coordinate(), req.getY_coordinate());
-            driver.setUser(savedUser);
-            driverRepository.save(driver);
+            if (role == Role.RIDER) {
+                Rider rider = new Rider(req.getPhoneNumber(), req.getAddress(), req.getX_coordinate(), req.getY_coordinate());
+                rider.setUser(savedUser);
+                riderRepository.save(rider);
+            }
+            else {
+                Driver driver = new Driver(req.getPhoneNumber(), req.getAddress(), req.getX_coordinate(), req.getY_coordinate());
+                driver.setUser(savedUser);
+                driverRepository.save(driver);
+            }
+        } catch (DataIntegrityViolationException e) {
+            log.warn("Race condition caught for email {}. The 'exists' check passed, but the database insert failed with a unique constraint violation.", req.getEmail());
+
+            throw new EmailAlreadyExistsException("Email already in use: " + req.getEmail());
         }
 
         return true;
