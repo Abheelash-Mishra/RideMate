@@ -146,6 +146,7 @@ public class RideServiceImpl implements RideService {
 
 
     @Override
+    @CacheEvict(value = "allRides", key = "#root.target.getUserId()")
     public RideStatusDTO stopRide(long rideID, int timeTakenInMins) {
         Ride currentRide = rideRepository.findById(rideID)
                 .orElseThrow(() -> new InvalidRideException("Invalid Ride ID - " + rideID + ", no such ride exists"));
