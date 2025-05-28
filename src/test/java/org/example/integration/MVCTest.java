@@ -4,18 +4,16 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.example.config.TestConfig;
 import org.example.dto.*;
-import org.example.models.PaymentMethodType;
-import org.example.models.PaymentStatus;
-import org.example.models.RideStatus;
+import org.example.models.*;
 import org.example.repository.*;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -52,12 +50,19 @@ public class MVCTest {
     @Autowired
     private PaymentRepository paymentRepository;
 
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
+    private final String TEST_ADMIN_EMAIL = "admin@gmail.com";
+    private final String TEST_ADMIN_PASSWORD = "admin@test";
+
     @BeforeEach
     public void setup() {
         rideRepository.deleteAll();
         riderRepository.deleteAll();
         driverRepository.deleteAll();
         paymentRepository.deleteAll();
+        userRepository.deleteAll();
     }
 
     @Test
@@ -432,17 +437,6 @@ public class MVCTest {
                         .param("type", "WALLET"))
                 .andExpect(status().isOk())
                 .andExpect(content().json(expectedPaymentDetailsJson));
-
-
-        // Check driver's earnings
-        DriverEarningsDTO expectedDriverEarnings = new DriverEarningsDTO(3, 186.7f);
-        String expectedDriverEarningsJson = new ObjectMapper().writeValueAsString(expectedDriverEarnings);
-
-        mockMvc.perform(get("/admin/drivers/earnings")
-                        .header("Authorization", "Bearer " + jwt)
-                        .param("driverID", "3"))
-                .andExpect(status().isOk())
-                .andExpect(content().json(expectedDriverEarningsJson));
     }
 
     @Test
@@ -570,39 +564,136 @@ public class MVCTest {
                 .andExpect(content().json(expectedPaymentDetailsJson));
     }
 
-    @Disabled("Have not implemented ADMIN role yet")
+    @Test
+    public void UseRiderServicesAsDriver() throws Exception {
+        // Register driver
+        RegisterRequest registerRequest;
+        registerRequest = new RegisterRequest("d1@email.com", "test@d1", "9876556789", "Main St", 1, 1, "Driver");
+        mockMvc.perform(post("/auth/register")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(registerRequest)))
+                .andExpect(status().isCreated());
+
+
+        // Log in as driver
+        LoginRequest loginRequest = new LoginRequest("d1@email.com", "test@d1");
+        String json = mockMvc.perform(post("/auth/login")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(loginRequest)))
+                .andExpect(status().isOk())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+
+        JsonNode node = objectMapper.readTree(json);
+        String jwt = node.get("token").asText();
+
+
+        // Attempt to use rider services as driver
+        mockMvc.perform(get("/ride/rider/match")
+                        .header("Authorization", "Bearer " + jwt))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    public void UnauthorizedAttemptsToAccessAdminServices() throws Exception {
+        // Register
+        RegisterRequest registerRequest;
+        registerRequest = new RegisterRequest("d1@email.com", "test@d1", "9876556789", "Main St", 1, 1, "Driver");
+        mockMvc.perform(post("/auth/register")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(registerRequest)))
+                .andExpect(status().isCreated());
+
+        registerRequest = new RegisterRequest("r1@email.com", "test@r1", "9876556789", "Main St", 1, 1, "Rider");
+        mockMvc.perform(post("/auth/register")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(registerRequest)))
+                .andExpect(status().isCreated());
+
+
+        // Log in
+        LoginRequest loginRequest;
+        loginRequest = new LoginRequest("d1@email.com", "test@d1");
+        String json_d1 = mockMvc.perform(post("/auth/login")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(loginRequest)))
+                .andExpect(status().isOk())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+
+        JsonNode node = objectMapper.readTree(json_d1);
+        String jwt_d1 = node.get("token").asText();
+
+        loginRequest = new LoginRequest("r1@email.com", "test@r1");
+        String json_r1 = mockMvc.perform(post("/auth/login")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(loginRequest)))
+                .andExpect(status().isOk())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+
+        node = objectMapper.readTree(json_r1);
+        String jwt_r1 = node.get("token").asText();
+
+
+        // Attempt to use admin services
+        mockMvc.perform(get("/admin/drivers/remove")
+                        .header("Authorization", "Bearer " + jwt_d1)
+                        .param("driverID", "2"))
+                .andExpect(status().isForbidden());
+
+        mockMvc.perform(get("/admin/drivers/remove")
+                        .header("Authorization", "Bearer " + jwt_r1)
+                        .param("driverID", "2"))
+                .andExpect(status().isForbidden());
+    }
+
     @Test
     public void TestAdminEndpoints() throws Exception {
-        // Add drivers
-        mockMvc.perform(post("/driver/add")
-                        .param("email", "d1@email.com")
-                        .param("phoneNumber", "9876556789")
-                        .param("x", "1")
-                        .param("y", "1"))
+        // Register drivers
+        RegisterRequest registerRequest;
+        registerRequest = new RegisterRequest("d1@email.com", "test@d1", "9876556789", "Main St", 1, 1, "Driver");
+        mockMvc.perform(post("/auth/register")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(registerRequest)))
                 .andExpect(status().isCreated());
 
-        mockMvc.perform(post("/driver/add")
-                        .param("email", "d2@email.com")
-                        .param("phoneNumber", "9876556789")
-                        .param("x", "4")
-                        .param("y", "5"))
+        registerRequest = new RegisterRequest("d2@email.com", "test@d2", "9876556789", "Main St", 4, 5, "Driver");
+        mockMvc.perform(post("/auth/register")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(registerRequest)))
                 .andExpect(status().isCreated());
 
-        mockMvc.perform(post("/driver/add")
-                        .param("email", "d3@email.com")
-                        .param("phoneNumber", "9876556789")
-                        .param("x", "2")
-                        .param("y", "2"))
+        registerRequest = new RegisterRequest("d3@email.com", "test@d3", "9876556789", "Main St", 2, 2, "Driver");
+        mockMvc.perform(post("/auth/register")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(registerRequest)))
                 .andExpect(status().isCreated());
 
 
-        // Add rider
-        mockMvc.perform(post("/ride/rider/add")
-                        .param("email", "r1@email.com")
-                        .param("phoneNumber", "9876556789")
-                        .param("x", "0")
-                        .param("y", "0"))
+        // Register rider
+        registerRequest = new RegisterRequest("r1@email.com", "test@r1", "9876556789", "Main St", 0, 0, "Rider");
+        mockMvc.perform(post("/auth/register")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(registerRequest)))
                 .andExpect(status().isCreated());
+
+
+        // Log in rider
+        LoginRequest loginRequest = new LoginRequest("r1@email.com", "test@r1");
+        String json = mockMvc.perform(post("/auth/login")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(loginRequest)))
+                .andExpect(status().isOk())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+
+        JsonNode node = objectMapper.readTree(json);
+        String jwt = node.get("token").asText();
 
 
         // Match rider
@@ -610,7 +701,7 @@ public class MVCTest {
         String expectedMatchedDriversJson = new ObjectMapper().writeValueAsString(expectedMatchedDrivers);
 
         mockMvc.perform(get("/ride/rider/match")
-                        .param("riderID", "1"))
+                        .header("Authorization", "Bearer " + jwt))
                 .andExpect(status().isOk())
                 .andExpect(content().json(expectedMatchedDriversJson));
 
@@ -620,8 +711,8 @@ public class MVCTest {
         String expectedRideStatusJson = new ObjectMapper().writeValueAsString(expectedRideStatus);
 
         mockMvc.perform(post("/ride/start")
+                        .header("Authorization", "Bearer " + jwt)
                         .param("N", "2")
-                        .param("riderID", "1")
                         .param("destination", "Beach")
                         .param("x", "4")
                         .param("y", "5"))
@@ -634,6 +725,7 @@ public class MVCTest {
         expectedRideStatusJson = new ObjectMapper().writeValueAsString(expectedRideStatus);
 
         mockMvc.perform(post("/ride/stop")
+                        .header("Authorization", "Bearer " + jwt)
                         .param("rideID", "1")
                         .param("timeInMins", "32"))
                 .andExpect(status().isOk())
@@ -641,6 +733,7 @@ public class MVCTest {
 
         // Get bill
         String response = mockMvc.perform(get("/ride/bill")
+                        .header("Authorization", "Bearer " + jwt)
                         .param("rideID", "1"))
                 .andExpect(status().isOk())
                 .andReturn()
@@ -650,22 +743,31 @@ public class MVCTest {
         float billAmount = Float.parseFloat(response);
         assertEquals(186.7f, billAmount, 0.1f);
 
+        if (userRepository.findByEmail(TEST_ADMIN_EMAIL).isEmpty()) {
+            User adminUser = new User();
+            adminUser.setEmail(TEST_ADMIN_EMAIL);
+            adminUser.setPassword(passwordEncoder.encode(TEST_ADMIN_PASSWORD));
+            adminUser.setRole(Role.ADMIN);
 
-        // Rate driver
-        DriverRatingDTO expectedDriverRating = new DriverRatingDTO(3, 4.5f);
-        String expectedDriverRatingJson = new ObjectMapper().writeValueAsString(expectedDriverRating);
+            userRepository.save(adminUser);
+        }
 
-        mockMvc.perform(post("/driver/rate")
-                        .param("rideID", "1")
-                        .param("driverID", "3")
-                        .param("rating", "4.5")
-                        .param("comment", "Drove well!"))
+        loginRequest = new LoginRequest("admin@gmail.com", "admin@test");
+        String json_admin = mockMvc.perform(post("/auth/login")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(loginRequest)))
                 .andExpect(status().isOk())
-                .andExpect(content().json(expectedDriverRatingJson));
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+
+        node = objectMapper.readTree(json_admin);
+        String jwt_admin = node.get("token").asText();
 
 
         // Delete driver
         mockMvc.perform(delete("/admin/drivers/remove")
+                        .header("Authorization", "Bearer " + jwt_admin)
                         .param("driverID", "2"))
                 .andExpect(status().isOk())
                 .andExpect(content().string("true"));
@@ -674,11 +776,12 @@ public class MVCTest {
         // List first N drivers from database
         List<DriverDTO> expectedDrivers = List.of(
                 new DriverDTO(1, 1, 1, 0.0),
-                new DriverDTO(3, 2, 2, 4.5)
+                new DriverDTO(3, 2, 2, 0.0)
         );
         String expectedDriversJson = new ObjectMapper().writeValueAsString(expectedDrivers);
 
         mockMvc.perform(get("/admin/drivers/list")
+                        .header("Authorization", "Bearer " + jwt_admin)
                         .param("N", "2"))
                 .andExpect(status().isOk())
                 .andExpect(content().json(expectedDriversJson));

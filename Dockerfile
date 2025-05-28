@@ -1,6 +1,8 @@
 FROM maven AS build
-COPY . /app
 WORKDIR /app
+COPY pom.xml .
+RUN mvn dependency:go-offline -DskipTests
+COPY src ./src
 RUN mvn package -DskipTests
 
 FROM openjdk:17-jdk-alpine

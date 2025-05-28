@@ -31,6 +31,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 import java.util.*;
@@ -42,6 +43,7 @@ import static org.mockito.Mockito.*;
 @SpringBootTest
 @Import(TestConfig.class)
 @ExtendWith(MockitoExtension.class)
+@TestPropertySource(properties = "spring.cache.type=NONE")
 class RideServiceTest {
     @MockitoBean
     private RiderRepository riderRepository;
@@ -159,6 +161,7 @@ class RideServiceTest {
 
         when(rideRepository.findById(rideID)).thenReturn(Optional.of(ride));
         when(driverRepository.findById(driverID)).thenReturn(Optional.of(driver));
+        doReturn(1L).when(rideServiceImpl).getUserId();
 
         RideStatusDTO expected = new RideStatusDTO(1, 1, 3, RideStatus.FINISHED);
         RideStatusDTO actual = rideService.stopRide(rideID, 32);

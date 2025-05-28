@@ -146,7 +146,7 @@ public class RideServiceImpl implements RideService {
 
 
     @Override
-    @CacheEvict(value = "allRides", key = "#root.target.getUserId()")
+//    @CacheEvict(value = "allRides", key = "#root.target.getUserId()")
     public RideStatusDTO stopRide(long rideID, int timeTakenInMins) {
         Ride currentRide = rideRepository.findById(rideID)
                 .orElseThrow(() -> new InvalidRideException("Invalid Ride ID - " + rideID + ", no such ride exists"));
@@ -245,7 +245,7 @@ public class RideServiceImpl implements RideService {
     }
 
     @Override
-    @Cacheable(value = "allRides", key = "#root.target.getUserId()")
+//    @Cacheable(value = "allRides", key = "#root.target.getUserId()")
     public List<RideDetailsDTO> getAllRides() {
         Rider rider = riderRepository.findByUserId(getUserId())
                 .orElseThrow(() -> new InvalidRiderIDException("No such rider"));
