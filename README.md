@@ -109,12 +109,9 @@ The following table summarizes the API performance tested using [k6](https://k6.
 | test_ride_flow.js   | 1000  | 1m       | 109.07/s | 24.17 ms  | 3.05 ms  | 153.82 ms | 52.00 ms   | 58.12 ms   | 51 ms      | 57 ms      | 100%         |
 |                     | 5000  | 2m       | 263.84/s | 128.03 ms | 2.43 ms  | 1.33 s    | 317.10 ms  | 444.85 ms  | 315 ms     | 442 ms     | 100%         |
 |                     | 10000 | 5m       | 177.28/s | 24.27 ms  | 1.34 ms  | 335.42 ms | 49.91 ms   | 56.94 ms   | 49 ms      | 56 ms      | 100%         |
-
-[//]: # (| test_admin_usage.js | 100   | 30s      | 7.21/s   | 4.74 ms  | 1.03 ms  | 141.30 ms | 4.91 ms    | 12.06 ms   | 4 ms       | 11 ms      | 100%         |)
-
-[//]: # (|                     | 500   | 30s      | 34.95/s  | 5.20 ms  | 0.81 ms  | 133.23 ms | 5.99 ms    | 11.30 ms   | 5 ms       | 10 ms      | 100%         |)
-
-[//]: # (|                     | 1000  | 30s      | 69.87/s  | 4.98 ms  | 0.73 ms  | 173.86 ms | 5.20 ms    | 10.75 ms   | 11 ms      | 13 ms      | 100%         |)
+| test_admin_usage.js | 100   | 1m       | 3.35/s   | 26.00 ms  | 3.31 ms  | 81.85 ms  | 60.17 ms   | 67.04 ms   | 58 ms      | 66 ms      | 100%         |
+|                     | 500   | 1m       | 16.36/s  | 29.09 ms  | 3.05 ms  | 160.86 ms | 70.21 ms   | 79.49 ms   | 69 ms      | 78 ms      | 100%         |
+|                     | 1000  | 1m       | 30.40/s  | 92.90 ms  | 3.18 ms  | 3.84 s    | 118.87 ms  | 333.14 ms  | 115 ms     | 328 ms     | 100%         |
 
 > **Notes:**
 > - R.D. = Response Duration
